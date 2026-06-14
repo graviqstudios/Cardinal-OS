@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120" role="img" aria-label="Cardinal OS">
+  <title>Cardinal OS — Needle in Housing</title>
+  <circle cx="60" cy="60" r="50" fill="none" stroke="#C9BBA3" stroke-width="4"></circle>
+  <path d="M60 14 V22 M106 60 H98 M60 106 V98 M14 60 H22" stroke="#C9BBA3" stroke-width="4" stroke-linecap="round"></path>
+  <path d="M60 28 L68 60 L52 60 Z" fill="#CB4B33"></path>
+  <path d="M60 86 L68 60 L52 60 Z" fill="#C9BBA3"></path>
+</svg>

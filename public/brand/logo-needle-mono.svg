@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100" role="img" aria-label="Cardinal OS">
+  <title>Cardinal OS — The Needle, single color</title>
+  
+  <path d="M50 6 L61 53 L39 53 Z" fill="currentColor"></path>
+  <path d="M50 86 L61 53 L39 53 Z" fill="currentColor" fill-opacity="0.45"></path>
+</svg>

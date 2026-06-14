@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="32" height="32" role="img" aria-label="Cardinal OS">
+  <title>Cardinal OS favicon</title>
+  <rect x="0" y="0" width="100" height="100" rx="24" fill="#CB4B33"></rect>
+  <path d="M50 22 L60 54 L40 54 Z" fill="#FBF5EA"></path>
+  <path d="M50 78 L60 54 L40 54 Z" fill="#FBF5EA" fill-opacity="0.55"></path>
+</svg>

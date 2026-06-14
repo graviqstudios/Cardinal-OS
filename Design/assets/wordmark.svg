@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 100" width="360" height="100" role="img" aria-label="Cardinal OS">
+  <title>Cardinal OS — horizontal lockup</title>
+  
+  <g transform="translate(8,18) scale(0.64)">
+    <path d="M50 6 L61 53 L39 53 Z" fill="#CB4B33"></path>
+    <path d="M50 86 L61 53 L39 53 Z" fill="#C9BBA3"></path>
+  </g>
+  
+  <text x="78" y="66" font-family="&#39;Instrument Serif&#39;, Georgia, serif" font-size="56" fill="#221C14">Cardinal</text>
+  <text x="300" y="44" font-family="&#39;Instrument Sans&#39;, system-ui, sans-serif" font-size="17" font-weight="500" letter-spacing="2.7" fill="#8A7E6A">OS</text>
+</svg>

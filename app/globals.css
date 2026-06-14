@@ -1,0 +1,197 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Cardinal OS — brand token layer.
+
+   The single source of truth for the look is Design/tokens.css (imported once in
+   app/layout.tsx). This file mirrors the brand palette into the Tailwind/shadcn
+   token names the app's components consume, expressed as HSL channels so
+   Tailwind opacity modifiers (bg-primary/10, etc.) keep working.
+
+   Themes: data-theme = parchment(default) | study | sage | dusk | ink.
+   Accents: data-accent = cardinal(default) | ochre | pine | cobalt | plum.
+   Values mirror Design/tokens.css — keep the two in sync.
+   ═════════════════════════════════════════════════════════════════════════ */
+
+@layer base {
+  :root {
+    --radius: 0.625rem; /* 10px — brand --r-button */
+
+    /* Module colours (fixed, theme-independent) — mirror --mod-* */
+    --module-readiness: 9 60% 50%;
+    --module-study: 217 59% 43%;
+    --module-calendar: 154 45% 34%;
+    --module-goals: 281 31% 43%;
+    --module-money: 37 72% 41%;
+
+    /* Topic heat scale (fixed): red → orange → yellow → green */
+    --status-untouched: 0 84% 60%;
+    --status-weak: 25 95% 53%;
+    --status-moderate: 45 93% 47%;
+    --status-strong: 142 71% 45%;
+
+    --primary-foreground: 0 0% 100%;
+  }
+
+  /* ── PARCHMENT (light, default) ───────────────────────────────────────── */
+  :root,
+  [data-theme="parchment"] {
+    --background: 40 47% 93%;
+    --foreground: 34 26% 11%;
+    --surface: 42 100% 98%;
+    --surface-foreground: 34 26% 11%;
+    --card: 42 100% 98%;
+    --card-foreground: 34 26% 11%;
+    --popover: 42 100% 98%;
+    --popover-foreground: 34 26% 11%;
+    --secondary: 40 43% 89%;
+    --secondary-foreground: 34 26% 11%;
+    --muted: 40 43% 89%;
+    --muted-foreground: 38 13% 48%;
+    --accent: 40 43% 89%;
+    --accent-foreground: 34 26% 11%;
+    --primary: 8 62% 47%;
+    --ring: 8 62% 47%;
+    --destructive: 11 66% 44%;
+    --destructive-foreground: 0 0% 100%;
+    --border: rgba(0, 0, 0, 0.08);
+    --input: rgba(0, 0, 0, 0.08);
+  }
+
+  /* ── STUDY (warm dark) ────────────────────────────────────────────────── */
+  [data-theme="study"] {
+    --background: 27 27% 8%;
+    --foreground: 38 44% 89%;
+    --surface: 28 26% 11%;
+    --surface-foreground: 38 44% 89%;
+    --card: 28 26% 11%;
+    --card-foreground: 38 44% 89%;
+    --popover: 28 26% 11%;
+    --popover-foreground: 38 44% 89%;
+    --secondary: 30 24% 13%;
+    --secondary-foreground: 38 44% 89%;
+    --muted: 30 24% 13%;
+    --muted-foreground: 37 15% 54%;
+    --accent: 30 24% 13%;
+    --accent-foreground: 38 44% 89%;
+    --primary: 11 65% 54%;
+    --ring: 11 65% 54%;
+    --destructive: 11 66% 44%;
+    --destructive-foreground: 0 0% 100%;
+    --border: rgba(242, 233, 219, 0.1);
+    --input: rgba(242, 233, 219, 0.1);
+  }
+
+  /* ── SAGE (calm light) ────────────────────────────────────────────────── */
+  [data-theme="sage"] {
+    --background: 75 18% 91%;
+    --foreground: 105 13% 13%;
+    --surface: 75 40% 98%;
+    --surface-foreground: 105 13% 13%;
+    --card: 75 40% 98%;
+    --card-foreground: 105 13% 13%;
+    --popover: 75 40% 98%;
+    --popover-foreground: 105 13% 13%;
+    --secondary: 75 19% 87%;
+    --secondary-foreground: 105 13% 13%;
+    --muted: 75 19% 87%;
+    --muted-foreground: 93 8% 47%;
+    --accent: 75 19% 87%;
+    --accent-foreground: 105 13% 13%;
+    --primary: 8 62% 47%;
+    --ring: 8 62% 47%;
+    --destructive: 11 66% 44%;
+    --destructive-foreground: 0 0% 100%;
+    --border: rgba(0, 0, 0, 0.07);
+    --input: rgba(0, 0, 0, 0.07);
+  }
+
+  /* ── DUSK (cool twilight) ─────────────────────────────────────────────── */
+  [data-theme="dusk"] {
+    --background: 240 15% 10%;
+    --foreground: 253 21% 92%;
+    --surface: 240 15% 14%;
+    --surface-foreground: 253 21% 92%;
+    --card: 240 15% 14%;
+    --card-foreground: 253 21% 92%;
+    --popover: 240 15% 14%;
+    --popover-foreground: 253 21% 92%;
+    --secondary: 240 15% 17%;
+    --secondary-foreground: 253 21% 92%;
+    --muted: 240 15% 17%;
+    --muted-foreground: 248 7% 56%;
+    --accent: 240 15% 17%;
+    --accent-foreground: 253 21% 92%;
+    --primary: 11 65% 54%;
+    --ring: 11 65% 54%;
+    --destructive: 11 66% 44%;
+    --destructive-foreground: 0 0% 100%;
+    --border: rgba(255, 255, 255, 0.08);
+    --input: rgba(255, 255, 255, 0.08);
+  }
+
+  /* ── INK (true black / OLED) ──────────────────────────────────────────── */
+  [data-theme="ink"] {
+    --background: 30 22% 4%;
+    --foreground: 40 51% 92%;
+    --surface: 38 38% 6%;
+    --surface-foreground: 40 51% 92%;
+    --card: 38 38% 6%;
+    --card-foreground: 40 51% 92%;
+    --popover: 38 38% 6%;
+    --popover-foreground: 40 51% 92%;
+    --secondary: 36 37% 8%;
+    --secondary-foreground: 40 51% 92%;
+    --muted: 36 37% 8%;
+    --muted-foreground: 36 11% 49%;
+    --accent: 36 37% 8%;
+    --accent-foreground: 40 51% 92%;
+    --primary: 11 68% 57%;
+    --ring: 11 68% 57%;
+    --destructive: 11 66% 44%;
+    --destructive-foreground: 0 0% 100%;
+    --border: rgba(242, 233, 219, 0.1);
+    --input: rgba(242, 233, 219, 0.1);
+  }
+
+  /* ── ACCENTS (override --primary / --ring) ────────────────────────────── */
+  [data-accent="cardinal"] { --primary: 9 60% 50%; --ring: 9 60% 50%; --primary-foreground: 0 0% 100%; }
+  [data-accent="ochre"]    { --primary: 37 72% 41%; --ring: 37 72% 41%; --primary-foreground: 27 27% 8%; }
+  [data-accent="pine"]     { --primary: 154 45% 34%; --ring: 154 45% 34%; --primary-foreground: 0 0% 100%; }
+  [data-accent="cobalt"]   { --primary: 217 59% 43%; --ring: 217 59% 43%; --primary-foreground: 0 0% 100%; }
+  [data-accent="plum"]     { --primary: 281 31% 43%; --ring: 281 31% 43%; --primary-foreground: 0 0% 100%; }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "ss01";
+  }
+}
+
+/* ── Theme/accent cross-fade (≤200ms), toggled by ThemeProvider on switch ── */
+html.theme-transition,
+html.theme-transition *,
+html.theme-transition *::before,
+html.theme-transition *::after {
+  transition:
+    background-color var(--dur-ui, 200ms) var(--ease-soft, ease),
+    border-color var(--dur-ui, 200ms) var(--ease-soft, ease),
+    color var(--dur-ui, 200ms) var(--ease-soft, ease),
+    fill var(--dur-ui, 200ms) var(--ease-soft, ease),
+    stroke var(--dur-ui, 200ms) var(--ease-soft, ease) !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.theme-transition,
+  html.theme-transition *,
+  html.theme-transition *::before,
+  html.theme-transition *::after {
+    transition: none !important;
+  }
+}

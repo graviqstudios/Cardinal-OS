@@ -1,0 +1,174 @@
+/* ===================================================================
+   Cardinal OS — Design Tokens
+   Drop this in once, then style everything with var(--token).
+   Never hard-code a hex in a component. Switch theme by setting
+   data-theme on <html> or <body>; switch accent with data-accent.
+   =================================================================== */
+
+:root {
+  /* ---- Brand constants (do not theme these) ---- */
+  --brand-cardinal:      #CB4B33;   /* the one red */
+  --brand-cardinal-deep: #B84026;   /* hover / pressed */
+  --brand-bone:          #C9BBA3;   /* second facet on the logo */
+
+  /* ---- Type ---- */
+  --font-serif: "Instrument Serif", Georgia, "Times New Roman", serif;
+  --font-sans:  "Instrument Sans", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+
+  /* Type scale (size / line-height / weight / tracking) */
+  --t-display:  400 60px/1   var(--font-serif);
+  --t-heading:  400 34px/1.1 var(--font-serif);
+  --t-numeral:  400 60px/1   var(--font-serif);  /* + font-variant-numeric: tabular-nums */
+  --t-title:    600 22px/1.3 var(--font-sans);   /* letter-spacing: -0.01em */
+  --t-body:     400 16px/1.6 var(--font-sans);
+  --t-caption:  400 13px/1.5 var(--font-sans);
+  --t-label:    600 12px/1   var(--font-sans);   /* letter-spacing: 0.14em; text-transform: uppercase */
+
+  /* ---- Radius ---- */
+  --r-button: 10px;
+  --r-card:   18px;
+  --r-pill:   999px;
+  --r-tile:   16px;
+  --r-icon:   24%;   /* app icon: 24% of its own size */
+
+  /* ---- Spacing step (8px base) ---- */
+  --space-1: 4px;  --space-2: 8px;  --space-3: 12px; --space-4: 16px;
+  --space-6: 24px; --space-8: 32px; --space-12: 48px; --space-16: 64px;
+
+  /* ---- Motion ---- */
+  --ease-soft: cubic-bezier(0.2, 0, 0, 1);   /* default for everything */
+  --dur-press: 120ms;   /* tap scale 0.95 */
+  --dur-ui:    200ms;   /* hovers, theme cross-fade, toggles */
+  --dur-modal: 240ms;   /* sheet/modal entrance: scale 0.95->1 + fade */
+  --dur-reveal: 1100ms; /* data reveals only: heat-map fill, score count-up */
+  /* Hard rule: no interaction animation exceeds 250ms. The two reveal
+     animations above are one-shot data visualisations, not interactions. */
+
+  /* ---- Module colors (fixed per module, theme-independent) ---- */
+  --mod-readiness: #CB4B33;   /* The Needle  */
+  --mod-study:     #2D5FB0;   /* The Folio   */
+  --mod-calendar:  #2F7D5B;   /* The Almanac */
+  --mod-goals:     #7A4C8F;   /* The Summit  */
+  --mod-money:     #B57A1E;   /* The Coin    */
+}
+
+/* ===================================================================
+   THEMES  —  set data-theme on <html>
+   Each defines: --bg, --surface, --surface-2, --text, --muted,
+   --border, --accent (theme-tuned cardinal that stays legible).
+   =================================================================== */
+
+/* Parchment — light, default */
+:root,
+[data-theme="parchment"] {
+  --bg:        #F5EFE3;
+  --surface:   #FFFCF5;
+  --surface-2: #EFE7D7;
+  --text:      #221C14;
+  --muted:     #8A7E6A;
+  --border:    rgba(0,0,0,0.08);
+  --accent:    #C2412E;
+  --on-accent: #FFFFFF;
+}
+
+/* Study — warm dark */
+[data-theme="study"] {
+  --bg:        #1A140F;
+  --surface:   #241C15;
+  --surface-2: #2A221A;
+  --text:      #EFE6D6;
+  --muted:     #9C8E78;
+  --border:    rgba(242,233,219,0.10);
+  --accent:    #D6593E;
+  --on-accent: #FFFFFF;
+}
+
+/* Sage — calm light */
+[data-theme="sage"] {
+  --bg:        #EBEDE5;
+  --surface:   #FBFCF8;
+  --surface-2: #E2E5D9;
+  --text:      #1E241C;
+  --muted:     #76806E;
+  --border:    rgba(0,0,0,0.07);
+  --accent:    #C2412E;
+  --on-accent: #FFFFFF;
+}
+
+/* Dusk — cool twilight */
+[data-theme="dusk"] {
+  --bg:        #16161E;
+  --surface:   #1F1F2A;
+  --surface-2: #262633;
+  --text:      #E7E5EE;
+  --muted:     #8A8898;
+  --border:    rgba(255,255,255,0.08);
+  --accent:    #D6593E;
+  --on-accent: #FFFFFF;
+}
+
+/* Ink — true black (OLED) */
+[data-theme="ink"] {
+  --bg:        #0B0907;
+  --surface:   #141009;
+  --surface-2: #1C160D;
+  --text:      #F5EEE0;
+  --muted:     #8C8170;
+  --border:    rgba(242,233,219,0.10);
+  --accent:    #DC6045;
+  --on-accent: #150E08;
+}
+
+/* ===================================================================
+   ACCENTS  —  set data-accent on <html> (overrides --accent).
+   Chosen on first launch. One harmonious key.
+   =================================================================== */
+[data-accent="cardinal"] { --accent: #CB4B33; --on-accent: #FFFFFF; }
+[data-accent="ochre"]    { --accent: #B57A1E; --on-accent: #1A140F; }
+[data-accent="pine"]     { --accent: #2F7D5B; --on-accent: #FFFFFF; }
+[data-accent="cobalt"]   { --accent: #2D5FB0; --on-accent: #FFFFFF; }
+[data-accent="plum"]     { --accent: #7A4C8F; --on-accent: #FFFFFF; }
+
+/* ===================================================================
+   Base + a few primitives, all token-driven
+   =================================================================== */
+html { color-scheme: light dark; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: var(--t-body);
+  -webkit-font-smoothing: antialiased;
+  transition: background var(--dur-ui) var(--ease-soft),
+              color      var(--dur-ui) var(--ease-soft);
+}
+
+.numeral { font: var(--t-numeral); font-variant-numeric: tabular-nums; }
+
+.btn {
+  font: 500 14px/1 var(--font-sans);
+  background: var(--accent);
+  color: var(--on-accent);
+  border: 0;
+  border-radius: var(--r-button);
+  padding: 12px 18px;
+  cursor: pointer;
+  transition: transform var(--dur-press) var(--ease-soft),
+              background var(--dur-press) var(--ease-soft);
+}
+.btn:active { transform: scale(0.95); }
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-card);
+  padding: var(--space-6);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
