@@ -3,7 +3,6 @@
 import { revalidatePath } from "next/cache";
 
 import { createClient } from "@/lib/supabase/server";
-import { recordLifeScoreSnapshot } from "@/lib/life-score/service";
 import type { Routine } from "@/lib/habits/types";
 
 type Result = { ok: true } | { ok: false; error: string };
