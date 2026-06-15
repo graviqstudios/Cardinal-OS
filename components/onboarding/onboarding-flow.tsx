@@ -57,7 +57,7 @@ export function OnboardingFlow({
       exam_date: examDate || null,
     });
     if (res.ok) {
-      router.push("/dashboard");
+      router.push("/today");
       router.refresh();
     } else {
       setError(res.error);

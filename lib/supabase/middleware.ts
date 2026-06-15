@@ -78,7 +78,7 @@ export async function updateSession(request: NextRequest) {
   // Authenticated user on an auth page → send to dashboard.
   if (user && (pathname === "/login" || pathname === "/signup")) {
     const url = request.nextUrl.clone();
-    url.pathname = "/dashboard";
+    url.pathname = "/today";
     url.search = "";
     return NextResponse.redirect(url);
   }

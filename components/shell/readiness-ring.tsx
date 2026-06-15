@@ -15,11 +15,13 @@ export function ReadinessRing({
   previous,
   size = 56,
   showLabel = false,
+  label = "Readiness",
 }: {
   score: number;
   previous?: number | null;
   size?: number;
   showLabel?: boolean;
+  label?: string;
 }) {
   const reduce = useReducedMotion();
   const [display, setDisplay] = React.useState(reduce ? score : 0);
@@ -46,7 +48,7 @@ export function ReadinessRing({
       {showLabel && (
         <div className="text-right">
           <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-            Readiness
+            {label}
           </p>
           {delta != null && delta > 0 && (
             <p

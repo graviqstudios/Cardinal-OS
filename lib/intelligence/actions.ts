@@ -35,7 +35,7 @@ export async function logMockExam(input: {
     taken_at: input.taken_at || new Date().toISOString().slice(0, 10),
   });
   if (error) return { ok: false, error: error.message };
-  revalidatePath("/dashboard");
+  revalidatePath("/today");
   return { ok: true };
 }
 
@@ -44,6 +44,6 @@ export async function deleteMockExam(id: string): Promise<Result> {
   if (!userId) return { ok: false, error: "Not authenticated." };
   const { error } = await supabase.from("mock_exams").delete().eq("id", id);
   if (error) return { ok: false, error: error.message };
-  revalidatePath("/dashboard");
+  revalidatePath("/today");
   return { ok: true };
 }

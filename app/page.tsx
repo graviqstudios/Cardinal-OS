@@ -15,5 +15,5 @@ export default async function Home() {
     // Supabase not configured yet — treat as signed out.
   }
 
-  redirect(signedIn ? "/dashboard" : "/login");
+  redirect(signedIn ? "/today" : "/login");
 }

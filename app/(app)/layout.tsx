@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 
 import { createClient } from "@/lib/supabase/server";
 import { isOnboarded, type Profile } from "@/lib/types";
-import { getReadinessSnapshot } from "@/lib/readiness/service";
+import { getLifeScoreSnapshot } from "@/lib/life-score/service";
 import { Sidebar } from "@/components/nav/sidebar";
 import { AppHeader } from "@/components/shell/app-header";
 import { PageTransition } from "@/components/motion/page-transition";
@@ -32,7 +32,7 @@ export default async function AppLayout({
 
   // Gate: unfinished onboarding must complete it first; finished users skip it.
   if (!onboarded && !onOnboarding) redirect("/onboarding");
-  if (onboarded && onOnboarding) redirect("/dashboard");
+  if (onboarded && onOnboarding) redirect("/today");
 
   // Onboarding is a focused, full-screen flow — no sidebar shell.
   if (onOnboarding) {
@@ -42,13 +42,13 @@ export default async function AppLayout({
   const displayName =
     profile?.name?.trim() || user.email?.split("@")[0] || "there";
 
-  const readiness = await getReadinessSnapshot();
+  const life = await getLifeScoreSnapshot();
 
   return (
     <div className="flex min-h-dvh flex-col md:flex-row">
       <Sidebar displayName={displayName} email={user.email ?? ""} />
       <main className="flex-1">
-        <AppHeader score={readiness?.score ?? 0} previous={readiness?.previous ?? null} />
+        <AppHeader score={life?.score ?? 0} previous={life?.previous ?? null} />
         <PageTransition className="mx-auto w-full max-w-5xl px-4 py-6 md:px-8 md:py-10">
           {children}
         </PageTransition>

@@ -20,7 +20,7 @@ export function Needle({ size = 22, className }: { size?: number; className?: st
 
 /** Primary lockup: the Needle + serif "Cardinal" + small tracked sans "OS". */
 export function Brand({
-  href = "/dashboard",
+  href = "/today",
   className,
 }: {
   href?: string;

@@ -47,7 +47,7 @@ export function AuthForm({ mode }: { mode: Mode }) {
         // If email confirmation is on, there's no session yet.
         const { data } = await supabase.auth.getSession();
         if (data.session) {
-          router.push("/dashboard");
+          router.push("/today");
           router.refresh();
         } else {
           setNotice("Check your inbox to confirm your email, then sign in.");
@@ -58,7 +58,7 @@ export function AuthForm({ mode }: { mode: Mode }) {
           password,
         });
         if (error) throw error;
-        router.push(searchParams.get("redirectedFrom") ?? "/dashboard");
+        router.push(searchParams.get("redirectedFrom") ?? "/today");
         router.refresh();
       }
     } catch (err) {
