@@ -1,8 +1,9 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { recordLifeScore } from "@/lib/life-score/actions";
+
 import { createClient } from "@/lib/supabase/server";
+import { recordLifeScoreSnapshot } from "@/lib/life-score/service";
 import type { Routine } from "@/lib/habits/types";
 
 type Result = { ok: true } | { ok: false; error: string };
@@ -71,7 +72,7 @@ export async function toggleHabitToday(habitId: string): Promise<Result> {
     if (error) return { ok: false, error: error.message };
   }
 
-  await recordLifeScore();
+  await recordLifeScoreSnapshot(supabase, userId);
   revalidatePath("/habits");
   revalidatePath("/today");
   return { ok: true };
