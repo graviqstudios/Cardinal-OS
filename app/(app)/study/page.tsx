@@ -7,10 +7,13 @@ import {
   getSubjectsWithTopics,
 } from "@/lib/study/queries";
 import { isMockAI } from "@/lib/ai/models";
+import { requireExamMode } from "@/lib/exam/guard";
 import { StudyWorkspace } from "@/components/study/study-workspace";
 import { PageHeader } from "@/components/shell/page-header";
 
 export default async function StudyPage() {
+  await requireExamMode();
+
   const [subjects, documents, sessionId] = await Promise.all([
     getSubjectsWithTopics(),
     getDocuments(),

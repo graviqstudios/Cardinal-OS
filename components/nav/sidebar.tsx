@@ -4,7 +4,7 @@ import * as React from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { LogOut, Menu, X } from "lucide-react";
+import { LogOut, Menu, PanelLeft, PanelLeftClose, X } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { NAV_ITEMS, type NavItem } from "@/lib/nav";
@@ -17,15 +17,32 @@ import { DURATION, EASE_OUT } from "@/lib/motion/variants";
 export function Sidebar({
   displayName,
   email,
+  examMode,
 }: {
   displayName: string;
   email: string;
+  examMode: boolean;
 }) {
   const [open, setOpen] = React.useState(false);
+  const [collapsed, setCollapsed] = React.useState(false);
 
   // Close the mobile drawer whenever the route changes.
   const pathname = usePathname();
   React.useEffect(() => setOpen(false), [pathname]);
+
+  // Restore the desktop collapsed preference (set after mount to avoid an SSR
+  // hydration mismatch).
+  React.useEffect(() => {
+    if (localStorage.getItem("sidebar-collapsed") === "1") setCollapsed(true);
+  }, []);
+
+  function toggleCollapsed() {
+    setCollapsed((c) => {
+      const next = !c;
+      localStorage.setItem("sidebar-collapsed", next ? "1" : "0");
+      return next;
+    });
+  }
 
   return (
     <>
@@ -50,15 +67,51 @@ export function Sidebar({
         onClose={() => setOpen(false)}
         displayName={displayName}
         email={email}
+        examMode={examMode}
       />
 
       {/* ── Desktop sidebar (pinned; only the nav list scrolls) ──── */}
-      <aside className="sticky top-0 hidden h-dvh w-64 shrink-0 flex-col border-r bg-surface md:flex">
-        <div className="flex h-14 items-center px-5">
-          <Brand />
+      <aside
+        className={cn(
+          "sticky top-0 hidden h-dvh shrink-0 flex-col border-r bg-surface transition-[width] duration-200 md:flex",
+          collapsed ? "w-[68px]" : "w-64",
+        )}
+      >
+        <div
+          className={cn(
+            "flex h-14 items-center",
+            collapsed ? "justify-center px-2" : "justify-between px-5",
+          )}
+        >
+          {collapsed ? (
+            <Tap className="inline-flex">
+              <Button
+                variant="ghost"
+                size="icon"
+                aria-label="Expand sidebar"
+                onClick={toggleCollapsed}
+              >
+                <PanelLeft className="h-5 w-5" />
+              </Button>
+            </Tap>
+          ) : (
+            <>
+              <Brand />
+              <Tap className="inline-flex">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  aria-label="Collapse sidebar"
+                  onClick={toggleCollapsed}
+                >
+                  <PanelLeftClose className="h-5 w-5" />
+                </Button>
+              </Tap>
+            </>
+          )}
         </div>
-        <NavList className="flex-1 px-3 py-2" />
-        <UserFooter displayName={displayName} email={email} />
+        <NavList className="flex-1 px-3 py-2" examMode={examMode} collapsed={collapsed} />
+        <UserFooter displayName={displayName} email={email} collapsed={collapsed} />
       </aside>
     </>
   );
@@ -69,11 +122,13 @@ function MobileDrawer({
   onClose,
   displayName,
   email,
+  examMode,
 }: {
   open: boolean;
   onClose: () => void;
   displayName: string;
   email: string;
+  examMode: boolean;
 }) {
   const reduceMotion = useReducedMotion();
 
@@ -109,7 +164,7 @@ function MobileDrawer({
                 </Button>
               </Tap>
             </div>
-            <NavList className="flex-1 px-3 py-2" />
+            <NavList className="flex-1 px-3 py-2" examMode={examMode} />
             <UserFooter displayName={displayName} email={email} />
           </motion.aside>
         </div>
@@ -119,22 +174,42 @@ function MobileDrawer({
 }
 
 
-function NavList({ className }: { className?: string }) {
+function NavList({
+  className,
+  examMode,
+  collapsed = false,
+}: {
+  className?: string;
+  examMode: boolean;
+  collapsed?: boolean;
+}) {
   const pathname = usePathname();
+  const items = examMode
+    ? NAV_ITEMS
+    : NAV_ITEMS.filter((item) => !item.examOnly);
   return (
     <nav className={cn("space-y-1 overflow-y-auto", className)}>
-      {NAV_ITEMS.map((item) => (
+      {items.map((item) => (
         <NavRow
           key={item.href}
           item={item}
           active={pathname === item.href || pathname.startsWith(`${item.href}/`)}
+          collapsed={collapsed}
         />
       ))}
     </nav>
   );
 }
 
-function NavRow({ item, active }: { item: NavItem; active: boolean }) {
+function NavRow({
+  item,
+  active,
+  collapsed = false,
+}: {
+  item: NavItem;
+  active: boolean;
+  collapsed?: boolean;
+}) {
   const Icon = item.icon;
   const iconStyle = item.colorVar
     ? { color: `hsl(var(${item.colorVar}))` }
@@ -148,22 +223,29 @@ function NavRow({ item, active }: { item: NavItem; active: boolean }) {
       ) : (
         <Icon className="h-4 w-4 shrink-0" style={iconStyle} />
       )}
-      <span className="flex-1">{item.label}</span>
-      {!item.enabled && (
-        <span className="rounded-full bg-muted px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
-          Soon
-        </span>
+      {!collapsed && (
+        <>
+          <span className="flex-1">{item.label}</span>
+          {!item.enabled && (
+            <span className="rounded-full bg-muted px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
+              Soon
+            </span>
+          )}
+        </>
       )}
     </>
   );
 
-  const base =
-    "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors";
+  const base = cn(
+    "flex items-center rounded-md text-sm font-medium transition-colors",
+    collapsed ? "justify-center p-2.5" : "gap-3 px-3 py-2",
+  );
 
   if (!item.enabled) {
     return (
       <div
         aria-disabled
+        title={collapsed ? item.label : undefined}
         className={cn(base, "cursor-not-allowed text-muted-foreground/70")}
       >
         {inner}
@@ -176,6 +258,7 @@ function NavRow({ item, active }: { item: NavItem; active: boolean }) {
       <Link
         href={item.href}
         aria-current={active ? "page" : undefined}
+        title={collapsed ? item.label : undefined}
         className={cn(
           base,
           active
@@ -192,9 +275,11 @@ function NavRow({ item, active }: { item: NavItem; active: boolean }) {
 function UserFooter({
   displayName,
   email,
+  collapsed = false,
 }: {
   displayName: string;
   email: string;
+  collapsed?: boolean;
 }) {
   const router = useRouter();
   const [pending, setPending] = React.useState(false);
@@ -207,27 +292,47 @@ function UserFooter({
     router.refresh();
   }
 
+  const avatar = (
+    <span
+      className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/15 text-sm font-semibold text-primary"
+      title={collapsed ? displayName : undefined}
+    >
+      {displayName.charAt(0).toUpperCase()}
+    </span>
+  );
+
+  const signOutButton = (
+    <Tap className="inline-flex">
+      <Button
+        variant="ghost"
+        size="icon"
+        aria-label="Sign out"
+        onClick={signOut}
+        disabled={pending}
+      >
+        <LogOut className="h-4 w-4" />
+      </Button>
+    </Tap>
+  );
+
+  if (collapsed) {
+    return (
+      <div className="flex flex-col items-center gap-2 border-t p-3">
+        {avatar}
+        {signOutButton}
+      </div>
+    );
+  }
+
   return (
     <div className="border-t p-3">
       <div className="flex items-center gap-3 px-2 py-1.5">
-        <span className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/15 text-sm font-semibold text-primary">
-          {displayName.charAt(0).toUpperCase()}
-        </span>
+        {avatar}
         <div className="min-w-0 flex-1">
           <p className="truncate text-sm font-medium">{displayName}</p>
           <p className="truncate text-xs text-muted-foreground">{email}</p>
         </div>
-        <Tap className="inline-flex">
-          <Button
-            variant="ghost"
-            size="icon"
-            aria-label="Sign out"
-            onClick={signOut}
-            disabled={pending}
-          >
-            <LogOut className="h-4 w-4" />
-          </Button>
-        </Tap>
+        {signOutButton}
       </div>
     </div>
   );

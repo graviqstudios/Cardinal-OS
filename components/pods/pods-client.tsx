@@ -35,7 +35,7 @@ export function PodsClient({
     setBusy(null);
     if (res.ok) {
       setName(""); setExam("");
-      router.push(`/pods?pod=${res.data!.id}`);
+      router.push(`/constellations?c=${res.data!.id}`);
     } else setError(res.error);
   }
 
@@ -48,7 +48,7 @@ export function PodsClient({
     setBusy(null);
     if (res.ok) {
       setCode("");
-      router.push(`/pods?pod=${res.data!.id}`);
+      router.push(`/constellations?c=${res.data!.id}`);
     } else setError(res.error);
   }
 
@@ -57,11 +57,11 @@ export function PodsClient({
       <Card>
         <CardContent className="space-y-3 p-4">
           <form onSubmit={create} className="grid gap-2 sm:grid-cols-[1fr_1fr_auto]">
-            <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Pod name" />
-            <Input value={exam} onChange={(e) => setExam(e.target.value)} placeholder="Exam target (optional)" />
+            <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Constellation name" />
+            <Input value={exam} onChange={(e) => setExam(e.target.value)} placeholder="Focus (optional)" />
             <Button type="submit" disabled={busy !== null}>
               {busy === "create" ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
-              Create pod
+              Create
             </Button>
           </form>
           <div className="relative">
@@ -84,11 +84,11 @@ export function PodsClient({
       <div className="space-y-2">
         {pods.length === 0 ? (
           <p className="px-1 text-sm text-muted-foreground">
-            No pods yet. Create one or join with an invite code.
+            No constellations yet. Create one or join with an invite code.
           </p>
         ) : (
           pods.map((p) => (
-            <Link key={p.id} href={`/pods?pod=${p.id}`} className="block">
+            <Link key={p.id} href={`/constellations?c=${p.id}`} className="block">
               <Card className={cn(selectedId === p.id && "ring-2 ring-primary")}>
                 <CardContent className="flex items-center gap-3 p-3">
                   <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 text-primary">

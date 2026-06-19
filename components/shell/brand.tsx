@@ -22,19 +22,28 @@ export function Needle({ size = 22, className }: { size?: number; className?: st
 export function Brand({
   href = "/today",
   className,
+  compact = false,
 }: {
   href?: string;
   className?: string;
+  /** Mark-only lockup (no wordmark) — used by the collapsed sidebar. */
+  compact?: boolean;
 }) {
   return (
-    <Link href={href} className={cn("flex items-center gap-2.5", className)}>
-      <Needle size={22} />
-      <span className="flex items-baseline gap-1">
-        <span className="font-serif text-xl leading-none tracking-tight">Cardinal</span>
-        <span className="font-sans text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-          OS
+    <Link
+      href={href}
+      aria-label="Cardinal OS"
+      className={cn("flex items-center gap-3", compact && "justify-center", className)}
+    >
+      <Needle size={30} />
+      {!compact && (
+        <span className="flex items-baseline gap-1">
+          <span className="font-serif text-2xl leading-none tracking-tight">Cardinal</span>
+          <span className="font-sans text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+            OS
+          </span>
         </span>
-      </span>
+      )}
     </Link>
   );
 }

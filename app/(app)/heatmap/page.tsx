@@ -1,8 +1,11 @@
 import { getSubjectsWithTopics } from "@/lib/study/queries";
+import { requireExamMode } from "@/lib/exam/guard";
 import { HeatmapGrid } from "@/components/study/heatmap-grid";
 import { PageHeader } from "@/components/shell/page-header";
 
 export default async function HeatmapPage() {
+  await requireExamMode();
+
   const subjects = await getSubjectsWithTopics();
 
   return (

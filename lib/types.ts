@@ -9,6 +9,7 @@ export type Profile = {
   exam_date: string | null; // ISO date (yyyy-mm-dd)
   accent_color: Accent | null;
   theme: Palette | null;
+  exam_mode: boolean;
   trial_started_at: string;
   is_pro: boolean;
   subscription_expires_at: string | null;

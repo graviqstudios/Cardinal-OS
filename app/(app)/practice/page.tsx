@@ -1,10 +1,13 @@
 import { getSubjectsWithTopics } from "@/lib/study/queries";
 import { Dumbbell } from "lucide-react";
 
+import { requireExamMode } from "@/lib/exam/guard";
 import { PracticeClient } from "@/components/practice/practice-client";
 import { PageHeader } from "@/components/shell/page-header";
 
 export default async function PracticePage() {
+  await requireExamMode();
+
   const subjects = await getSubjectsWithTopics();
   const topics = subjects.flatMap((s) =>
     s.topics.map((t) => ({ id: t.id, name: t.name, subjectName: s.name })),

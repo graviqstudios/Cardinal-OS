@@ -11,6 +11,7 @@ export type ProfileUpdate = {
   exam_date?: string | null;
   accent_color?: string | null;
   theme?: string | null;
+  exam_mode?: boolean;
 };
 
 export type ProfileActionResult =

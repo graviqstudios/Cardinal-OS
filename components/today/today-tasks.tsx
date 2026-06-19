@@ -15,6 +15,19 @@ export function TodayTasks({ tasks }: { tasks: Task[] }) {
   const router = useRouter();
   const [title, setTitle] = React.useState("");
   const [, start] = React.useTransition();
+  // Optimistically hide completed tasks; cleared when fresh data arrives.
+  const [doneIds, setDoneIds] = React.useState<Set<string>>(new Set());
+  React.useEffect(() => setDoneIds(new Set()), [tasks]);
+
+  function complete(id: string) {
+    setDoneIds((s) => new Set(s).add(id));
+    start(async () => {
+      await toggleTaskDone(id, true);
+      router.refresh();
+    });
+  }
+
+  const visible = tasks.filter((t) => !doneIds.has(t.id));
 
   function add(e: React.FormEvent) {
     e.preventDefault();
@@ -40,16 +53,16 @@ export function TodayTasks({ tasks }: { tasks: Task[] }) {
         </div>
 
         <div className="space-y-1">
-          {tasks.length === 0 && (
+          {visible.length === 0 && (
             <p className="px-1 py-1 text-sm text-muted-foreground">
               Nothing for today yet. Add the one thing that matters most.
             </p>
           )}
-          {tasks.map((t) => (
+          {visible.map((t) => (
             <div key={t.id} className="flex items-center gap-2.5 rounded-button px-1 py-1.5">
               <Tap className="inline-flex">
                 <button
-                  onClick={() => start(async () => { await toggleTaskDone(t.id, true); router.refresh(); })}
+                  onClick={() => complete(t.id)}
                   className="flex h-5 w-5 shrink-0 items-center justify-center rounded-pill border border-input hover:border-primary"
                   aria-label="Complete task"
                 />

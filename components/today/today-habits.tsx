@@ -14,6 +14,18 @@ import { Tap } from "@/components/motion/tap";
 export function TodayHabits({ habits }: { habits: HabitWithToday[] }) {
   const router = useRouter();
   const [, start] = React.useTransition();
+  // Optimistic completion overrides; cleared when fresh server data arrives.
+  const [optimistic, setOptimistic] = React.useState<Record<string, boolean>>({});
+  React.useEffect(() => setOptimistic({}), [habits]);
+
+  function toggle(h: HabitWithToday) {
+    const next = optimistic[h.id] ?? h.doneToday;
+    setOptimistic((o) => ({ ...o, [h.id]: !next }));
+    start(async () => {
+      await toggleHabitToday(h.id);
+      router.refresh();
+    });
+  }
 
   return (
     <Card>
@@ -36,25 +48,27 @@ export function TodayHabits({ habits }: { habits: HabitWithToday[] }) {
           </Link>
         ) : (
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-            {habits.map((h) => (
+            {habits.map((h) => {
+              const done = optimistic[h.id] ?? h.doneToday;
+              return (
               <Tap key={h.id} className="block">
                 <button
-                  onClick={() => start(async () => { await toggleHabitToday(h.id); router.refresh(); })}
+                  onClick={() => toggle(h)}
                   className={cn(
                     "flex w-full items-center gap-2.5 rounded-button border p-2.5 text-left transition-colors",
-                    h.doneToday ? "border-primary/40 bg-primary/5" : "border-border hover:bg-accent",
+                    done ? "border-primary/40 bg-primary/5" : "border-border hover:bg-accent",
                   )}
                 >
                   <span
                     className={cn(
                       "flex h-6 w-6 shrink-0 items-center justify-center rounded-pill border",
-                      h.doneToday ? "border-primary bg-primary text-primary-foreground" : "border-input",
+                      done ? "border-primary bg-primary text-primary-foreground" : "border-input",
                     )}
                   >
-                    {h.doneToday && <Check className="h-3.5 w-3.5" />}
+                    {done && <Check className="h-3.5 w-3.5" />}
                   </span>
                   <span className="min-w-0 flex-1">
-                    <span className={cn("block truncate text-sm", h.doneToday && "text-muted-foreground")}>
+                    <span className={cn("block truncate text-sm", done && "text-muted-foreground")}>
                       {h.name}
                     </span>
                     {h.streak > 0 && (
@@ -66,7 +80,8 @@ export function TodayHabits({ habits }: { habits: HabitWithToday[] }) {
                   </span>
                 </button>
               </Tap>
-            ))}
+              );
+            })}
           </div>
         )}
       </CardContent>

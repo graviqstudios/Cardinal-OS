@@ -18,6 +18,17 @@ export function HabitsClient({ habits }: { habits: HabitWithToday[] }) {
   const [name, setName] = React.useState("");
   const [routine, setRoutine] = React.useState<Routine>("any");
   const [, start] = React.useTransition();
+  const [optimistic, setOptimistic] = React.useState<Record<string, boolean>>({});
+  React.useEffect(() => setOptimistic({}), [habits]);
+
+  function toggle(h: HabitWithToday) {
+    const next = optimistic[h.id] ?? h.doneToday;
+    setOptimistic((o) => ({ ...o, [h.id]: !next }));
+    start(async () => {
+      await toggleHabitToday(h.id);
+      router.refresh();
+    });
+  }
 
   function add(e: React.FormEvent) {
     e.preventDefault();
@@ -79,14 +90,16 @@ export function HabitsClient({ habits }: { habits: HabitWithToday[] }) {
                     <div className="flex items-center gap-3">
                       <Tap className="inline-flex">
                         <button
-                          onClick={() => start(async () => { await toggleHabitToday(h.id); router.refresh(); })}
+                          onClick={() => toggle(h)}
                           className={cn(
                             "flex h-6 w-6 shrink-0 items-center justify-center rounded-pill border",
-                            h.doneToday ? "border-primary bg-primary text-primary-foreground" : "border-input",
+                            (optimistic[h.id] ?? h.doneToday)
+                              ? "border-primary bg-primary text-primary-foreground"
+                              : "border-input",
                           )}
                           aria-label="Toggle today"
                         >
-                          {h.doneToday && <Check className="h-3.5 w-3.5" />}
+                          {(optimistic[h.id] ?? h.doneToday) && <Check className="h-3.5 w-3.5" />}
                         </button>
                       </Tap>
                       <span className="flex-1 truncate text-sm font-medium">{h.name}</span>

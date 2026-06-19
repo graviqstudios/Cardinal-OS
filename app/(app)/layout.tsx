@@ -46,7 +46,11 @@ export default async function AppLayout({
 
   return (
     <div className="flex min-h-dvh flex-col md:flex-row">
-      <Sidebar displayName={displayName} email={user.email ?? ""} />
+      <Sidebar
+        displayName={displayName}
+        email={user.email ?? ""}
+        examMode={profile?.exam_mode ?? false}
+      />
       <main className="flex-1">
         <AppHeader score={life?.score ?? 0} previous={life?.previous ?? null} />
         <PageTransition className="mx-auto w-full max-w-5xl px-4 py-6 md:px-8 md:py-10">

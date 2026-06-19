@@ -1,10 +1,13 @@
 import { Mic } from "lucide-react";
 
 import { getSubjectsWithTopics } from "@/lib/study/queries";
+import { requireExamMode } from "@/lib/exam/guard";
 import { VoiceExaminer } from "@/components/voice/voice-examiner";
 import { PageHeader } from "@/components/shell/page-header";
 
 export default async function VoicePage() {
+  await requireExamMode();
+
   const subjects = await getSubjectsWithTopics();
   const topics = subjects.flatMap((s) =>
     s.topics.map((t) => ({ id: t.id, name: t.name, subjectName: s.name })),

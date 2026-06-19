@@ -12,12 +12,14 @@ import { Tap } from "@/components/motion/tap";
 
 export function ProfileForm({
   initial,
+  examMode,
 }: {
   initial: {
     name: string;
     exam_target: string;
     exam_date: string;
   };
+  examMode: boolean;
 }) {
   const router = useRouter();
   const [name, setName] = React.useState(initial.name);
@@ -58,25 +60,29 @@ export function ProfileForm({
           placeholder="Your name"
         />
       </div>
-      <div className="space-y-2">
-        <Label htmlFor="exam_target">Exam / goal</Label>
-        <Input
-          id="exam_target"
-          value={examTarget}
-          onChange={(e) => setExamTarget(e.target.value)}
-          placeholder="e.g. NEET 2027"
-        />
-      </div>
-      <div className="space-y-2">
-        <Label htmlFor="exam_date">Target date</Label>
-        <Input
-          id="exam_date"
-          type="date"
-          value={examDate}
-          onChange={(e) => setExamDate(e.target.value)}
-          className="max-w-xs"
-        />
-      </div>
+      {examMode && (
+        <>
+          <div className="space-y-2">
+            <Label htmlFor="exam_target">Exam / goal</Label>
+            <Input
+              id="exam_target"
+              value={examTarget}
+              onChange={(e) => setExamTarget(e.target.value)}
+              placeholder="e.g. NEET 2027"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="exam_date">Target date</Label>
+            <Input
+              id="exam_date"
+              type="date"
+              value={examDate}
+              onChange={(e) => setExamDate(e.target.value)}
+              className="max-w-xs"
+            />
+          </div>
+        </>
+      )}
 
       {error && <p className="text-sm text-destructive">{error}</p>}
 

@@ -16,6 +16,18 @@ export function TasksClient({ grouped }: { grouped: Record<TaskStatus, Task[]> }
   const router = useRouter();
   const [title, setTitle] = React.useState("");
   const [, start] = React.useTransition();
+  const [optDone, setOptDone] = React.useState<Record<string, boolean>>({});
+  React.useEffect(() => setOptDone({}), [grouped]);
+  const isDone = (t: Task) => optDone[t.id] ?? t.status === "done";
+
+  function toggleDone(t: Task) {
+    const next = !isDone(t);
+    setOptDone((o) => ({ ...o, [t.id]: next }));
+    start(async () => {
+      await toggleTaskDone(t.id, next);
+      router.refresh();
+    });
+  }
 
   function add(e: React.FormEvent) {
     e.preventDefault();
@@ -64,24 +76,19 @@ export function TasksClient({ grouped }: { grouped: Record<TaskStatus, Task[]> }
                     <div key={t.id} className="flex items-center gap-2.5 rounded-button px-1 py-1.5">
                       <Tap className="inline-flex">
                         <button
-                          onClick={() =>
-                            start(async () => {
-                              await toggleTaskDone(t.id, t.status !== "done");
-                              router.refresh();
-                            })
-                          }
+                          onClick={() => toggleDone(t)}
                           className={cn(
                             "flex h-5 w-5 shrink-0 items-center justify-center rounded-pill border",
-                            t.status === "done"
+                            isDone(t)
                               ? "border-primary bg-primary text-primary-foreground"
                               : "border-input hover:border-primary",
                           )}
                           aria-label="Toggle done"
                         >
-                          {t.status === "done" && <Check className="h-3 w-3" />}
+                          {isDone(t) && <Check className="h-3 w-3" />}
                         </button>
                       </Tap>
-                      <span className={cn("flex-1 truncate text-sm", t.status === "done" && "text-muted-foreground line-through")}>
+                      <span className={cn("flex-1 truncate text-sm", isDone(t) && "text-muted-foreground line-through")}>
                         {t.title}
                       </span>
                       <select

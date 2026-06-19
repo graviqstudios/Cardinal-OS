@@ -3,7 +3,6 @@
 import { revalidatePath } from "next/cache";
 
 import { createClient } from "@/lib/supabase/server";
-import { recordLifeScoreSnapshot } from "@/lib/life-score/service";
 import type { Priority, TaskStatus } from "@/lib/tasks/types";
 
 type Result = { ok: true } | { ok: false; error: string };
@@ -51,7 +50,6 @@ export async function setTaskStatus(id: string, status: TaskStatus): Promise<Res
     .update({ status, completed_at: status === "done" ? new Date().toISOString() : null })
     .eq("id", id);
   if (error) return { ok: false, error: error.message };
-  await recordLifeScoreSnapshot(supabase, userId);
   refresh();
   return { ok: true };
 }

@@ -6,7 +6,6 @@ import { z } from "zod";
 
 import { createClient } from "@/lib/supabase/server";
 import { isMockAI, liteModel } from "@/lib/ai/models";
-import { recordLifeScoreSnapshot } from "@/lib/life-score/service";
 import type { ProjectStatus } from "@/lib/projects/types";
 
 type Result<T = void> = { ok: true; data?: T } | { ok: false; error: string };
@@ -50,7 +49,6 @@ export async function setProjectProgress(id: string, progress: number): Promise<
   const clamped = Math.max(0, Math.min(100, Math.round(progress)));
   const { error } = await supabase.from("projects").update({ progress: clamped }).eq("id", id);
   if (error) return { ok: false, error: error.message };
-  await recordLifeScoreSnapshot(supabase, userId);
   refresh();
   return { ok: true };
 }

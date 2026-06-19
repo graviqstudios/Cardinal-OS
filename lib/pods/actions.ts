@@ -18,7 +18,7 @@ async function uid() {
 export async function createPod(name: string, examTarget: string): Promise<Result<{ id: string }>> {
   const { supabase, userId } = await uid();
   if (!userId) return { ok: false, error: "Not authenticated." };
-  if (!name.trim()) return { ok: false, error: "Pod name is required." };
+  if (!name.trim()) return { ok: false, error: "A name is required." };
 
   const { data, error } = await supabase.rpc("create_pod", {
     p_name: name.trim(),
@@ -27,7 +27,7 @@ export async function createPod(name: string, examTarget: string): Promise<Resul
   if (error) return { ok: false, error: error.message };
 
   await publishPodStats();
-  revalidatePath("/pods");
+  revalidatePath("/constellations");
   return { ok: true, data: { id: data as string } };
 }
 
@@ -40,7 +40,7 @@ export async function joinPod(code: string): Promise<Result<{ id: string }>> {
   if (error) return { ok: false, error: error.message.replace(/^.*?:\s*/, "") };
 
   await publishPodStats();
-  revalidatePath("/pods");
+  revalidatePath("/constellations");
   return { ok: true, data: { id: data as string } };
 }
 
@@ -53,7 +53,7 @@ export async function leavePod(podId: string): Promise<Result> {
     .eq("pod_id", podId)
     .eq("user_id", userId);
   if (error) return { ok: false, error: error.message };
-  revalidatePath("/pods");
+  revalidatePath("/constellations");
   return { ok: true };
 }
 

@@ -53,7 +53,7 @@ export function PodDetailView({ pod }: { pod: PodDetail }) {
               size="sm"
               onClick={async () => {
                 await leavePod(pod.id);
-                router.push("/pods");
+                router.push("/constellations");
               }}
             >
               <LogOut className="h-4 w-4" />

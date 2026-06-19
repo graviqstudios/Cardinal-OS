@@ -5,6 +5,7 @@ import { Settings as SettingsIcon } from "lucide-react";
 
 import { ThemeControls } from "@/components/theme/theme-controls";
 import { ProfileForm } from "@/components/settings/profile-form";
+import { ExamModeToggle } from "@/components/settings/exam-mode-toggle";
 import { PageHeader } from "@/components/shell/page-header";
 
 export default async function SettingsPage() {
@@ -43,12 +44,22 @@ export default async function SettingsPage() {
         </CardHeader>
         <CardContent>
           <ProfileForm
+            examMode={profile?.exam_mode ?? false}
             initial={{
               name: profile?.name ?? "",
               exam_target: profile?.exam_target ?? "",
               exam_date: profile?.exam_date ?? "",
             }}
           />
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Exam Prep</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <ExamModeToggle initial={profile?.exam_mode ?? false} />
         </CardContent>
       </Card>
 

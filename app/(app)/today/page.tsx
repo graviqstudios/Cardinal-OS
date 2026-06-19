@@ -8,6 +8,7 @@ import { getTodayTasks } from "@/lib/tasks/queries";
 import { getTodayReflection } from "@/lib/journal/queries";
 import { getEvents } from "@/lib/calendar/queries";
 import { fmtTime } from "@/lib/calendar/dates";
+import { buildGreeting } from "@/lib/today/greeting";
 import { Card, CardContent } from "@/components/ui/card";
 import { LifeScoreRecorder } from "@/components/life-score/life-score-recorder";
 import { LifeScoreHero } from "@/components/today/life-score-hero";
@@ -17,13 +18,6 @@ import { TodayTasks } from "@/components/today/today-tasks";
 import { TodayBriefing } from "@/components/today/today-briefing";
 import { DailyReflection } from "@/components/today/daily-reflection";
 import { QuickCapture } from "@/components/today/quick-capture";
-
-function greeting(date: Date) {
-  const h = date.getHours();
-  if (h < 12) return "Good morning";
-  if (h < 18) return "Good afternoon";
-  return "Good evening";
-}
 
 export default async function TodayPage() {
   const supabase = await createClient();
@@ -54,6 +48,28 @@ export default async function TodayPage() {
   const hasData =
     habits.length > 0 || tasks.length > 0 || (life?.breakdown.velocity ?? null) != null;
 
+  const habitsDone = habits.filter((h) => h.doneToday).length;
+  const topStreak = habits.reduce((max, h) => Math.max(max, h.streak), 0);
+  const trend: "up" | "down" | "flat" | null =
+    life?.previous == null
+      ? null
+      : life.score > life.previous
+        ? "up"
+        : life.score < life.previous
+          ? "down"
+          : "flat";
+
+  const greetingText = buildGreeting({
+    name,
+    hasData,
+    habitsDone,
+    habitsTotal: habits.length,
+    taskCount: tasks.length,
+    trend,
+    topStreak,
+    daySeed: Math.floor(now.getTime() / 86_400_000),
+  });
+
   return (
     <div className="space-y-6">
       <LifeScoreRecorder />
@@ -65,7 +81,7 @@ export default async function TodayPage() {
             {dateLabel}
           </p>
           <h1 className="font-serif text-4xl leading-[1.05] tracking-tight sm:text-5xl">
-            {greeting(now)}, {name}.
+            {greetingText}
           </h1>
         </div>
         <TodayIntention />
