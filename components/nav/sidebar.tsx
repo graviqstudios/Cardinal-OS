@@ -72,6 +72,7 @@ export function Sidebar({
 
       {/* ── Desktop sidebar (pinned; only the nav list scrolls) ──── */}
       <aside
+        data-tour="sidebar"
         className={cn(
           "sticky top-0 hidden h-dvh shrink-0 flex-col border-r bg-surface transition-[width] duration-200 md:flex",
           collapsed ? "w-[68px]" : "w-64",

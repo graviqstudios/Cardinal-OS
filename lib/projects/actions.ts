@@ -24,14 +24,21 @@ function refresh() {
   revalidatePath("/today");
 }
 
-export async function createProject(name: string, status: ProjectStatus = "active"): Promise<Result> {
+export async function createProject(
+  name: string,
+  status: ProjectStatus = "active",
+): Promise<Result<{ id: string }>> {
   const { supabase, userId } = await uid();
   if (!userId) return { ok: false, error: "Not authenticated." };
   if (!name.trim()) return { ok: false, error: "Name is required." };
-  const { error } = await supabase.from("projects").insert({ user_id: userId, name: name.trim(), status });
+  const { data, error } = await supabase
+    .from("projects")
+    .insert({ user_id: userId, name: name.trim(), status })
+    .select("id")
+    .single();
   if (error) return { ok: false, error: error.message };
   refresh();
-  return { ok: true };
+  return { ok: true, data: { id: data.id as string } };
 }
 
 export async function setProjectStatus(id: string, status: ProjectStatus): Promise<Result> {

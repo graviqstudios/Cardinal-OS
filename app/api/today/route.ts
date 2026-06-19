@@ -49,29 +49,28 @@ export async function POST() {
       : "Nothing scheduled.");
 
   if (isMockAI || (habitTotal === 0 && openTasks === 0)) {
-    return Response.json({ text: mockBriefing(habitDone, habitTotal, openTasks, score.score) });
+    return Response.json({ text: mockBriefing(habitDone, habitTotal, openTasks) });
   }
 
   try {
     const { text } = await generateText({
       model: chatModel(),
       system:
-        "You are Cardinal, a calm, warm life companion. Write a 2–3 sentence morning briefing for the user based on the facts. Be encouraging but never gushing, never use exclamation marks or 'Great job'. Point to one concrete thing worth doing today. No preamble.",
+        "You are Cardinal, a calm, warm life companion. Write ONE short sentence (max ~16 words) for the user based on the facts — a gentle nudge toward the one thing worth doing today. Never gushing, no exclamation marks, no 'Great job'. No preamble.",
       prompt: facts,
     });
-    return Response.json({ text });
+    return Response.json({ text: text.trim() });
   } catch {
-    return Response.json({ text: mockBriefing(habitDone, habitTotal, openTasks, score.score) });
+    return Response.json({ text: mockBriefing(habitDone, habitTotal, openTasks) });
   }
 }
 
-function mockBriefing(done: number, total: number, openTasks: number, score: number) {
+function mockBriefing(done: number, total: number, openTasks: number) {
   if (total === 0 && openTasks === 0) {
-    return "A clean slate this morning. Add a habit or two and your first task — your Life Score grows as your days take shape.";
+    return "A clean slate — add your first habit or task to get going.";
   }
-  const habitLine =
-    total > 0
-      ? `${done} of ${total} habits done so far`
-      : "no habits set up yet";
-  return `Your Life Score is ${score}. You have ${habitLine} and ${openTasks} task${openTasks === 1 ? "" : "s"} waiting. Pick the one that matters most and start there.`;
+  if (openTasks > 0) {
+    return `Pick the one task that matters most and start there.`;
+  }
+  return `${done} of ${total} habits done — a calm, steady day ahead.`;
 }

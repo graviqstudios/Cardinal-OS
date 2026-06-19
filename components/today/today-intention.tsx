@@ -28,7 +28,7 @@ export function TodayIntention() {
   }
 
   return (
-    <form onSubmit={submit} className="flex gap-2">
+    <form onSubmit={submit} data-tour="intention" className="flex gap-2">
       <Input
         value={value}
         onChange={(e) => setValue(e.target.value)}

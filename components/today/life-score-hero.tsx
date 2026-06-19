@@ -21,7 +21,7 @@ export function LifeScoreHero({
   const delta = previous == null ? null : score - previous;
 
   return (
-    <Card>
+    <Card data-tour="life-score">
       <CardContent className="flex items-center gap-5 p-6 sm:gap-7">
         <ReadinessRing score={score} previous={previous} size={108} />
         <div className="min-w-0 flex-1">

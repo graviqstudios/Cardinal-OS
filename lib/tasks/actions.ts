@@ -25,6 +25,7 @@ export async function createTask(input: {
   status?: TaskStatus;
   priority?: Priority | null;
   due_date?: string | null;
+  project_id?: string | null;
 }): Promise<Result> {
   const { supabase, userId } = await uid();
   if (!userId) return { ok: false, error: "Not authenticated." };
@@ -36,7 +37,24 @@ export async function createTask(input: {
     status: input.status ?? "today",
     priority: input.priority ?? null,
     due_date: input.due_date ?? null,
+    project_id: input.project_id ?? null,
   });
+  if (error) return { ok: false, error: error.message };
+  refresh();
+  return { ok: true };
+}
+
+/** Link a task to a project (or clear it with null). */
+export async function setTaskProject(
+  id: string,
+  projectId: string | null,
+): Promise<Result> {
+  const { supabase, userId } = await uid();
+  if (!userId) return { ok: false, error: "Not authenticated." };
+  const { error } = await supabase
+    .from("tasks")
+    .update({ project_id: projectId })
+    .eq("id", id);
   if (error) return { ok: false, error: error.message };
   refresh();
   return { ok: true };

@@ -71,6 +71,7 @@ export function QuickCapture() {
         <button
           onClick={() => setOpen((o) => !o)}
           aria-label="Quick capture"
+          data-tour="capture"
           className="flex h-12 w-12 items-center justify-center rounded-pill bg-primary text-primary-foreground shadow-lg"
         >
           {open ? <X className="h-5 w-5" /> : <Plus className="h-5 w-5" />}
