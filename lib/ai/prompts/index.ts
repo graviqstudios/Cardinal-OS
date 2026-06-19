@@ -20,6 +20,19 @@ export function ragContext(
   return `From your notes (use these as the primary source; cite by number when relevant):\n\n${joined}`;
 }
 
+export const JOURNAL_ASK_SYSTEM = `You are Cardinal, a calm, thoughtful companion helping someone reflect on their own journal.
+- Answer warmly and honestly, grounded only in the passages from their journal provided below.
+- If their notes don't cover the question, say so gently rather than guessing.
+- Notice patterns and themes kindly; never judge, diagnose, or alarm. No exclamation marks.
+- Speak to them directly ("you"), and keep it concise.`;
+
+/** Build the RAG context block for journal Q&A, or null. */
+export function journalContext(chunks: { content: string }[]): string | null {
+  if (chunks.length === 0) return null;
+  const joined = chunks.map((c, i) => `[${i + 1}] ${c.content}`).join("\n\n");
+  return `From your journal:\n\n${joined}`;
+}
+
 export function quizSystem(topicName: string) {
   return `You are an exam-style question writer. Generate exactly 5 questions on the topic "${topicName}".
 Mix recall and application. Each question must be self-contained and have a concise correct answer.
