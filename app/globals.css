@@ -199,3 +199,40 @@ html.theme-transition *::after {
     transition: none !important;
   }
 }
+
+/* ── Warm depth backdrop ──────────────────────────────────────────────────────
+   A still, premium field behind the app shell: a warm accent glow lit from the
+   top, two soft supporting tints, a gentle "lit from above" wash, and a faint
+   grain that kills the flat, vector look. Glass cards sit on top of this. */
+.co-depth {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, hsl(var(--surface) / 0.55), transparent 22%),
+    radial-gradient(1100px 640px at 16% -10%, hsl(var(--primary) / 0.16), transparent 60%),
+    radial-gradient(900px 560px at 102% 4%, hsl(var(--module-projects) / 0.08), transparent 55%),
+    radial-gradient(1100px 760px at 50% 118%, hsl(var(--module-calendar) / 0.07), transparent 55%);
+}
+.co-depth::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  opacity: 0.04;
+  mix-blend-mode: overlay;
+}
+
+/* ── Glass surface: translucent card with backdrop blur + soft depth shadow ── */
+.glass {
+  background: hsl(var(--card) / 0.72);
+  box-shadow: 0 1px 0 0 hsl(var(--foreground) / 0.04) inset, 0 14px 40px -22px rgba(0, 0, 0, 0.55);
+}
+@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .glass {
+    background: hsl(var(--card) / 0.6);
+    backdrop-filter: blur(14px) saturate(1.2);
+    -webkit-backdrop-filter: blur(14px) saturate(1.2);
+  }
+}

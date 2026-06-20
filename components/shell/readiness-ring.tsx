@@ -73,6 +73,7 @@ export function ReadinessRing({
             pathLength={1000}
             strokeDasharray={`${display} 1000`}
             transform="rotate(-90 70 70)"
+            style={{ filter: "drop-shadow(0 0 5px hsl(var(--primary) / 0.45))" }}
           />
         </svg>
         <div

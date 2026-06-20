@@ -100,6 +100,7 @@ export default async function TodayPage() {
           previous={life?.previous ?? null}
           history={life?.history ?? []}
           hasData={hasData}
+          breakdown={life?.breakdown ?? null}
         />
         <div className="space-y-6">
           <TodayHabits habits={habits} />

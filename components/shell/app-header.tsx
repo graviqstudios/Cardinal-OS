@@ -13,7 +13,7 @@ export function AppHeader({
   previous: number | null;
 }) {
   return (
-    <div className="z-20 flex h-16 items-center justify-end gap-3 border-b border-border bg-background/80 px-4 backdrop-blur md:sticky md:top-0 md:px-8">
+    <div className="z-20 flex h-16 items-center justify-end gap-3 border-b border-border bg-background/55 px-4 backdrop-blur-xl md:sticky md:top-0 md:px-8">
       <ReadinessRing score={score} previous={previous} size={46} showLabel label="Life Score" />
     </div>
   );

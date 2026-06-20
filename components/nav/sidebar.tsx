@@ -74,7 +74,7 @@ export function Sidebar({
       <aside
         data-tour="sidebar"
         className={cn(
-          "sticky top-0 hidden h-dvh shrink-0 flex-col border-r bg-surface transition-[width] duration-200 md:flex",
+          "sticky top-0 hidden h-dvh shrink-0 flex-col border-r bg-surface/70 backdrop-blur-xl transition-[width] duration-200 md:flex",
           collapsed ? "w-[68px]" : "w-64",
         )}
       >
@@ -146,7 +146,7 @@ function MobileDrawer({
             onClick={onClose}
           />
           <motion.aside
-            className="absolute inset-y-0 left-0 flex w-72 max-w-[85%] flex-col border-r bg-surface"
+            className="absolute inset-y-0 left-0 flex w-72 max-w-[85%] flex-col border-r bg-surface/85 backdrop-blur-xl"
             initial={reduceMotion ? { opacity: 0 } : { x: "-100%" }}
             animate={reduceMotion ? { opacity: 1 } : { x: 0 }}
             exit={reduceMotion ? { opacity: 0 } : { x: "-100%" }}
@@ -220,7 +220,9 @@ function NavRow({
     <>
       {item.mark ? (
         // eslint-disable-next-line @next/next/no-img-element
-        <img src={item.mark} alt="" className="h-4 w-4 shrink-0" />
+        // Module marks carry ~20% internal clear space, so scale them up to read
+        // at the same visual weight as the full-bleed lucide icons beside them.
+        <img src={item.mark} alt="" className="h-4 w-4 shrink-0 scale-[1.45]" />
       ) : (
         <Icon className="h-4 w-4 shrink-0" style={iconStyle} />
       )}

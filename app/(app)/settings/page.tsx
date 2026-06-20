@@ -1,7 +1,9 @@
+import Link from "next/link";
+
 import { createClient } from "@/lib/supabase/server";
 import type { Profile } from "@/lib/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Settings as SettingsIcon } from "lucide-react";
+import { ChevronRight, Plug, Settings as SettingsIcon } from "lucide-react";
 
 import { ThemeControls } from "@/components/theme/theme-controls";
 import { ProfileForm } from "@/components/settings/profile-form";
@@ -62,6 +64,23 @@ export default async function SettingsPage() {
           <ExamModeToggle initial={profile?.exam_mode ?? false} />
         </CardContent>
       </Card>
+
+      <Link href="/settings/integrations" className="block">
+        <Card className="transition-colors hover:bg-accent/40">
+          <CardContent className="flex items-center gap-3 p-5">
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-button bg-primary/10 text-primary">
+              <Plug className="h-5 w-5" />
+            </span>
+            <div className="min-w-0 flex-1">
+              <p className="text-sm font-medium">Integrations</p>
+              <p className="text-sm text-muted-foreground">
+                Connect Google, Notion, Spotify and Evernote.
+              </p>
+            </div>
+            <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground" />
+          </CardContent>
+        </Card>
+      </Link>
 
       <Card>
         <CardHeader>

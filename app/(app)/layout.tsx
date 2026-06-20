@@ -6,6 +6,7 @@ import { isOnboarded, type Profile } from "@/lib/types";
 import { getLifeScoreSnapshot } from "@/lib/life-score/service";
 import { Sidebar } from "@/components/nav/sidebar";
 import { AppHeader } from "@/components/shell/app-header";
+import { Aurora } from "@/components/shell/aurora";
 import { PageTransition } from "@/components/motion/page-transition";
 
 export default async function AppLayout({
@@ -45,7 +46,9 @@ export default async function AppLayout({
   const life = await getLifeScoreSnapshot();
 
   return (
-    <div className="flex min-h-dvh flex-col md:flex-row">
+    <>
+      <Aurora />
+      <div className="relative z-10 flex min-h-dvh flex-col md:flex-row">
       <Sidebar
         displayName={displayName}
         email={user.email ?? ""}
@@ -57,6 +60,7 @@ export default async function AppLayout({
           {children}
         </PageTransition>
       </main>
-    </div>
+      </div>
+    </>
   );
 }
