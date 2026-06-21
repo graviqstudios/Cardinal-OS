@@ -11,6 +11,7 @@ export type Profile = {
   theme: Palette | null;
   exam_mode: boolean;
   tour_completed_at: string | null;
+  terms_accepted_at: string | null;
   trial_started_at: string;
   is_pro: boolean;
   subscription_expires_at: string | null;

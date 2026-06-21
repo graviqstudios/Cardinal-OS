@@ -7,6 +7,7 @@ import { getLifeScoreSnapshot } from "@/lib/life-score/service";
 import { Sidebar } from "@/components/nav/sidebar";
 import { AppHeader } from "@/components/shell/app-header";
 import { Aurora } from "@/components/shell/aurora";
+import { ConsentGate } from "@/components/legal/consent-gate";
 import { PageTransition } from "@/components/motion/page-transition";
 
 export default async function AppLayout({
@@ -35,9 +36,17 @@ export default async function AppLayout({
   if (!onboarded && !onOnboarding) redirect("/onboarding");
   if (onboarded && onOnboarding) redirect("/today");
 
+  // Consent gate: blocks everything (onboarding included) until Terms accepted.
+  const needsConsent = Boolean(profile) && !profile?.terms_accepted_at;
+
   // Onboarding is a focused, full-screen flow — no sidebar shell.
   if (onOnboarding) {
-    return <>{children}</>;
+    return (
+      <>
+        {needsConsent && <ConsentGate />}
+        {children}
+      </>
+    );
   }
 
   const displayName =
@@ -47,6 +56,7 @@ export default async function AppLayout({
 
   return (
     <>
+      {needsConsent && <ConsentGate />}
       <Aurora />
       <div className="relative z-10 flex min-h-dvh flex-col md:flex-row">
       <Sidebar

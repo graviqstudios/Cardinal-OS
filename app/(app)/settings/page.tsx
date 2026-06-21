@@ -65,6 +65,20 @@ export default async function SettingsPage() {
 
       <Card>
         <CardHeader>
+          <CardTitle>Legal</CardTitle>
+        </CardHeader>
+        <CardContent className="flex flex-wrap gap-4 text-sm">
+          <a href="/privacy" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+            Privacy Policy
+          </a>
+          <a href="/terms" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+            Terms &amp; Conditions
+          </a>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
           <CardTitle>Account</CardTitle>
         </CardHeader>
         <CardContent className="text-sm text-muted-foreground">

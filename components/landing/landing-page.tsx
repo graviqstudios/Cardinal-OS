@@ -696,8 +696,8 @@ export function LandingPage() {
           <div className="mt-12 flex flex-wrap items-center justify-between gap-3.5 border-t border-[rgba(242,233,219,0.07)] pt-6">
             <div className="text-[13px] text-[#6E6250]">© 2026 GraviQ Studios · India · Free during beta</div>
             <div className="flex flex-wrap items-center gap-4 text-[13px]">
-              <button onClick={() => setModal("privacy")} className="text-[#B6A892] transition-colors hover:text-[var(--co-accent)]">Privacy Policy</button>
-              <button onClick={() => setModal("terms")} className="text-[#B6A892] transition-colors hover:text-[var(--co-accent)]">Terms &amp; Conditions</button>
+              <a href="/privacy" className="text-[#B6A892] transition-colors hover:text-[var(--co-accent)]">Privacy Policy</a>
+              <a href="/terms" className="text-[#B6A892] transition-colors hover:text-[var(--co-accent)]">Terms &amp; Conditions</a>
               <button onClick={() => setModal("support")} className="text-[#B6A892] transition-colors hover:text-[var(--co-accent)]">Support</button>
             </div>
           </div>

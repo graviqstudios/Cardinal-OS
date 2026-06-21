@@ -4,7 +4,7 @@ import { createServerClient, type CookieOptions } from "@supabase/ssr";
 type CookieToSet = { name: string; value: string; options: CookieOptions };
 
 /** Routes that are reachable without an authenticated session. */
-const PUBLIC_PATHS = ["/login", "/signup", "/auth", "/api"];
+const PUBLIC_PATHS = ["/login", "/signup", "/auth", "/api", "/privacy", "/terms"];
 
 function isPublic(pathname: string) {
   if (pathname === "/") return true;
