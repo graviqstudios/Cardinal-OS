@@ -10,6 +10,7 @@ import {
   createGoal,
   deleteGoal,
   deleteMilestone,
+  setGoalIdentity,
   setGoalProgress,
   toggleMilestone,
 } from "@/lib/goals/actions";
@@ -18,14 +19,15 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Tap } from "@/components/motion/tap";
 
 export function GoalsClient({
   goals,
   streak,
+  examMode,
 }: {
   goals: GoalWithMilestones[];
   streak: number;
+  examMode: boolean;
 }) {
   const router = useRouter();
   const [title, setTitle] = React.useState("");
@@ -47,28 +49,30 @@ export function GoalsClient({
 
   return (
     <div className="space-y-4">
-      {/* Streak */}
-      <Card>
-        <CardContent className="flex items-center gap-3 p-4">
-          <span
-            className="flex h-10 w-10 items-center justify-center rounded-lg"
-            style={{
-              backgroundColor: "hsl(var(--module-money) / 0.14)",
-              color: "hsl(var(--module-money))",
-            }}
-          >
-            <Flame className="h-5 w-5" />
-          </span>
-          <div>
-            <p className="text-lg font-semibold">
-              {streak} day{streak === 1 ? "" : "s"}
-            </p>
-            <p className="text-xs text-muted-foreground">
-              Study streak — practice today to keep it alive.
-            </p>
-          </div>
-        </CardContent>
-      </Card>
+      {/* Streak (exam template only) */}
+      {examMode && (
+        <Card>
+          <CardContent className="flex items-center gap-3 p-4">
+            <span
+              className="flex h-10 w-10 items-center justify-center rounded-lg"
+              style={{
+                backgroundColor: "hsl(var(--module-money) / 0.14)",
+                color: "hsl(var(--module-money))",
+              }}
+            >
+              <Flame className="h-5 w-5" />
+            </span>
+            <div>
+              <p className="text-lg font-semibold">
+                {streak} day{streak === 1 ? "" : "s"}
+              </p>
+              <p className="text-xs text-muted-foreground">
+                Study streak — practice today to keep it alive.
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* New goal */}
       <Card>
@@ -114,26 +118,65 @@ export function GoalsClient({
   );
 }
 
+function velocityLabel(goal: GoalWithMilestones): { text: string; ok: boolean } | null {
+  if (!goal.target_date) return null;
+  const created = new Date(goal.created_at).getTime();
+  const target = new Date(goal.target_date).getTime();
+  const total = target - created;
+  if (total <= 0) return null;
+  const expected = Math.max(0, Math.min(1, (Date.now() - created) / total)) * 100;
+  return goal.progress + 5 >= expected
+    ? { text: "On track", ok: true }
+    : { text: "Keep going", ok: false };
+}
+
 function GoalCard({ goal }: { goal: GoalWithMilestones }) {
   const router = useRouter();
   const [, start] = React.useTransition();
   const [newMilestone, setNewMilestone] = React.useState("");
   const [progress, setProgress] = React.useState(goal.progress);
+  const [identity, setIdentity] = React.useState(goal.identity ?? "");
 
   const refresh = () => router.refresh();
   const done = goal.milestones.filter((m) => m.completed).length;
+  const vel = velocityLabel(goal);
 
   return (
     <Card>
       <CardContent className="space-y-3 p-4">
         <div className="flex items-start gap-2">
-          <div className="flex-1">
-            <div className="flex items-center gap-2">
+          <div className="min-w-0 flex-1">
+            <div className="flex flex-wrap items-center gap-2">
               <p className="font-medium">{goal.title}</p>
               <Badge variant="secondary" className="capitalize">{goal.type}</Badge>
+              {vel && (
+                <span
+                  className="rounded-pill px-2 py-0.5 text-[11px] font-medium"
+                  style={{
+                    backgroundColor: vel.ok ? "hsl(var(--module-calendar) / 0.14)" : "hsl(var(--muted))",
+                    color: vel.ok ? "hsl(var(--module-calendar))" : "hsl(var(--muted-foreground))",
+                  }}
+                >
+                  {vel.text}
+                </span>
+              )}
+            </div>
+            <div className="mt-1.5 flex items-baseline gap-1.5">
+              <span className="shrink-0 font-serif text-sm italic text-muted-foreground">I am someone who</span>
+              <input
+                value={identity}
+                onChange={(e) => setIdentity(e.target.value)}
+                onBlur={() => {
+                  if (identity !== (goal.identity ?? "")) {
+                    start(async () => { await setGoalIdentity(goal.id, identity); refresh(); });
+                  }
+                }}
+                placeholder="ships, every week…"
+                className="w-full border-0 border-b border-transparent bg-transparent font-serif text-sm italic text-foreground placeholder:text-muted-foreground/60 focus:border-input focus:outline-none"
+              />
             </div>
             {goal.target_date && (
-              <p className="text-xs text-muted-foreground">
+              <p className="mt-1 text-xs text-muted-foreground">
                 Target: {new Date(goal.target_date).toLocaleDateString()}
               </p>
             )}

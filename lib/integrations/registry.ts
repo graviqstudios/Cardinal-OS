@@ -15,18 +15,15 @@ export type ProviderMeta = {
   logo: string;
 };
 
+// NOTE: Gmail and Evernote connections are intentionally hidden for now (their
+// backend code remains dormant under lib/integrations + app/api/integrations).
+// Re-add their entries here to bring the cards back.
 export const PROVIDERS: ProviderMeta[] = [
   {
     id: "google_calendar",
     name: "Google Calendar",
     blurb: "Two-way sync between Cardinal events and your Google Calendar.",
     logo: "/site-assets/logo-gcal.png",
-  },
-  {
-    id: "google_gmail",
-    name: "Gmail",
-    blurb: "Scan your inbox on demand and turn action items into draft tasks.",
-    logo: "/site-assets/logo-gmail.png",
   },
   {
     id: "notion",
@@ -39,11 +36,5 @@ export const PROVIDERS: ProviderMeta[] = [
     name: "Spotify",
     blurb: "Link a focus playlist that cues when you start a session.",
     logo: "/site-assets/logo-spotify.png",
-  },
-  {
-    id: "evernote",
-    name: "Evernote",
-    blurb: "Import notebooks and notes into your second brain.",
-    logo: "/site-assets/logo-evernote.png",
   },
 ];

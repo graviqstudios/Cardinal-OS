@@ -5,6 +5,7 @@ export type Goal = {
   user_id: string;
   title: string;
   type: GoalType;
+  identity: string | null;
   target_date: string | null;
   progress: number; // 0..100
   created_at: string;

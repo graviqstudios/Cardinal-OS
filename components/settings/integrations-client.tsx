@@ -10,6 +10,9 @@ import type { ProviderId } from "@/lib/integrations/registry";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tap } from "@/components/motion/tap";
+import { CalendarSync } from "@/components/settings/calendar-sync";
+import { NotionImport } from "@/components/settings/notion-import";
+import { SpotifyFocus } from "@/components/settings/spotify-focus";
 
 type ProviderRow = {
   id: ProviderId;
@@ -27,9 +30,11 @@ function fmtDate(iso: string) {
 export function IntegrationsClient({
   providers,
   encKeyMissing,
+  spotifyFocus,
 }: {
   providers: ProviderRow[];
   encKeyMissing: boolean;
+  spotifyFocus: { id: string; name: string } | null;
 }) {
   return (
     <div className="space-y-4">
@@ -46,14 +51,20 @@ export function IntegrationsClient({
 
       <div className="grid gap-4 sm:grid-cols-2">
         {providers.map((p) => (
-          <ProviderCard key={p.id} provider={p} />
+          <ProviderCard key={p.id} provider={p} spotifyFocus={spotifyFocus} />
         ))}
       </div>
     </div>
   );
 }
 
-function ProviderCard({ provider: p }: { provider: ProviderRow }) {
+function ProviderCard({
+  provider: p,
+  spotifyFocus,
+}: {
+  provider: ProviderRow;
+  spotifyFocus: { id: string; name: string } | null;
+}) {
   const router = useRouter();
   const [busy, setBusy] = React.useState(false);
 
@@ -113,6 +124,10 @@ function ProviderCard({ provider: p }: { provider: ProviderRow }) {
             </Tap>
           )}
         </div>
+
+        {p.id === "google_calendar" && p.connected && <CalendarSync />}
+        {p.id === "notion" && p.connected && <NotionImport />}
+        {p.id === "spotify" && p.connected && <SpotifyFocus current={spotifyFocus} />}
       </CardContent>
     </Card>
   );

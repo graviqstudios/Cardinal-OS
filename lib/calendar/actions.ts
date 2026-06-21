@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 
 import { createClient } from "@/lib/supabase/server";
 import { EVENT_TYPES, type EventType } from "@/lib/calendar/types";
+import { freshAccessToken, insertGoogleEvent } from "@/lib/integrations/google";
 
 type Result<T = void> = { ok: true; data?: T } | { ok: false; error: string };
 
@@ -46,6 +47,25 @@ export async function createEvent(input: EventInput): Promise<Result<{ id: strin
     .select("id")
     .single();
   if (error) return { ok: false, error: error.message };
+
+  // Best-effort push to Google Calendar when connected; never block creation.
+  try {
+    const token = await freshAccessToken(userId, "google_calendar");
+    if (token) {
+      const gid = await insertGoogleEvent(token, {
+        summary: input.title.trim(),
+        startISO: input.start_time,
+        endISO: input.end_time,
+        allDay: input.all_day ?? false,
+      });
+      await supabase
+        .from("events")
+        .update({ external_id: gid, source: "cardinal" })
+        .eq("id", data.id);
+    }
+  } catch {
+    /* Google push failed — the event still exists locally. */
+  }
 
   revalidatePath("/calendar");
   return { ok: true, data: { id: data.id as string } };

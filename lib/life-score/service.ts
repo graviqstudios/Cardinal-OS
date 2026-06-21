@@ -31,6 +31,8 @@ export async function computeForUser(
     { data: projects },
     { data: txns },
     { data: events },
+    { data: workouts },
+    { data: focus },
   ] = await Promise.all([
     supabase.from("habits").select("id, created_at").eq("user_id", userId).eq("archived", false),
     supabase.from("habit_logs").select("completed, logged_date").eq("user_id", userId).gte("logged_date", since7Date),
@@ -39,6 +41,8 @@ export async function computeForUser(
     supabase.from("projects").select("progress").eq("user_id", userId),
     supabase.from("transactions").select("id").eq("user_id", userId).gte("occurred_at", since7),
     supabase.from("events").select("id").eq("user_id", userId).gte("start_time", since7),
+    supabase.from("workout_logs").select("id").eq("user_id", userId).gte("date", since7Date),
+    supabase.from("focus_sessions").select("id").eq("user_id", userId).gte("created_at", since7),
   ]);
 
   // Habits: completions in the last 7 days vs. (active habits × 7).
@@ -70,6 +74,7 @@ export async function computeForUser(
     progresses.some((p) => p > 0), // goals/projects
     (txns ?? []).length > 0, // money
     (events ?? []).length > 0, // calendar
+    (workouts ?? []).length > 0 || (focus ?? []).length > 0, // body
   ];
   const balance = areasActive.filter(Boolean).length / areasActive.length;
 

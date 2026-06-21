@@ -2,13 +2,26 @@ import { randomBytes } from "crypto";
 import { NextResponse } from "next/server";
 
 import { createClient } from "@/lib/supabase/server";
+import { isProviderConfigured, hasEncryptionKey } from "@/lib/integrations/config";
+import type { ProviderId } from "@/lib/integrations/registry";
 import { buildGoogleAuthUrl, googleRedirectUri, type GoogleProvider } from "@/lib/integrations/google";
+import { notionAuthUrl } from "@/lib/integrations/notion";
+import { makePkcePair, spotifyAuthUrl } from "@/lib/integrations/spotify";
+import { evernoteRequestToken, evernoteAuthorizeUrl } from "@/lib/integrations/evernote";
 
 export const runtime = "nodejs";
 
-const GOOGLE_PROVIDERS = ["google_calendar", "google_gmail"];
+const VALID: ProviderId[] = ["google_calendar", "google_gmail", "notion", "spotify", "evernote"];
 
-/** Begin an OAuth connect flow for a provider. (Google only, for now.) */
+const cookieOpts = {
+  httpOnly: true as const,
+  sameSite: "lax" as const,
+  secure: process.env.NODE_ENV === "production",
+  path: "/",
+  maxAge: 600,
+};
+
+/** Begin an OAuth connect flow for any provider. */
 export async function GET(
   req: Request,
   { params }: { params: Promise<{ provider: string }> },
@@ -23,31 +36,53 @@ export async function GET(
   } = await supabase.auth.getUser();
   if (!user) return NextResponse.redirect(new URL("/login", origin));
 
-  if (!GOOGLE_PROVIDERS.includes(provider)) {
+  if (!VALID.includes(provider as ProviderId)) {
     settings.searchParams.set("error", "unsupported");
     return NextResponse.redirect(settings);
   }
-  if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
+  if (!isProviderConfigured(provider as ProviderId) || !hasEncryptionKey()) {
     settings.searchParams.set("error", "not_configured");
     return NextResponse.redirect(settings);
   }
 
   const nonce = randomBytes(16).toString("hex");
-  const state = `${nonce}.${provider}`;
-  const authUrl = buildGoogleAuthUrl(
-    provider as GoogleProvider,
-    googleRedirectUri(origin),
-    state,
-  );
+  const callback = (p: string) => `${origin}/api/integrations/${p}/callback`;
 
-  const res = NextResponse.redirect(authUrl);
-  // Short-lived CSRF cookie tying this browser to the state we sent Google.
-  res.cookies.set("int_oauth", nonce, {
-    httpOnly: true,
-    sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
-    path: "/",
-    maxAge: 600,
-  });
-  return res;
+  try {
+    if (provider === "google_calendar" || provider === "google_gmail") {
+      const url = buildGoogleAuthUrl(
+        provider as GoogleProvider,
+        googleRedirectUri(origin),
+        `${nonce}.${provider}`,
+      );
+      const res = NextResponse.redirect(url);
+      res.cookies.set("int_oauth", nonce, cookieOpts);
+      return res;
+    }
+
+    if (provider === "notion") {
+      const url = notionAuthUrl(callback("notion"), `${nonce}.notion`);
+      const res = NextResponse.redirect(url);
+      res.cookies.set("int_oauth", nonce, cookieOpts);
+      return res;
+    }
+
+    if (provider === "spotify") {
+      const { verifier, challenge } = makePkcePair();
+      const url = spotifyAuthUrl(callback("spotify"), `${nonce}.spotify`, challenge);
+      const res = NextResponse.redirect(url);
+      res.cookies.set("int_oauth", nonce, cookieOpts);
+      res.cookies.set("int_pkce", verifier, cookieOpts);
+      return res;
+    }
+
+    // evernote — OAuth 1.0a: fetch a request token, then redirect to authorize.
+    const reqToken = await evernoteRequestToken(callback("evernote"));
+    const res = NextResponse.redirect(evernoteAuthorizeUrl(reqToken.oauth_token));
+    res.cookies.set("int_evernote_secret", reqToken.oauth_token_secret, cookieOpts);
+    return res;
+  } catch {
+    settings.searchParams.set("error", "start_failed");
+    return NextResponse.redirect(settings);
+  }
 }

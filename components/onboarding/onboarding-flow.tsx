@@ -123,11 +123,11 @@ export function OnboardingFlow({
 
             {step === 2 && (
               <Section
-                title="When's the big day?"
+                title="Set a target date"
                 description={
                   examTarget.trim()
-                    ? `We'll count down to your ${examTarget.trim()} date. Optional.`
-                    : "Set a target date if you have one. Optional."
+                    ? `If "${examTarget.trim()}" has a date, mark it and we'll keep it in view. Optional.`
+                    : "If your goal has a deadline, mark it. Optional, and easy to change later."
                 }
               >
                 <div className="space-y-2">

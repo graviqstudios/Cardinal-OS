@@ -44,6 +44,18 @@ export async function deleteGoal(id: string): Promise<Result> {
   return { ok: true };
 }
 
+export async function setGoalIdentity(id: string, identity: string): Promise<Result> {
+  const { supabase, userId } = await uid();
+  if (!userId) return { ok: false, error: "Not authenticated." };
+  const { error } = await supabase
+    .from("goals")
+    .update({ identity: identity.trim() || null })
+    .eq("id", id);
+  if (error) return { ok: false, error: error.message };
+  revalidatePath("/goals");
+  return { ok: true };
+}
+
 export async function setGoalProgress(id: string, progress: number): Promise<Result> {
   const { supabase, userId } = await uid();
   if (!userId) return { ok: false, error: "Not authenticated." };

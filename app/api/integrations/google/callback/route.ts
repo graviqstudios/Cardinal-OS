@@ -14,7 +14,7 @@ export const runtime = "nodejs";
 /** OAuth redirect target for both Google connections (Calendar + Gmail). */
 export async function GET(req: NextRequest) {
   const url = new URL(req.url);
-  const settings = new URL("/settings/integrations", url.origin);
+  const settings = new URL("/calendar", url.origin);
 
   const oauthError = url.searchParams.get("error");
   if (oauthError) {

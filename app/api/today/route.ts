@@ -3,6 +3,7 @@ import { generateText } from "ai";
 import { createClient } from "@/lib/supabase/server";
 import { chatModel, isMockAI } from "@/lib/ai/models";
 import { computeForUser } from "@/lib/life-score/service";
+import { getInsights } from "@/lib/insights/service";
 import { checkRateLimit } from "@/lib/ratelimit";
 
 export const runtime = "nodejs";
@@ -40,13 +41,16 @@ export async function POST() {
   const openTasks = (tasks ?? []).length;
   const nextEvent = (events ?? [])[0];
 
+  const insights = await getInsights();
+
   const facts =
     `Life Score ${score.score}/1000. ` +
     `Habits ${habitDone}/${habitTotal} done today. ` +
     `${openTasks} open tasks. ` +
     (nextEvent
-      ? `Next event: ${nextEvent.title} at ${new Date(nextEvent.start_time).toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" })}.`
-      : "Nothing scheduled.");
+      ? `Next event: ${nextEvent.title} at ${new Date(nextEvent.start_time).toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" })}. `
+      : "Nothing scheduled. ") +
+    (insights.length ? `Patterns we've noticed: ${insights.join(" ")}` : "");
 
   if (isMockAI || (habitTotal === 0 && openTasks === 0)) {
     return Response.json({ text: mockBriefing(habitDone, habitTotal, openTasks) });

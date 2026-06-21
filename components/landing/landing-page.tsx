@@ -1,4 +1,4 @@
-/* eslint-disable react/no-unescaped-entities, @next/next/no-img-element */
+/* eslint-disable react/no-unescaped-entities */
 "use client";
 
 import * as React from "react";
@@ -277,7 +277,7 @@ export function LandingPage() {
               The operating system for your <span className="italic" style={{ color: "var(--co-accent)" }}>life</span>.
             </h1>
             <p className="mt-6 max-w-[540px] text-[17px] leading-relaxed text-[#B6A892] sm:text-[19px]">
-              One calm, premium home for your days, habits, goals, money, body and mind. AI woven through everything, and the apps you already use connected into a single honest signal.
+              One calm, premium home for your days, habits, goals, money, body and mind, with AI woven through everything and one honest number to orient by.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <a href="/signup" className="inline-flex items-center gap-2.5 rounded-xl px-6 py-3.5 text-[15px] font-medium text-white transition-transform active:scale-[0.97]" style={{ background: "var(--co-accent)" }}>
@@ -311,34 +311,6 @@ export function LandingPage() {
           </div>
         </div>
       </header>
-
-      {/* ══ INTEGRATIONS STRIP ══ */}
-      <section className="px-5 pb-16 pt-8 sm:px-7">
-        <Reveal className="mx-auto max-w-[1180px]">
-          <p className="mb-6 text-center text-[13px] uppercase tracking-[0.1em] text-[#897C68]">Speaks to the apps you already live in</p>
-          <div className="flex flex-wrap justify-center gap-3">
-            {[
-              { name: "Notion", img: "/site-assets/logo-notion.png" },
-              { name: "Gmail", img: "/site-assets/logo-gmail.png" },
-              { name: "Google Calendar", img: "/site-assets/logo-gcal.png" },
-              { name: "Spotify", img: "/site-assets/logo-spotify.png" },
-              { name: "Evernote", img: "/site-assets/logo-evernote.png" },
-            ].map((it) => (
-              <div key={it.name} className="flex items-center gap-2.5 rounded-xl border border-[rgba(242,233,219,0.08)] bg-[#1E170F] py-2.5 pl-2.5 pr-4 text-sm text-[#D7CCBA]">
-                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-white"><img src={it.img} alt={it.name} className="block h-[19px] w-[19px] object-contain" /></span>
-                {it.name}
-              </div>
-            ))}
-            <div className="flex items-center gap-2.5 rounded-xl border border-[rgba(242,233,219,0.08)] bg-[#1E170F] py-2.5 pl-2.5 pr-4 text-sm text-[#D7CCBA]">
-              <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md" style={{ background: "rgba(var(--co-accent-rgb),0.16)" }}>
-                <svg width="17" height="17" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="13.5" r="7" fill="var(--co-accent)" /><path d="M12 13.5V10" stroke="#fff" strokeWidth="1.7" strokeLinecap="round" /></svg>
-              </span>
-              Pomodoro, built in
-            </div>
-          </div>
-          <p className="mt-5 text-center text-xs text-[#6E6250]">Connections roll out through the beta. The built-in focus timer is here from day one.</p>
-        </Reveal>
-      </section>
 
       {/* ══ LIFE SCORE ══ */}
       <section id="lifescore" className="scroll-mt-[84px] px-5 py-20 sm:px-7">
@@ -451,7 +423,7 @@ export function LandingPage() {
               Today opens to your score, your intention, your habits, your tasks, the next thing on your calendar, and a short briefing that already knows what matters. Quick-capture anything in under five seconds.
             </p>
             <div className="mt-6 flex flex-col gap-3.5">
-              {["AI plans your day and writes your weekly review", "Pulls action items from your inbox into Today", "Cues your focus playlist the moment you start"].map((t) => (
+              {["AI plans your day and writes your weekly review", "Captures anything you type in plain words and files it", "Notices the patterns that run across your whole life"].map((t) => (
                 <div key={t} className="flex items-center gap-3 text-[15px] text-[#D7CCBA]"><span className="h-2 w-2 rounded-full" style={{ background: "var(--co-accent)" }} />{t}</div>
               ))}
             </div>
@@ -845,13 +817,12 @@ const AI_FEATURES: { title: string; desc: string; soon?: boolean; icon: React.Re
   { title: "Projects into actions", desc: "Turn a fuzzy project into concrete next steps with a single tap.", icon: aiIcon(<><path d="M9 11l3 3L22 4" /><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" /></>) },
   { title: "Spend, categorised", desc: "Transactions sorted for you, with a quiet nudge when stress starts hitting your wallet.", icon: aiIcon(<><rect x="3" y="6" width="18" height="13" rx="2" /><path d="M3 10h18" /></>) },
   { title: "Cross-life patterns", desc: "It notices what only shows up when habits, sleep, money and goals share one home.", icon: aiIcon(<><path d="M3 17l6-6 4 4 8-8" /></>) },
-  { title: "Inbox to tasks", desc: "Pull action items straight from your Gmail into Today, accept or reject each one.", soon: true, icon: aiIcon(<><rect x="3" y="5" width="18" height="14" rx="2" /><path d="M3 7l9 6 9-6" /></>) },
 ];
 
 const TRUST = [
-  { title: "Yours alone", desc: "Row-level security means only you can ever read your own data." },
-  { title: "Never trains a model", desc: "No content you create or connect is used to train any AI model." },
-  { title: "Connect and disconnect freely", desc: "Revoke any integration at any time, which removes its access immediately." },
+  { title: "Yours alone", desc: "Row-level security keeps your data visible only to you and the team running the service, never to other users." },
+  { title: "Never trains a model", desc: "Nothing you create is used to train any AI model." },
+  { title: "No selling, ever", desc: "We never sell your data, and there are no third-party ad trackers." },
   { title: "Built for 16+, India-first", desc: "Aligned with India's DPDP Act. Export or delete your data whenever you want." },
 ];
 
@@ -867,8 +838,7 @@ const REVIEWS = [
 const FAQS = [
   { q: "Is Cardinal OS really free?", a: "Yes. Free for everyone during the testing period. No Pro gates, no paywalls, no trial clocks. We want to learn from real people first. If pricing ever arrives, it will be transparent and never a dark pattern." },
   { q: "What exactly is the Life Score?", a: "One number from 0 to 1000 that blends habit consistency, goal and project velocity, task follow-through, and how evenly you're engaging across your life. It rewards a whole, balanced life rather than grinding a single area, and it never shows red." },
-  { q: "Is my data private?", a: "Yes. No integration data is used to train any model. Gmail scanning runs only on demand and stores no emails. Imports from Notion or Evernote happen once, only when you ask. You can disconnect any service at any time, which revokes its access immediately." },
-  { q: "What can it connect to?", a: "Notion, Gmail, Google Calendar, Spotify and Evernote, plus a built-in Pomodoro focus engine. These connections roll out through the beta. Cardinal doesn't replace these tools, it connects them so they finally speak to each other through one interface." },
+  { q: "Is my data private?", a: "Yes. Your data is yours: row-level security means only you, and the Cardinal team running the service, can ever access it, never other users. Nothing you write is used to train any AI model, and you can export or delete it whenever you want." },
   { q: "What are Constellations?", a: "Small groups of four to six people who help each other stay on course. You share a Life Score and a quiet dashboard, with live chat when members are online. No feeds, no likes, no notifications to outsiders. A quiet room, not a Discord server." },
   { q: "Does it still work for exam prep?", a: "Absolutely. Exam Prep is an installable template with Readiness Score, syllabus heat map, practice, mock predictor, a calm focus mode and a voice examiner. Your Exam Readiness becomes a domain score that feeds the main Life Score with extra weight as your exam nears." },
   { q: "Who makes Cardinal OS?", a: `GraviQ Studios, an independent, design-led studio in India that builds one product at a time, in public. Reach us any time at ${EMAIL}.` },
@@ -881,8 +851,7 @@ const LEGAL = {
     sections: [
       { h: "Who we are", p: `Cardinal OS is operated by GraviQ Studios, an independent studio in India. For any privacy question, write to ${EMAIL}.` },
       { h: "What we collect", p: "Account details from Google sign-in (your name and email), the content you create inside Cardinal (habits, tasks, notes, goals and so on), and basic usage data that helps us improve the product." },
-      { h: "Connected apps", p: "When you connect Notion, Gmail, Google Calendar, Spotify or Evernote, we access only what a feature needs. Gmail is scanned on demand and never stored. Imports from Notion and Evernote are one-way and happen only when you ask." },
-      { h: "How we use your data", p: "To run Cardinal, calculate your Life Score and power its AI features. We never sell your data, and no integration data is ever used to train any model." },
+      { h: "How we use your data", p: "To run Cardinal, calculate your Life Score and power its AI features. We never sell your data, and nothing you write is ever used to train any model." },
       { h: "AI processing", p: "To deliver a feature, the minimum necessary content may be processed by our AI providers (Google Gemini and Anthropic Claude) solely to return your result. It is not used to train their models." },
       { h: "Storage and security", p: "Your data is stored with Supabase and encrypted in transit. Row-level security means only you can read your own data." },
       { h: "Your rights", p: "Under India's DPDP Act, 2023, you can access, correct, export or delete your data and withdraw consent at any time." },

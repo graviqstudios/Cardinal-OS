@@ -186,3 +186,25 @@ export async function fetchGoogleEvents(
   const data = (await res.json()) as { items?: GoogleEvent[] };
   return data.items ?? [];
 }
+
+/** Create an event on the user's primary Google calendar; returns its id. */
+export async function insertGoogleEvent(
+  accessToken: string,
+  ev: { summary: string; startISO: string; endISO: string; allDay: boolean },
+): Promise<string> {
+  const body = ev.allDay
+    ? { summary: ev.summary, start: { date: ev.startISO.slice(0, 10) }, end: { date: ev.endISO.slice(0, 10) } }
+    : { summary: ev.summary, start: { dateTime: ev.startISO }, end: { dateTime: ev.endISO } };
+
+  const res = await fetch(
+    "https://www.googleapis.com/calendar/v3/calendars/primary/events",
+    {
+      method: "POST",
+      headers: { Authorization: `Bearer ${accessToken}`, "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    },
+  );
+  if (!res.ok) throw new Error(`Calendar insert failed: ${res.status}`);
+  const data = (await res.json()) as { id: string };
+  return data.id;
+}

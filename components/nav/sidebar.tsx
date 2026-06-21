@@ -219,9 +219,9 @@ function NavRow({
   const inner = (
     <>
       {item.mark ? (
-        // eslint-disable-next-line @next/next/no-img-element
         // Module marks carry ~20% internal clear space, so scale them up to read
         // at the same visual weight as the full-bleed lucide icons beside them.
+        // eslint-disable-next-line @next/next/no-img-element
         <img src={item.mark} alt="" className="h-4 w-4 shrink-0 scale-[1.45]" />
       ) : (
         <Icon className="h-4 w-4 shrink-0" style={iconStyle} />

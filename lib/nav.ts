@@ -1,4 +1,5 @@
 import {
+  Activity,
   CalendarDays,
   Dumbbell,
   FolderKanban,
@@ -38,6 +39,7 @@ export const NAV_ITEMS: NavItem[] = [
   { label: "Journal", href: "/journal", icon: NotebookPen, enabled: true },
   { label: "Calendar", href: "/calendar", icon: CalendarDays, colorVar: "--module-calendar", mark: "/brand/module-calendar.svg", enabled: true },
   { label: "Money", href: "/money", icon: Wallet, colorVar: "--module-money", mark: "/brand/module-money.svg", enabled: true },
+  { label: "Body", href: "/body", icon: Activity, colorVar: "--module-readiness", enabled: true },
   { label: "Study", href: "/study", icon: GraduationCap, colorVar: "--module-study", mark: "/brand/module-study.svg", examOnly: true, enabled: true },
   { label: "Heatmap", href: "/heatmap", icon: Grid3x3, colorVar: "--module-readiness", mark: "/brand/module-readiness.svg", examOnly: true, enabled: true },
   { label: "Practice", href: "/practice", icon: Dumbbell, colorVar: "--module-study", examOnly: true, enabled: true },

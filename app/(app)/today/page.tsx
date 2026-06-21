@@ -5,6 +5,7 @@ import { getHabitsWithToday } from "@/lib/habits/queries";
 import { getTodayTasks } from "@/lib/tasks/queries";
 import { getTodayReflection } from "@/lib/journal/queries";
 import { getEvents } from "@/lib/calendar/queries";
+import { getInsights } from "@/lib/insights/service";
 import { buildGreeting } from "@/lib/today/greeting";
 import { LifeScoreRecorder } from "@/components/life-score/life-score-recorder";
 import { LifeScoreHero } from "@/components/today/life-score-hero";
@@ -13,6 +14,8 @@ import { TodayHabits } from "@/components/today/today-habits";
 import { TodayTasks } from "@/components/today/today-tasks";
 import { TodayBriefing } from "@/components/today/today-briefing";
 import { MiniCalendar } from "@/components/today/mini-calendar";
+import { TodayInsights } from "@/components/today/today-insights";
+import { FocusTimer } from "@/components/body/focus-timer";
 import { DailyReflection } from "@/components/today/daily-reflection";
 import { QuickCapture } from "@/components/today/quick-capture";
 import { ProductTour } from "@/components/tour/product-tour";
@@ -29,18 +32,20 @@ export default async function TodayPage() {
   const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
   const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 1).toISOString();
 
-  const [{ data: profile }, life, habits, tasks, monthEvents, reflection] = await Promise.all([
-    supabase
-      .from("users")
-      .select("name, email, tour_completed_at")
-      .eq("id", user!.id)
-      .single<Pick<Profile, "name" | "email" | "tour_completed_at">>(),
-    getLifeScoreSnapshot(),
-    getHabitsWithToday(),
-    getTodayTasks(),
-    getEvents(monthStart, monthEnd),
-    getTodayReflection(),
-  ]);
+  const [{ data: profile }, life, habits, tasks, monthEvents, reflection, insights] =
+    await Promise.all([
+      supabase
+        .from("users")
+        .select("name, email, tour_completed_at")
+        .eq("id", user!.id)
+        .single<Pick<Profile, "name" | "email" | "tour_completed_at">>(),
+      getLifeScoreSnapshot(),
+      getHabitsWithToday(),
+      getTodayTasks(),
+      getEvents(monthStart, monthEnd),
+      getTodayReflection(),
+      getInsights(),
+    ]);
 
   const name = profile?.name?.trim() || profile?.email?.split("@")[0] || "there";
   const dateLabel = now.toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric" });
@@ -93,26 +98,28 @@ export default async function TodayPage() {
         <TodayIntention />
       </header>
 
-      {/* Life Score (left) + today's habits & tasks (right) */}
-      <div className="grid gap-6 lg:grid-cols-2">
-        <LifeScoreHero
-          score={life?.score ?? 0}
-          previous={life?.previous ?? null}
-          history={life?.history ?? []}
-          hasData={hasData}
-          breakdown={life?.breakdown ?? null}
-        />
+      {/* Left: Life Score + calendar · Right: habits, tasks, focus */}
+      <div className="grid items-start gap-6 lg:grid-cols-2">
+        <div className="space-y-6">
+          <LifeScoreHero
+            score={life?.score ?? 0}
+            previous={life?.previous ?? null}
+            history={life?.history ?? []}
+            hasData={hasData}
+          />
+          <MiniCalendar events={monthEvents} todayEvents={todayEvents} />
+        </div>
         <div className="space-y-6">
           <TodayHabits habits={habits} />
           <TodayTasks tasks={tasks} />
+          <FocusTimer />
         </div>
       </div>
 
-      {/* Mini calendar + daily reflection */}
-      <div className="grid gap-6 lg:grid-cols-2">
-        <MiniCalendar events={monthEvents} todayEvents={todayEvents} />
-        <DailyReflection initial={reflection} />
-      </div>
+      {/* Cross-domain patterns ("we noticed") */}
+      <TodayInsights insights={insights} />
+
+      <DailyReflection initial={reflection} />
 
       <QuickCapture />
     </div>
