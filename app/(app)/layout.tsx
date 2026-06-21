@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 
 import { createClient } from "@/lib/supabase/server";
 import { isOnboarded, type Profile } from "@/lib/types";
+import { LEGAL } from "@/lib/legal/content";
 import { getLifeScoreSnapshot } from "@/lib/life-score/service";
 import { Sidebar } from "@/components/nav/sidebar";
 import { AppHeader } from "@/components/shell/app-header";
@@ -36,8 +37,12 @@ export default async function AppLayout({
   if (!onboarded && !onOnboarding) redirect("/onboarding");
   if (onboarded && onOnboarding) redirect("/today");
 
-  // Consent gate: blocks everything (onboarding included) until Terms accepted.
-  const needsConsent = Boolean(profile) && !profile?.terms_accepted_at;
+  // Consent gate: blocks everything (onboarding included) until the *current*
+  // Terms are accepted. Re-prompts once when the policy's effective date moves.
+  const needsConsent =
+    Boolean(profile) &&
+    (!profile?.terms_accepted_at ||
+      new Date(profile.terms_accepted_at) < new Date(LEGAL.effectiveISO));
 
   // Onboarding is a focused, full-screen flow — no sidebar shell.
   if (onOnboarding) {

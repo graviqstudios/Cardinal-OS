@@ -1,4 +1,4 @@
-import { createAdminClient } from "@/lib/supabase/admin";
+import { createAdminClient, hasServiceRole } from "@/lib/supabase/admin";
 import { generateMonthlyReview } from "@/lib/journal/monthly";
 import { reindexJournalEntry } from "@/lib/journal/embed";
 import { brevoConfigured, sendEmail } from "@/lib/email/brevo";
@@ -18,6 +18,9 @@ export async function GET(req: Request) {
   }
   if (!brevoConfigured()) {
     return Response.json({ skipped: "email not configured" });
+  }
+  if (!hasServiceRole()) {
+    return Response.json({ error: "SUPABASE_SERVICE_ROLE_KEY not set" }, { status: 503 });
   }
 
   const admin = createAdminClient();

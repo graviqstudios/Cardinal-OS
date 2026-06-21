@@ -9,53 +9,33 @@ import { updateProfile } from "@/lib/profile/actions";
 import { useCardinalTheme } from "@/components/theme/theme-provider";
 import { ThemeControls } from "@/components/theme/theme-controls";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Tap } from "@/components/motion/tap";
-import {
-  DURATION,
-  EASE_OUT,
-  fadeVariants,
-  pageVariants,
-} from "@/lib/motion/variants";
+import { DURATION, EASE_OUT, fadeVariants, pageVariants } from "@/lib/motion/variants";
 import { cn } from "@/lib/utils";
 
-const STEPS = ["Appearance", "Your goal", "Target date"] as const;
+const STEPS = ["Appearance", "Ready"] as const;
 
-export function OnboardingFlow({
-  initial,
-}: {
-  initial: { exam_target: string; exam_date: string };
-}) {
+export function OnboardingFlow() {
   const router = useRouter();
   const reduceMotion = useReducedMotion();
   const { palette, accent } = useCardinalTheme();
 
   const [step, setStep] = React.useState(0);
-  const [examTarget, setExamTarget] = React.useState(initial.exam_target);
-  const [examDate, setExamDate] = React.useState(initial.exam_date);
   const [pending, setPending] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
 
   const last = step === STEPS.length - 1;
 
   function next() {
-    if (last) {
-      void finish();
-    } else {
-      setStep((s) => s + 1);
-    }
+    if (last) void finish();
+    else setStep((s) => s + 1);
   }
 
   async function finish() {
     setPending(true);
     setError(null);
-    const res = await updateProfile({
-      accent_color: accent,
-      theme: palette,
-      exam_target: examTarget.trim() || null,
-      exam_date: examDate || null,
-    });
+    // Only preferences are set here — goals, dates and the rest come later, in-app.
+    const res = await updateProfile({ accent_color: accent, theme: palette });
     if (res.ok) {
       router.push("/today");
       router.refresh();
@@ -68,18 +48,13 @@ export function OnboardingFlow({
   return (
     <div className="flex min-h-dvh items-center justify-center px-4 py-10">
       <div className="w-full max-w-lg">
-        {/* Progress */}
         <div className="mb-8 flex items-center justify-center gap-2">
           {STEPS.map((_, i) => (
             <span
               key={i}
               className={cn(
                 "h-1.5 rounded-full transition-all duration-200",
-                i === step
-                  ? "w-8 bg-primary"
-                  : i < step
-                    ? "w-4 bg-primary/50"
-                    : "w-4 bg-muted",
+                i === step ? "w-8 bg-primary" : i < step ? "w-4 bg-primary/50" : "w-4 bg-muted",
               )}
             />
           ))}
@@ -97,7 +72,7 @@ export function OnboardingFlow({
             {step === 0 && (
               <Section
                 title="Make it yours"
-                description="Pick an accent and palette. You can change these any time in Settings — and the whole app updates instantly."
+                description="Pick an accent and palette. You can change these any time in Settings, and the whole app updates instantly."
               >
                 <ThemeControls />
               </Section>
@@ -105,40 +80,12 @@ export function OnboardingFlow({
 
             {step === 1 && (
               <Section
-                title="What are you working toward?"
-                description="An exam, a course, or a personal goal. Optional — you can skip this."
+                title="You're all set"
+                description="That's all we need to begin. Add habits, tasks, goals and the rest whenever you're ready — Cardinal grows with you."
               >
-                <div className="space-y-2">
-                  <Label htmlFor="exam_target">Exam or goal</Label>
-                  <Input
-                    id="exam_target"
-                    autoFocus
-                    value={examTarget}
-                    onChange={(e) => setExamTarget(e.target.value)}
-                    placeholder="e.g. NEET 2027, CAT, or 'Finish Calculus'"
-                  />
-                </div>
-              </Section>
-            )}
-
-            {step === 2 && (
-              <Section
-                title="Set a target date"
-                description={
-                  examTarget.trim()
-                    ? `If "${examTarget.trim()}" has a date, mark it and we'll keep it in view. Optional.`
-                    : "If your goal has a deadline, mark it. Optional, and easy to change later."
-                }
-              >
-                <div className="space-y-2">
-                  <Label htmlFor="exam_date">Target date</Label>
-                  <Input
-                    id="exam_date"
-                    type="date"
-                    value={examDate}
-                    onChange={(e) => setExamDate(e.target.value)}
-                    className="max-w-xs"
-                  />
+                <div className="rounded-card border bg-card p-5 text-sm leading-relaxed text-muted-foreground">
+                  Your home opens to your Life Score, today&apos;s intention, and a
+                  calm view of what matters. Nothing to set up first.
                 </div>
               </Section>
             )}
@@ -147,44 +94,30 @@ export function OnboardingFlow({
 
         {error && <p className="mt-4 text-sm text-destructive">{error}</p>}
 
-        {/* Controls */}
         <div className="mt-8 flex items-center justify-between">
           <Tap className="inline-block">
-            <Button
-              variant="ghost"
-              onClick={() => setStep((s) => Math.max(0, s - 1))}
-              disabled={step === 0 || pending}
-            >
+            <Button variant="ghost" onClick={() => setStep((s) => Math.max(0, s - 1))} disabled={step === 0 || pending}>
               <ArrowLeft className="h-4 w-4" />
               Back
             </Button>
           </Tap>
 
-          <div className="flex items-center gap-2">
-            {step > 0 && !last && (
-              <Tap className="inline-block">
-                <Button variant="ghost" onClick={next} disabled={pending}>
-                  Skip
-                </Button>
-              </Tap>
-            )}
-            <Tap className="inline-block">
-              <Button onClick={next} disabled={pending}>
-                {pending && <Loader2 className="h-4 w-4 animate-spin" />}
-                {last ? (
-                  <>
-                    {!pending && <Check className="h-4 w-4" />}
-                    Finish
-                  </>
-                ) : (
-                  <>
-                    Continue
-                    <ArrowRight className="h-4 w-4" />
-                  </>
-                )}
-              </Button>
-            </Tap>
-          </div>
+          <Tap className="inline-block">
+            <Button onClick={next} disabled={pending}>
+              {pending && <Loader2 className="h-4 w-4 animate-spin" />}
+              {last ? (
+                <>
+                  {!pending && <Check className="h-4 w-4" />}
+                  Enter Cardinal
+                </>
+              ) : (
+                <>
+                  Continue
+                  <ArrowRight className="h-4 w-4" />
+                </>
+              )}
+            </Button>
+          </Tap>
         </div>
       </div>
     </div>

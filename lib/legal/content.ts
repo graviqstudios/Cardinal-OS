@@ -11,6 +11,9 @@ export const LEGAL = {
   grievanceOfficer: "P. S. Satchith, GraviQ Studios",
   jurisdiction: "India",
   updated: "21 June 2026",
+  // Bump this whenever the Terms / Privacy Policy materially change — users who
+  // accepted an older version will be re-prompted once. (Machine-readable date.)
+  effectiveISO: "2026-06-21",
 };
 
 export type LegalDoc = {

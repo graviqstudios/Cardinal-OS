@@ -17,6 +17,8 @@ export function ConsentGate() {
   const router = useRouter();
   const [agreed, setAgreed] = React.useState(false);
   const [pending, setPending] = React.useState(false);
+  const [done, setDone] = React.useState(false);
+  const [error, setError] = React.useState<string | null>(null);
 
   // Lock background scroll while the gate is up.
   React.useEffect(() => {
@@ -28,10 +30,18 @@ export function ConsentGate() {
   async function accept() {
     if (!agreed) return;
     setPending(true);
+    setError(null);
     const res = await acceptTerms();
-    if (res.ok) router.refresh();
-    else setPending(false);
+    if (res.ok) {
+      setDone(true); // close immediately; don't wait on the refresh round-trip
+      router.refresh();
+    } else {
+      setPending(false);
+      setError("Couldn't save your agreement. Please try again.");
+    }
   }
+
+  if (done) return null;
 
   return (
     <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
@@ -66,6 +76,8 @@ export function ConsentGate() {
             and I am at least 16 years old.
           </span>
         </label>
+
+        {error && <p className="mt-4 text-sm text-destructive">{error}</p>}
 
         <Tap className="mt-6 block">
           <Button className="w-full" onClick={accept} disabled={!agreed || pending}>

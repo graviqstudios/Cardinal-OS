@@ -1,5 +1,10 @@
 import { createClient } from "@supabase/supabase-js";
 
+/** True when the service-role key is configured (required for admin jobs). */
+export function hasServiceRole(): boolean {
+  return Boolean(process.env.SUPABASE_SERVICE_ROLE_KEY);
+}
+
 /**
  * Service-role Supabase client — bypasses RLS. Server-only, for trusted
  * background jobs (e.g. the monthly-review cron) that operate across all users.

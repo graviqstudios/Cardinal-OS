@@ -6,6 +6,7 @@ import { Settings as SettingsIcon } from "lucide-react";
 import { ThemeControls } from "@/components/theme/theme-controls";
 import { ProfileForm } from "@/components/settings/profile-form";
 import { ExamModeToggle } from "@/components/settings/exam-mode-toggle";
+import { AccountActions } from "@/components/settings/account-actions";
 import { PageHeader } from "@/components/shell/page-header";
 
 export default async function SettingsPage() {
@@ -81,10 +82,12 @@ export default async function SettingsPage() {
         <CardHeader>
           <CardTitle>Account</CardTitle>
         </CardHeader>
-        <CardContent className="text-sm text-muted-foreground">
-          Signed in as{" "}
-          <span className="font-medium text-foreground">{user?.email}</span>.
-          Use the sign-out button in the sidebar to log out.
+        <CardContent className="space-y-5">
+          <p className="text-sm text-muted-foreground">
+            Signed in as{" "}
+            <span className="font-medium text-foreground">{user?.email}</span>.
+          </p>
+          <AccountActions />
         </CardContent>
       </Card>
     </div>

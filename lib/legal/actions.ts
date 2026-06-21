@@ -12,10 +12,12 @@ export async function acceptTerms(): Promise<{ ok: boolean }> {
   } = await supabase.auth.getUser();
   if (!user) return { ok: false };
 
-  await supabase
+  const { error } = await supabase
     .from("users")
     .update({ terms_accepted_at: new Date().toISOString() })
     .eq("id", user.id);
+  if (error) return { ok: false };
+
   revalidatePath("/", "layout");
   return { ok: true };
 }

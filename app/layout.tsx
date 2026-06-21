@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { Analytics } from "@vercel/analytics/next";
 
 import "@/Design/tokens.css";
 import "./globals.css";
@@ -70,6 +71,7 @@ export default async function RootLayout({
         <ThemeProvider initialPalette={initialPalette} initialAccent={initialAccent}>
           {children}
         </ThemeProvider>
+        <Analytics />
       </body>
     </html>
   );
