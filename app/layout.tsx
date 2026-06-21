@@ -11,6 +11,7 @@ import {
   type Accent,
   type Palette,
 } from "@/lib/theme/config";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 export const metadata: Metadata = {
   title: "Cardinal OS",
@@ -70,6 +71,7 @@ export default async function RootLayout({
         <ThemeProvider initialPalette={initialPalette} initialAccent={initialAccent}>
           {children}
         </ThemeProvider>
+        <SpeedInsights />
       </body>
     </html>
   );
