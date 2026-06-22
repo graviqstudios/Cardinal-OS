@@ -6,6 +6,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/theme/theme-provider";
 import { ThemeScript } from "@/components/theme/theme-script";
 import { createClient } from "@/lib/supabase/server";
+import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/site";
 import {
   isAccent,
   isPalette,
@@ -14,10 +15,68 @@ import {
 } from "@/lib/theme/config";
 
 export const metadata: Metadata = {
-  title: "Cardinal OS",
-  description:
-    "Your AI tutor, planner, and progress tracker in one place — so you always know what to study next.",
-  icons: { icon: "/brand/favicon.svg" },
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: "Cardinal OS — one calm home for your whole life",
+    template: "%s · Cardinal OS",
+  },
+  description: SITE_DESCRIPTION,
+  applicationName: SITE_NAME,
+  keywords: [
+    "Cardinal OS",
+    "life OS",
+    "life operating system",
+    "productivity app",
+    "Notion alternative",
+    "habit tracker",
+    "task manager",
+    "goal tracking app",
+    "journal app",
+    "second brain",
+    "daily planner",
+    "Life Score",
+    "AI planner",
+    "student productivity",
+    "GraviQ Studios",
+  ],
+  authors: [{ name: "GraviQ Studios", url: SITE_URL }],
+  creator: "GraviQ Studios",
+  publisher: "GraviQ Studios",
+  category: "productivity",
+  alternates: { canonical: "/" },
+  openGraph: {
+    type: "website",
+    url: SITE_URL,
+    siteName: SITE_NAME,
+    title: "Cardinal OS — one calm home for your whole life",
+    description: SITE_DESCRIPTION,
+    locale: "en_US",
+  },
+  twitter: {
+    card: "summary_large_image",
+    site: "@GraviQStudios",
+    creator: "@GraviQStudios",
+    title: "Cardinal OS — one calm home for your whole life",
+    description: SITE_DESCRIPTION,
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+      "max-video-preview": -1,
+    },
+  },
+  icons: {
+    icon: "/brand/favicon.svg",
+    apple: "/brand/app-icon.svg",
+  },
+  verification: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION
+    ? { google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION }
+    : undefined,
 };
 
 export const viewport: Viewport = {

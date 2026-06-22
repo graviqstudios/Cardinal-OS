@@ -6,8 +6,11 @@ type CookieToSet = { name: string; value: string; options: CookieOptions };
 /** Routes that are reachable without an authenticated session. */
 const PUBLIC_PATHS = ["/login", "/signup", "/auth", "/api", "/privacy", "/terms"];
 
+/** SEO/crawler files that must be served to unauthenticated bots, never gated. */
+const PUBLIC_FILES = new Set(["/robots.txt", "/sitemap.xml", "/opengraph-image", "/manifest.webmanifest"]);
+
 function isPublic(pathname: string) {
-  if (pathname === "/") return true;
+  if (pathname === "/" || PUBLIC_FILES.has(pathname)) return true;
   return PUBLIC_PATHS.some(
     (p) => pathname === p || pathname.startsWith(`${p}/`),
   );
