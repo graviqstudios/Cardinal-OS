@@ -59,7 +59,7 @@ const STEPS: Step[] = [
 const POP_W = 300;
 const PAD = 8; // spotlight padding around the target
 
-export function ProductTour({ run }: { run: boolean }) {
+export function ProductTour({ run, returning = false }: { run: boolean; returning?: boolean }) {
   const [mounted, setMounted] = React.useState(false);
   const [steps, setSteps] = React.useState<Step[]>([]);
   const [i, setI] = React.useState(0);
@@ -74,9 +74,18 @@ export function ProductTour({ run }: { run: boolean }) {
     const present = STEPS.filter((s) => {
       const el = document.querySelector(s.sel) as HTMLElement | null;
       return el && el.getClientRects().length > 0;
-    });
+    }).map((s) =>
+      // Returning users have seen onboarding before — frame the opener as an update.
+      returning && s.sel === '[data-tour="sidebar"]'
+        ? {
+            ...s,
+            title: "A few new things",
+            body: "We've tidied up. Habits, tasks, projects and goals now live together in Plan, and Body is now Health. Here's a quick look.",
+          }
+        : s,
+    );
     setSteps(present);
-  }, [run]);
+  }, [run, returning]);
 
   const step = steps[i];
 

@@ -7,6 +7,7 @@ import { getTodayReflection } from "@/lib/journal/queries";
 import { getEvents } from "@/lib/calendar/queries";
 import { getInsights } from "@/lib/insights/service";
 import { buildGreeting } from "@/lib/today/greeting";
+import { TOUR_VERSION } from "@/lib/tour/version";
 import { LifeScoreRecorder } from "@/components/life-score/life-score-recorder";
 import { LifeScoreHero } from "@/components/today/life-score-hero";
 import { TodayIntention } from "@/components/today/today-intention";
@@ -36,9 +37,9 @@ export default async function TodayPage() {
     await Promise.all([
       supabase
         .from("users")
-        .select("name, email, tour_completed_at")
+        .select("name, email, tour_completed_at, tour_version")
         .eq("id", user!.id)
-        .single<Pick<Profile, "name" | "email" | "tour_completed_at">>(),
+        .single<Pick<Profile, "name" | "email" | "tour_completed_at" | "tour_version">>(),
       getLifeScoreSnapshot(),
       getHabitsWithToday(),
       getTodayTasks(),
@@ -82,7 +83,10 @@ export default async function TodayPage() {
   return (
     <div className="space-y-6">
       <LifeScoreRecorder />
-      <ProductTour run={!profile?.tour_completed_at} />
+      <ProductTour
+        run={(profile?.tour_version ?? 0) < TOUR_VERSION}
+        returning={Boolean(profile?.tour_completed_at)}
+      />
 
       {/* Greeting + daily message + intention */}
       <header className="space-y-3">
