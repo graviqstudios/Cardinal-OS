@@ -129,6 +129,50 @@ function LifeRing({ target, size, stroke }: { target: number; size: number; stro
   );
 }
 
+/* ── 14-day Life Score trend (distinct from the hero ring) ────────────────── */
+function LifeTrend() {
+  const pts = [612, 628, 605, 640, 658, 649, 672, 690, 681, 705, 724, 742, 760, 784];
+  const max = 1000;
+  const min = 520;
+  const W = 320;
+  const H = 150;
+  const pad = 8;
+  const stepX = (W - pad * 2) / (pts.length - 1);
+  const coords = pts.map((v, i) => {
+    const x = pad + i * stepX;
+    const y = pad + (1 - (v - min) / (max - min)) * (H - pad * 2);
+    return [x, y] as const;
+  });
+  const line = coords.map(([x, y]) => `${x},${y}`).join(" ");
+  const area = `${pad},${H - pad} ${line} ${W - pad},${H - pad}`;
+  const last = coords[coords.length - 1];
+  const gain = pts[pts.length - 1] - pts[0];
+
+  return (
+    <div className="w-full">
+      <div className="flex items-end justify-between">
+        <div>
+          <div className="font-serif text-5xl leading-none tabular-nums">784</div>
+          <div className="mt-1.5 text-xs text-[#897C68]">Life Score · today</div>
+        </div>
+        <span className="inline-flex items-center gap-1.5 rounded-full border border-[rgba(47,125,91,0.3)] bg-[rgba(47,125,91,0.16)] px-2.5 py-1 text-xs font-medium text-[#7FC4A3]">▲ up {gain} in 14 days</span>
+      </div>
+      <svg viewBox={`0 0 ${W} ${H}`} className="mt-5 w-full overflow-visible">
+        {[0.25, 0.5, 0.75].map((g) => (
+          <line key={g} x1={pad} x2={W - pad} y1={pad + g * (H - pad * 2)} y2={pad + g * (H - pad * 2)} stroke="rgba(242,233,219,0.06)" strokeWidth={1} />
+        ))}
+        <polygon points={area} fill="rgba(var(--co-accent-rgb),0.12)" />
+        <polyline points={line} fill="none" stroke="var(--co-accent)" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" style={{ filter: "drop-shadow(0 0 8px rgba(var(--co-accent-rgb),0.35))" }} />
+        <circle cx={last[0]} cy={last[1]} r={4.5} fill="var(--co-accent)" />
+      </svg>
+      <div className="mt-2 flex justify-between text-[10px] text-[#6E6250]">
+        <span>14 days ago</span>
+        <span>today</span>
+      </div>
+    </div>
+  );
+}
+
 export function LandingPage() {
   const [accent, setAccent] = React.useState<Accent>(ACCENTS[0]);
   const [menuOpen, setMenuOpen] = React.useState(false);
@@ -338,12 +382,14 @@ export function LandingPage() {
                 <p className="text-sm leading-relaxed text-[#D7CCBA]">Anti-anxiety by design. The ring never shows red. A 300 wears the same calm color as an 800, and one missed day cannot collapse it.</p>
               </div>
             </Reveal>
-            <Reveal className="flex flex-col items-center rounded-[24px] border border-[rgba(242,233,219,0.10)] bg-[#1A140F] p-8 sm:p-11">
-              <LifeRing target={784} size={220} stroke={8} />
-              <p className="mx-auto mt-7 max-w-[340px] text-center font-serif text-xl italic leading-relaxed text-[#D7CCBA]">
-                “Your week is tracking well. Body shows four solid days. Rohan hasn't heard from you in three weeks, worth a message.”
-              </p>
-              <div className="mt-3.5 text-xs text-[#897C68]">Today's AI briefing</div>
+            <Reveal className="flex flex-col rounded-[24px] border border-[rgba(242,233,219,0.10)] bg-[#1A140F] p-8 sm:p-11">
+              <LifeTrend />
+              <div className="mt-8 border-t border-[rgba(242,233,219,0.08)] pt-6">
+                <p className="font-serif text-xl italic leading-relaxed text-[#D7CCBA]">
+                  “Your week is tracking well. Health shows four solid days. Rohan hasn't heard from you in three weeks, worth a message.”
+                </p>
+                <div className="mt-3.5 text-xs text-[#897C68]">Today's AI briefing</div>
+              </div>
             </Reveal>
           </div>
         </div>
@@ -354,12 +400,12 @@ export function LandingPage() {
         <div className="mx-auto max-w-[1180px]">
           <Reveal className="mx-auto max-w-[640px] text-center">
             <div className="text-xs font-semibold uppercase tracking-[0.2em] text-[#C97A63]">Life areas</div>
-            <h2 className="mt-3.5 font-serif text-4xl font-normal leading-[1.05] tracking-[-0.01em] sm:text-[46px]">Eleven areas. One system.</h2>
-            <p className="mt-4 text-[17px] leading-relaxed text-[#B6A892]">Every part of a life in motion, in one calm interface. Each area carries its own mark and color, so a glance tells you where you are.</p>
+            <h2 className="mt-3.5 font-serif text-4xl font-normal leading-[1.05] tracking-[-0.01em] sm:text-[46px]">Your whole life, one system.</h2>
+            <p className="mt-4 text-[17px] leading-relaxed text-[#B6A892]">The areas you live in every day, each with its own mark and color, so a glance tells you where you are. Plus more rolling out.</p>
           </Reveal>
 
           <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {AREAS.map((a, i) => (
+            {FEATURED_AREAS.map((a, i) => (
               <Reveal key={a.name} delay={(i % 3) * 60}>
                 <div
                   className="group h-full rounded-[18px] border border-[rgba(242,233,219,0.09)] bg-[#1A140F] p-6 transition-transform duration-200 hover:-translate-y-1"
@@ -377,8 +423,8 @@ export function LandingPage() {
               <a href="/signup" className="flex h-full flex-col justify-between rounded-[18px] border p-6 transition-transform duration-200 hover:-translate-y-1" style={{ background: "linear-gradient(160deg, rgba(var(--co-accent-rgb),0.16), rgba(var(--co-accent-rgb),0.04))", borderColor: "rgba(var(--co-accent-rgb),0.28)" }}>
                 <div className="flex h-12 w-12 items-center justify-center rounded-[13px]" style={{ background: "rgba(var(--co-accent-rgb),0.2)", color: "var(--co-accent)" }}><Arrow s={26} /></div>
                 <div>
-                  <h3 className="mt-4 text-lg font-semibold">Templates &amp; more</h3>
-                  <p className="mt-2 text-sm leading-relaxed text-[#C9BBA3]">Install life packs: Exam Prep today, with Fitness, Job Hunt and Creator rolling out.</p>
+                  <h3 className="mt-4 text-lg font-semibold">Goals, Money, Health &amp; more</h3>
+                  <p className="mt-2 text-sm leading-relaxed text-[#C9BBA3]">Plus People, Learn and Constellations, and life packs like Exam Prep, with more rolling out.</p>
                 </div>
               </a>
             </Reveal>
@@ -458,7 +504,7 @@ export function LandingPage() {
             </div>
             <div className="mt-3.5 flex items-center gap-2.5 rounded-[13px] border px-4 py-3" style={{ background: "rgba(var(--co-accent-rgb),0.08)", borderColor: "rgba(var(--co-accent-rgb),0.18)" }}>
               <Needle s={18} />
-              <div className="text-[13px] leading-snug text-[#5E564A]">Your week is tracking well. Body shows four solid days.</div>
+              <div className="text-[13px] leading-snug text-[#5E564A]">Your week is tracking well. Health shows four solid days.</div>
             </div>
           </Reveal>
         </div>
@@ -546,7 +592,7 @@ export function LandingPage() {
               <div className="flex flex-col gap-2.5">
                 {[
                   { i: "A", c: "#2D5FB0", m: "Locked in 3 deep-work hours today. Score's finally climbing 📈", on: true },
-                  { i: "M", c: "#7A4C8F", m: "Same. Body area says rest tomorrow though, listening to it.", on: true },
+                  { i: "M", c: "#7A4C8F", m: "Same. Health says rest tomorrow though, listening to it.", on: true },
                   { i: "S", c: "var(--co-accent)", m: "Proud of us. Same time tomorrow?", on: false },
                 ].map((row, idx) => (
                   <div key={idx} className="flex items-start gap-2.5">
@@ -801,12 +847,18 @@ const AREAS: { name: string; desc: string; tint: string; soon?: boolean; icon: R
   { name: "Goals & Skills", desc: "Identity-based goals and a skill tree. “I am someone who ships.” XP you actually earn.", tint: "rgba(122,76,143,0.16)", icon: areaIcon(<><path d="M22 78 L50 30 L50 78 Z" fill="rgba(160,116,180,0.5)" /><path d="M50 30 L78 78 L50 78 Z" fill="#A074B4" /></>) },
   { name: "Calendar", desc: "Two-way Google Calendar sync. Schedule in plain language, see it everywhere.", tint: "rgba(47,125,91,0.14)", icon: areaIcon(<><rect x="22" y="28" width="56" height="50" rx="10" stroke="#4FA37D" strokeWidth="7" /><path d="M22 44 H78 M36 22 V32 M64 22 V32" stroke="#4FA37D" strokeWidth="7" strokeLinecap="round" /></>) },
   { name: "Money", desc: "AI-categorised spend, budgets and savings goals. Notices when stress hits your wallet.", tint: "rgba(181,122,30,0.16)", icon: areaIcon(<><circle cx="50" cy="50" r="32" stroke="#C99535" strokeWidth="7" /><path d="M50 36 L62 50 L50 64 L38 50 Z" fill="#C99535" /></>) },
-  { name: "Body", desc: "Workouts, sleep and energy, plus a built-in Pomodoro engine. “Five days straight, rest tomorrow.”", tint: "rgba(var(--co-accent-rgb),0.14)", soon: true, icon: areaIcon(<><circle cx="50" cy="50" r="30" stroke="var(--co-accent)" strokeWidth="7" /><path d="M50 30 L57 50 L50 46 L43 50 Z" fill="var(--co-accent)" /><path d="M50 70 L57 50 L43 50 Z" fill="rgba(var(--co-accent-rgb),0.45)" /></>) },
+  { name: "Health", desc: "Sleep, energy, mood and hydration, workouts, breathing and a focus engine. “Five days straight, rest tomorrow.”", tint: "rgba(var(--co-accent-rgb),0.14)", icon: areaIcon(<><circle cx="50" cy="50" r="30" stroke="var(--co-accent)" strokeWidth="7" /><path d="M50 30 L57 50 L50 46 L43 50 Z" fill="var(--co-accent)" /><path d="M50 70 L57 50 L43 50 Z" fill="rgba(var(--co-accent-rgb),0.45)" /></>) },
   { name: "Journal & Notes", desc: "Your second brain. Everything embedded, so you can ask your own notes anything.", tint: "rgba(181,122,30,0.16)", icon: areaIcon(<><rect x="28" y="24" width="38" height="46" rx="7" stroke="#D0A24A" strokeWidth="7" /><rect x="40" y="36" width="38" height="46" rx="7" stroke="#D0A24A" strokeWidth="7" /></>) },
   { name: "People", desc: "A quiet personal CRM. Gentle nudges to reach the people who matter, before drift sets in.", tint: "rgba(196,98,45,0.16)", soon: true, icon: areaIcon(<><path d="M20 66 H80" stroke="#D47A4A" strokeWidth="7" strokeLinecap="round" /><path d="M34 66 A16 16 0 0 1 66 66" stroke="#D47A4A" strokeWidth="7" strokeLinecap="round" /><path d="M50 30 V40 M70 40 L64 46 M30 40 L36 46" stroke="#D47A4A" strokeWidth="7" strokeLinecap="round" /></>) },
   { name: "Learn", desc: "Upload anything, chat with it, quiz yourself. Topics climb from weak to strong as you go.", tint: "rgba(45,95,176,0.14)", soon: true, icon: areaIcon(<><rect x="28" y="24" width="38" height="46" rx="7" stroke="#5A87D6" strokeWidth="7" /><rect x="40" y="36" width="38" height="46" rx="7" stroke="#5A87D6" strokeWidth="7" /></>) },
   { name: "Constellations", desc: "Groups of four to six who help you stay on course. A quiet room, not a Discord server.", tint: "rgba(59,79,114,0.22)", icon: areaIcon(<><path d="M30 32 L58 24 L72 54 L44 70 Z" stroke="#7E92BD" strokeWidth="4" fill="none" strokeLinejoin="round" /><circle cx="30" cy="32" r="5" fill="#9FB0D6" /><circle cx="58" cy="24" r="5" fill="#9FB0D6" /><circle cx="72" cy="54" r="5" fill="#9FB0D6" /><circle cx="44" cy="70" r="5" fill="#9FB0D6" /></>) },
 ];
+
+// The five everyday areas shown on the landing; the rest are bundled into the
+// "and more" card to keep the section short.
+const FEATURED_AREAS = ["Habits", "Tasks", "Projects", "Calendar", "Journal & Notes"]
+  .map((n) => AREAS.find((a) => a.name === n)!)
+  .filter(Boolean);
 
 const aiIcon = (path: React.ReactNode) => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">{path}</svg>;
 const AI_FEATURES: { title: string; desc: string; soon?: boolean; icon: React.ReactNode }[] = [

@@ -47,7 +47,7 @@ export function TodayTasks({ tasks }: { tasks: Task[] }) {
           <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
             Today&apos;s tasks
           </p>
-          <Link href="/tasks" className="text-xs font-medium text-primary hover:underline">
+          <Link href="/plan?tab=tasks" className="text-xs font-medium text-primary hover:underline">
             All tasks
           </Link>
         </div>

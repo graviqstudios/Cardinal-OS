@@ -157,7 +157,10 @@ export function FocusTimer({
   const progress = total > 0 ? 1 - secondsLeft / total : 0;
   const label = phase === "focus" ? "Focus" : phase === "break" ? "Break" : "Done";
 
-  const ring = (size: number) => (
+  const ring = (size: number) => {
+    const big = size > 200;
+    const stroke = big ? 6 : 8;
+    return (
     <div className="relative" style={{ width: size, height: size }}>
       {/* breathing pacer */}
       {running && phase === "focus" && (
@@ -170,19 +173,20 @@ export function FocusTimer({
         />
       )}
       <svg width={size} height={size} viewBox="0 0 140 140" fill="none">
-        <circle cx="70" cy="70" r="60" stroke="hsl(var(--muted))" strokeWidth={size > 200 ? 5 : 8} />
+        <circle cx="70" cy="70" r="60" stroke="hsl(var(--muted))" strokeWidth={stroke} />
         <circle
-          cx="70" cy="70" r="60" stroke="hsl(var(--primary))" strokeWidth={size > 200 ? 5 : 8} strokeLinecap="round"
+          cx="70" cy="70" r="60" stroke="hsl(var(--primary))" strokeWidth={stroke} strokeLinecap="round"
           pathLength={1000} strokeDasharray={`${Math.round(progress * 1000)} 1000`}
           transform="rotate(-90 70 70)" style={{ transition: "stroke-dasharray 1s linear", filter: "drop-shadow(0 0 6px hsl(var(--primary) / 0.4))" }}
         />
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
         <div className="font-serif tabular-nums leading-none" style={{ fontSize: size * 0.22 }}>{mmss(secondsLeft)}</div>
-        <div className="mt-1 text-[10px] uppercase tracking-[0.16em] text-muted-foreground">{label}</div>
+        <div className={cn("uppercase tracking-[0.16em] text-muted-foreground", big ? "mt-3 text-sm" : "mt-1 text-[10px]")}>{label}</div>
       </div>
     </div>
-  );
+    );
+  };
 
   const controls = (
     <div className="flex items-center gap-2">
@@ -205,7 +209,7 @@ export function FocusTimer({
       <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Session title (optional)" className="h-9 bg-surface" />
       <Textarea value={description} onChange={(e) => setDescription(e.target.value)} placeholder="What are you working on? (optional)" rows={2} className="resize-none bg-surface" />
       <div className="flex items-center gap-2">
-        <span className="text-xs text-muted-foreground">Link</span>
+        <span className="text-xs text-muted-foreground">Link to Task</span>
         <select value={link} onChange={(e) => setLink(e.target.value)} aria-label="Link to a task or habit" className="h-9 flex-1 rounded-button border border-input bg-transparent px-2 text-sm">
           <option value="">Nothing — just focus</option>
           {tasks.length > 0 && (
@@ -225,25 +229,28 @@ export function FocusTimer({
 
   // ── Zen / full-screen mode ──────────────────────────────────────────────────
   if (zen) {
+    const zenSize = typeof window !== "undefined"
+      ? Math.min(560, window.innerWidth - 96, window.innerHeight - 260)
+      : 480;
     const overlay = (
-      <div className="fixed inset-0 z-[120] flex flex-col items-center justify-center gap-6 bg-background p-6">
-        <button onClick={exitZen} aria-label="Exit focus mode" className="absolute right-5 top-5 text-muted-foreground hover:text-foreground">
-          <Minimize2 className="h-5 w-5" />
+      <div className="fixed inset-0 z-[120] flex flex-col items-center justify-center gap-10 bg-background p-8">
+        <button onClick={exitZen} aria-label="Exit focus mode" className="absolute right-6 top-6 text-muted-foreground hover:text-foreground">
+          <Minimize2 className="h-6 w-6" />
         </button>
         {running && (title || linkName) && (
           <div className="text-center">
-            {title && <p className="font-serif text-2xl">{title}</p>}
-            {linkName && <p className="mt-1 text-sm text-muted-foreground">{linkName}</p>}
+            {title && <p className="font-serif text-4xl">{title}</p>}
+            {linkName && <p className="mt-2 text-base text-muted-foreground">{linkName}</p>}
           </div>
         )}
-        {ring(Math.min(360, typeof window !== "undefined" ? window.innerWidth - 80 : 360))}
+        {ring(Math.max(320, zenSize))}
         {phase === "reflect" ? (
           <div className="w-full max-w-sm space-y-2">
             <Input value={note} onChange={(e) => setNote(e.target.value)} placeholder="How did that go?" className="bg-surface" />
             <Tap className="block"><Button className="w-full" onClick={finishFocus}>Save and break</Button></Tap>
           </div>
         ) : running ? (
-          controls
+          <div className="scale-125">{controls}</div>
         ) : (
           <div className="w-full max-w-sm space-y-4">
             {setup}

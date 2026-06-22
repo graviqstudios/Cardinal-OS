@@ -31,7 +31,7 @@ export async function createGoal(input: {
     target_date: input.target_date || null,
   });
   if (error) return { ok: false, error: error.message };
-  revalidatePath("/goals");
+  revalidatePath("/plan");
   return { ok: true };
 }
 
@@ -40,7 +40,7 @@ export async function deleteGoal(id: string): Promise<Result> {
   if (!userId) return { ok: false, error: "Not authenticated." };
   const { error } = await supabase.from("goals").delete().eq("id", id);
   if (error) return { ok: false, error: error.message };
-  revalidatePath("/goals");
+  revalidatePath("/plan");
   return { ok: true };
 }
 
@@ -52,7 +52,7 @@ export async function setGoalIdentity(id: string, identity: string): Promise<Res
     .update({ identity: identity.trim() || null })
     .eq("id", id);
   if (error) return { ok: false, error: error.message };
-  revalidatePath("/goals");
+  revalidatePath("/plan");
   return { ok: true };
 }
 
@@ -62,7 +62,7 @@ export async function setGoalProgress(id: string, progress: number): Promise<Res
   const clamped = Math.max(0, Math.min(100, Math.round(progress)));
   const { error } = await supabase.from("goals").update({ progress: clamped }).eq("id", id);
   if (error) return { ok: false, error: error.message };
-  revalidatePath("/goals");
+  revalidatePath("/plan");
   return { ok: true };
 }
 
@@ -75,7 +75,7 @@ export async function addMilestone(goalId: string, title: string): Promise<Resul
     .from("milestones")
     .insert({ user_id: userId, goal_id: goalId, title: title.trim() });
   if (error) return { ok: false, error: error.message };
-  revalidatePath("/goals");
+  revalidatePath("/plan");
   return { ok: true };
 }
 
@@ -84,7 +84,7 @@ export async function toggleMilestone(id: string, completed: boolean): Promise<R
   if (!userId) return { ok: false, error: "Not authenticated." };
   const { error } = await supabase.from("milestones").update({ completed }).eq("id", id);
   if (error) return { ok: false, error: error.message };
-  revalidatePath("/goals");
+  revalidatePath("/plan");
   return { ok: true };
 }
 
@@ -93,7 +93,7 @@ export async function deleteMilestone(id: string): Promise<Result> {
   if (!userId) return { ok: false, error: "Not authenticated." };
   const { error } = await supabase.from("milestones").delete().eq("id", id);
   if (error) return { ok: false, error: error.message };
-  revalidatePath("/goals");
+  revalidatePath("/plan");
   return { ok: true };
 }
 
@@ -115,7 +115,7 @@ export async function createCareerTarget(input: {
     notes: input.notes || null,
   });
   if (error) return { ok: false, error: error.message };
-  revalidatePath("/goals");
+  revalidatePath("/plan");
   return { ok: true };
 }
 
@@ -124,6 +124,6 @@ export async function deleteCareerTarget(id: string): Promise<Result> {
   if (!userId) return { ok: false, error: "Not authenticated." };
   const { error } = await supabase.from("career_targets").delete().eq("id", id);
   if (error) return { ok: false, error: error.message };
-  revalidatePath("/goals");
+  revalidatePath("/plan");
   return { ok: true };
 }

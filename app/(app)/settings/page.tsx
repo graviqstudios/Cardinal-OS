@@ -48,6 +48,7 @@ export default async function SettingsPage() {
             examMode={profile?.exam_mode ?? false}
             initial={{
               name: profile?.name ?? "",
+              sex: profile?.sex ?? "",
               exam_target: profile?.exam_target ?? "",
               exam_date: profile?.exam_date ?? "",
             }}

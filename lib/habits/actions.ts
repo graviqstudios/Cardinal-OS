@@ -30,7 +30,7 @@ export async function createHabit(name: string, routine: Routine = "any"): Promi
     .from("habits")
     .insert({ user_id: userId, name: name.trim(), routine });
   if (error) return { ok: false, error: error.message };
-  revalidatePath("/habits");
+  revalidatePath("/plan");
   revalidatePath("/today");
   return { ok: true };
 }
@@ -40,7 +40,7 @@ export async function deleteHabit(id: string): Promise<Result> {
   if (!userId) return { ok: false, error: "Not authenticated." };
   const { error } = await supabase.from("habits").delete().eq("id", id);
   if (error) return { ok: false, error: error.message };
-  revalidatePath("/habits");
+  revalidatePath("/plan");
   revalidatePath("/today");
   return { ok: true };
 }
@@ -71,7 +71,7 @@ export async function toggleHabitToday(habitId: string): Promise<Result> {
     if (error) return { ok: false, error: error.message };
   }
 
-  revalidatePath("/habits");
+  revalidatePath("/plan");
   revalidatePath("/today");
   return { ok: true };
 }

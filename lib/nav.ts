@@ -1,19 +1,16 @@
 import {
-  Activity,
   CalendarDays,
   Dumbbell,
-  FolderKanban,
   GraduationCap,
   Grid3x3,
+  HeartPulse,
   Home,
-  ListChecks,
+  LayoutGrid,
   type LucideIcon,
   Mic,
   NotebookPen,
-  Repeat,
   Settings,
   Sparkles,
-  Target,
   Wallet,
 } from "lucide-react";
 
@@ -32,14 +29,11 @@ export type NavItem = {
 
 export const NAV_ITEMS: NavItem[] = [
   { label: "Today", href: "/today", icon: Home, enabled: true },
-  { label: "Habits", href: "/habits", icon: Repeat, colorVar: "--module-habits", enabled: true },
-  { label: "Tasks", href: "/tasks", icon: ListChecks, colorVar: "--module-tasks", enabled: true },
-  { label: "Projects", href: "/projects", icon: FolderKanban, colorVar: "--module-projects", enabled: true },
-  { label: "Goals", href: "/goals", icon: Target, colorVar: "--module-goals", mark: "/brand/module-goals.svg", enabled: true },
+  { label: "Plan", href: "/plan", icon: LayoutGrid, colorVar: "--module-tasks", enabled: true },
   { label: "Journal", href: "/journal", icon: NotebookPen, enabled: true },
   { label: "Calendar", href: "/calendar", icon: CalendarDays, colorVar: "--module-calendar", mark: "/brand/module-calendar.svg", enabled: true },
   { label: "Money", href: "/money", icon: Wallet, colorVar: "--module-money", mark: "/brand/module-money.svg", enabled: true },
-  { label: "Body", href: "/body", icon: Activity, colorVar: "--module-readiness", enabled: true },
+  { label: "Health", href: "/health", icon: HeartPulse, colorVar: "--module-readiness", enabled: true },
   { label: "Study", href: "/study", icon: GraduationCap, colorVar: "--module-study", mark: "/brand/module-study.svg", examOnly: true, enabled: true },
   { label: "Heatmap", href: "/heatmap", icon: Grid3x3, colorVar: "--module-readiness", mark: "/brand/module-readiness.svg", examOnly: true, enabled: true },
   { label: "Practice", href: "/practice", icon: Dumbbell, colorVar: "--module-study", examOnly: true, enabled: true },

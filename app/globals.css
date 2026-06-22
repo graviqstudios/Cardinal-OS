@@ -42,6 +42,7 @@
   /* ── PARCHMENT (light, default) ───────────────────────────────────────── */
   :root,
   [data-theme="parchment"] {
+    color-scheme: light;
     --background: 40 47% 93%;
     --foreground: 34 26% 11%;
     --surface: 42 100% 98%;
@@ -66,6 +67,7 @@
 
   /* ── STUDY (warm dark) ────────────────────────────────────────────────── */
   [data-theme="study"] {
+    color-scheme: dark;
     --background: 27 27% 8%;
     --foreground: 38 44% 89%;
     --surface: 28 26% 11%;
@@ -90,6 +92,7 @@
 
   /* ── SAGE (calm light) ────────────────────────────────────────────────── */
   [data-theme="sage"] {
+    color-scheme: light;
     --background: 75 18% 91%;
     --foreground: 105 13% 13%;
     --surface: 75 40% 98%;
@@ -114,6 +117,7 @@
 
   /* ── DUSK (cool twilight) ─────────────────────────────────────────────── */
   [data-theme="dusk"] {
+    color-scheme: dark;
     --background: 240 15% 10%;
     --foreground: 253 21% 92%;
     --surface: 240 15% 14%;
@@ -138,6 +142,7 @@
 
   /* ── INK (true black / OLED) ──────────────────────────────────────────── */
   [data-theme="ink"] {
+    color-scheme: dark;
     --background: 30 22% 4%;
     --foreground: 40 51% 92%;
     --surface: 38 38% 6%;

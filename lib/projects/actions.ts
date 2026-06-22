@@ -19,8 +19,7 @@ async function uid() {
 }
 
 function refresh() {
-  revalidatePath("/projects");
-  revalidatePath("/tasks");
+  revalidatePath("/plan");
   revalidatePath("/today");
 }
 

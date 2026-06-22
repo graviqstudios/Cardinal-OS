@@ -42,7 +42,7 @@ export async function importTasks(titles: string[]): Promise<Result> {
   const { error } = await supabase.from("tasks").insert(rows);
   if (error) return { ok: false, error: error.message };
 
-  revalidatePath("/tasks");
+  revalidatePath("/plan");
   revalidatePath("/today");
   return { ok: true };
 }

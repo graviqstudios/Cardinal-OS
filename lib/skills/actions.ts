@@ -27,7 +27,7 @@ export async function createSkill(name: string, areaTag: string | null): Promise
     xp: 0,
   });
   if (error) return { ok: false, error: error.message };
-  revalidatePath("/goals");
+  revalidatePath("/plan");
   return { ok: true };
 }
 
@@ -56,7 +56,7 @@ export async function addXp(
     .eq("id", id);
   if (error) return { ok: false, error: error.message };
 
-  revalidatePath("/goals");
+  revalidatePath("/plan");
   return { ok: true, data: { level: newLevel, leveledUp: newLevel > oldLevel } };
 }
 
@@ -65,6 +65,6 @@ export async function deleteSkill(id: string): Promise<Result> {
   if (!userId) return { ok: false, error: "Not authenticated." };
   const { error } = await supabase.from("skills").delete().eq("id", id);
   if (error) return { ok: false, error: error.message };
-  revalidatePath("/goals");
+  revalidatePath("/plan");
   return { ok: true };
 }

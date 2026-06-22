@@ -15,7 +15,13 @@ const STEPS: Step[] = [
   {
     sel: '[data-tour="sidebar"]',
     title: "Everything in one place",
-    body: "Your areas — Today, Habits, Tasks, Journal and more — live here. Switch between them any time.",
+    body: "Your whole life in one calm place: Today, Plan, Journal, Calendar, Money and Health. Switch between them any time.",
+    placement: "right",
+  },
+  {
+    sel: 'a[href="/plan"]',
+    title: "Plan brings it together",
+    body: "Habits, tasks, projects and goals all live in Plan now. Open it and switch between them with the tabs up top.",
     placement: "right",
   },
   {
@@ -29,6 +35,12 @@ const STEPS: Step[] = [
     title: "Start with one thing",
     body: "Each day, name what matters most. We'll keep it front and centre so the rest can wait.",
     placement: "bottom",
+  },
+  {
+    sel: 'a[href="/health"]',
+    title: "Look after yourself",
+    body: "Health holds your sleep, energy, mood and hydration, movement, and a moment to breathe.",
+    placement: "right",
   },
   {
     sel: 'a[href="/journal"]',

@@ -5,6 +5,7 @@ export const runtime = "nodejs";
 const TABLES = [
   "habits", "habit_logs", "tasks", "projects", "skills", "goals", "milestones",
   "career_targets", "journal_entries", "body_metrics", "workout_logs",
+  "nutrition_logs", "period_logs",
   "focus_sessions", "events", "transactions", "budgets", "savings_goals",
   "life_scores", "constellation_messages",
 ];

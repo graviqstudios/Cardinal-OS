@@ -9,6 +9,7 @@ export type Profile = {
   exam_date: string | null; // ISO date (yyyy-mm-dd)
   accent_color: Accent | null;
   theme: Palette | null;
+  sex: "female" | "male" | "other" | null;
   exam_mode: boolean;
   tour_completed_at: string | null;
   terms_accepted_at: string | null;

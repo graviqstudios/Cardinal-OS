@@ -18,11 +18,13 @@ export function ProfileForm({
     name: string;
     exam_target: string;
     exam_date: string;
+    sex: "female" | "male" | "other" | "";
   };
   examMode: boolean;
 }) {
   const router = useRouter();
   const [name, setName] = React.useState(initial.name);
+  const [sex, setSex] = React.useState(initial.sex);
   const [examTarget, setExamTarget] = React.useState(initial.exam_target);
   const [examDate, setExamDate] = React.useState(initial.exam_date);
   const [pending, setPending] = React.useState(false);
@@ -36,6 +38,7 @@ export function ProfileForm({
     setSaved(false);
     const res = await updateProfile({
       name: name.trim() || null,
+      sex: sex || null,
       exam_target: examTarget.trim() || null,
       exam_date: examDate || null,
     });
@@ -59,6 +62,23 @@ export function ProfileForm({
           onChange={(e) => setName(e.target.value)}
           placeholder="Your name"
         />
+      </div>
+      <div className="space-y-2">
+        <Label htmlFor="sex">Gender</Label>
+        <select
+          id="sex"
+          value={sex}
+          onChange={(e) => setSex(e.target.value as typeof sex)}
+          className="flex h-10 w-full max-w-xs rounded-button border border-input bg-transparent px-3 text-sm"
+        >
+          <option value="">Prefer not to say</option>
+          <option value="female">Female</option>
+          <option value="male">Male</option>
+          <option value="other">Other</option>
+        </select>
+        <p className="text-xs text-muted-foreground">
+          Selecting female enables optional cycle tracking in Health.
+        </p>
       </div>
       {examMode && (
         <>

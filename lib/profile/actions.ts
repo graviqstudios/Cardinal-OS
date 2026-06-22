@@ -11,8 +11,11 @@ export type ProfileUpdate = {
   exam_date?: string | null;
   accent_color?: string | null;
   theme?: string | null;
+  sex?: "female" | "male" | "other" | null;
   exam_mode?: boolean;
 };
+
+const SEX_VALUES = ["female", "male", "other"] as const;
 
 export type ProfileActionResult =
   | { ok: true }
@@ -42,6 +45,9 @@ export async function updateProfile(
   }
   if (update.theme != null && !PALETTE_IDS.includes(update.theme as never)) {
     return { ok: false, error: "Invalid theme." };
+  }
+  if (update.sex != null && !SEX_VALUES.includes(update.sex)) {
+    return { ok: false, error: "Invalid value." };
   }
 
   const { error } = await supabase

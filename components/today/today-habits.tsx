@@ -34,14 +34,14 @@ export function TodayHabits({ habits }: { habits: HabitWithToday[] }) {
           <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
             Today&apos;s habits
           </p>
-          <Link href="/habits" className="text-xs font-medium text-primary hover:underline">
+          <Link href="/plan?tab=habits" className="text-xs font-medium text-primary hover:underline">
             Manage
           </Link>
         </div>
 
         {habits.length === 0 ? (
           <Link
-            href="/habits"
+            href="/plan?tab=habits"
             className="flex items-center gap-2 rounded-button border border-dashed p-3 text-sm text-muted-foreground hover:bg-accent"
           >
             <Plus className="h-4 w-4" /> Add your first habit
