@@ -112,7 +112,10 @@ export default async function TodayPage() {
         <div className="space-y-6">
           <TodayHabits habits={habits} />
           <TodayTasks tasks={tasks} />
-          <FocusTimer />
+          <FocusTimer
+            tasks={tasks.map((t) => ({ id: t.id, name: t.title }))}
+            habits={habits.map((h) => ({ id: h.id, name: h.name }))}
+          />
         </div>
       </div>
 

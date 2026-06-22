@@ -86,7 +86,10 @@ export async function deleteWorkout(id: string): Promise<Result> {
 export async function logFocusSession(input: {
   duration_minutes: number;
   note?: string | null;
+  title?: string | null;
+  description?: string | null;
   task_id?: string | null;
+  habit_id?: string | null;
 }): Promise<Result> {
   const { supabase, userId } = await uid();
   if (!userId) return { ok: false, error: "Not authenticated." };
@@ -95,7 +98,10 @@ export async function logFocusSession(input: {
     user_id: userId,
     duration_minutes: input.duration_minutes,
     note: input.note ?? null,
+    title: input.title?.trim() || null,
+    description: input.description?.trim() || null,
     task_id: input.task_id ?? null,
+    habit_id: input.habit_id ?? null,
     completed: true,
   });
   if (error) return { ok: false, error: error.message };

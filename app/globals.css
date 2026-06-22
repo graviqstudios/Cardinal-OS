@@ -236,3 +236,9 @@ html.theme-transition *::after {
     -webkit-backdrop-filter: blur(14px) saturate(1.2);
   }
 }
+
+/* ── Focus-mode breathing pacer (in 4s, out 4s). Honors reduced motion. ────── */
+@keyframes co-breathe {
+  0%, 100% { transform: scale(0.92); opacity: 0.5; }
+  50% { transform: scale(1.12); opacity: 1; }
+}
