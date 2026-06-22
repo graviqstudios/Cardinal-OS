@@ -20,6 +20,7 @@ import { FocusTimer } from "@/components/body/focus-timer";
 import { DailyReflection } from "@/components/today/daily-reflection";
 import { QuickCapture } from "@/components/today/quick-capture";
 import { ProductTour } from "@/components/tour/product-tour";
+import { WhatsNew } from "@/components/tour/whats-new";
 
 export default async function TodayPage() {
   const supabase = await createClient();
@@ -47,6 +48,11 @@ export default async function TodayPage() {
       getTodayReflection(),
       getInsights(),
     ]);
+
+  // First-run users get the full guided tour; returning users who predate this
+  // tour version get a calm, dismissable "what's new" banner instead.
+  const needsTour = (profile?.tour_version ?? 0) < TOUR_VERSION;
+  const isNewUser = !profile?.tour_completed_at;
 
   const name = profile?.name?.trim() || profile?.email?.split("@")[0] || "there";
   const dateLabel = now.toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric" });
@@ -83,10 +89,9 @@ export default async function TodayPage() {
   return (
     <div className="space-y-6">
       <LifeScoreRecorder />
-      <ProductTour
-        run={(profile?.tour_version ?? 0) < TOUR_VERSION}
-        returning={Boolean(profile?.tour_completed_at)}
-      />
+      {needsTour && (isNewUser
+        ? <ProductTour run returning={false} onceKey={`co-tour-${TOUR_VERSION}`} />
+        : <WhatsNew version={TOUR_VERSION} />)}
 
       {/* Greeting + daily message + intention */}
       <header className="space-y-3">

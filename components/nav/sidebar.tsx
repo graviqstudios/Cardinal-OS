@@ -189,7 +189,7 @@ function NavList({
     ? NAV_ITEMS
     : NAV_ITEMS.filter((item) => !item.examOnly);
   return (
-    <nav className={cn("space-y-1 overflow-y-auto", className)}>
+    <nav className={cn("space-y-1.5 overflow-y-auto", className)}>
       {items.map((item) => (
         <NavRow
           key={item.href}
@@ -222,9 +222,9 @@ function NavRow({
         // Module marks carry ~20% internal clear space, so scale them up to read
         // at the same visual weight as the full-bleed lucide icons beside them.
         // eslint-disable-next-line @next/next/no-img-element
-        <img src={item.mark} alt="" className="h-4 w-4 shrink-0 scale-[1.45]" />
+        <img src={item.mark} alt="" className="h-5 w-5 shrink-0 scale-[1.45]" />
       ) : (
-        <Icon className="h-4 w-4 shrink-0" style={iconStyle} />
+        <Icon className="h-5 w-5 shrink-0" style={iconStyle} />
       )}
       {!collapsed && (
         <>
@@ -240,8 +240,8 @@ function NavRow({
   );
 
   const base = cn(
-    "flex items-center rounded-md text-sm font-medium transition-colors",
-    collapsed ? "justify-center p-2.5" : "gap-3 px-3 py-2",
+    "flex items-center rounded-md text-[15px] font-medium transition-colors",
+    collapsed ? "justify-center p-3" : "gap-3 px-3 py-2.5",
   );
 
   if (!item.enabled) {

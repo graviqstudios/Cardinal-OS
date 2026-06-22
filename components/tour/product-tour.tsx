@@ -59,7 +59,17 @@ const STEPS: Step[] = [
 const POP_W = 300;
 const PAD = 8; // spotlight padding around the target
 
-export function ProductTour({ run, returning = false }: { run: boolean; returning?: boolean }) {
+export function ProductTour({
+  run,
+  returning = false,
+  onceKey,
+}: {
+  run: boolean;
+  returning?: boolean;
+  /** If set, the tour shows at most once per device for this key (survives a DB
+   *  write that can't persist, e.g. before a pending migration is applied). */
+  onceKey?: string;
+}) {
   const [mounted, setMounted] = React.useState(false);
   const [steps, setSteps] = React.useState<Step[]>([]);
   const [i, setI] = React.useState(0);
@@ -67,6 +77,14 @@ export function ProductTour({ run, returning = false }: { run: boolean; returnin
   const [done, setDone] = React.useState(!run);
 
   React.useEffect(() => setMounted(true), []);
+
+  // Honour the per-device "already shown" guard before doing anything else.
+  React.useEffect(() => {
+    if (!onceKey) return;
+    try {
+      if (localStorage.getItem(onceKey)) setDone(true);
+    } catch { /* ignore */ }
+  }, [onceKey]);
 
   // Collect only the steps whose target is actually present and visible.
   React.useEffect(() => {
@@ -113,6 +131,11 @@ export function ProductTour({ run, returning = false }: { run: boolean; returnin
 
   async function finish() {
     setDone(true);
+    if (onceKey) {
+      try {
+        localStorage.setItem(onceKey, "1");
+      } catch { /* ignore */ }
+    }
     await completeTour();
   }
   function next() {

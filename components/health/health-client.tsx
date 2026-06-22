@@ -236,11 +236,12 @@ function Hydration({ today }: { today: BodyOverview["today"] }) {
   const glasses = Math.round(ml / GLASS_ML);
   const goalGlasses = Math.round(HYDRATION_GOAL_ML / GLASS_ML);
   const progress = Math.min(1, ml / HYDRATION_GOAL_ML);
-  const size = 132;
+  const reached = ml >= HYDRATION_GOAL_ML;
+  const size = 156;
 
   return (
     <Card className="h-full">
-      <CardContent className="flex h-full flex-col items-center gap-4 p-6">
+      <CardContent className="flex h-full flex-col items-center gap-5 p-6">
         <div className="flex w-full items-center justify-between">
           <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
             Hydration
@@ -252,17 +253,35 @@ function Hydration({ today }: { today: BodyOverview["today"] }) {
           <svg width={size} height={size} viewBox="0 0 140 140" fill="none">
             <circle cx="70" cy="70" r="60" stroke="hsl(var(--muted))" strokeWidth={8} />
             <circle
-              cx="70" cy="70" r="60" stroke="hsl(var(--module-calendar))" strokeWidth={8} strokeLinecap="round"
+              cx="70" cy="70" r="60" stroke="hsl(var(--module-study))" strokeWidth={8} strokeLinecap="round"
               pathLength={1000} strokeDasharray={`${Math.round(progress * 1000)} 1000`}
               transform="rotate(-90 70 70)" style={{ transition: "stroke-dasharray .5s cubic-bezier(0.2,0,0,1)" }}
             />
           </svg>
           <div className="absolute inset-0 flex flex-col items-center justify-center">
-            <Droplet className="h-5 w-5" style={{ color: "hsl(var(--module-calendar))" }} />
-            <div className="mt-1 font-serif text-2xl tabular-nums leading-none">{glasses}</div>
+            <Droplet className="h-6 w-6" style={{ color: "hsl(var(--module-study))" }} />
+            <div className="mt-1 font-serif text-3xl tabular-nums leading-none">{glasses}</div>
             <div className="text-[10px] uppercase tracking-[0.16em] text-muted-foreground">of {goalGlasses} glasses</div>
           </div>
         </div>
+
+        {/* Glass pips: fill horizontal/vertical space and read at a glance. */}
+        <div className="flex w-full flex-wrap items-center justify-center gap-2">
+          {Array.from({ length: goalGlasses }, (_, idx) => (
+            <Droplet
+              key={idx}
+              className="h-5 w-5 transition-colors"
+              style={{
+                color: idx < glasses ? "hsl(var(--module-study))" : "hsl(var(--muted-foreground) / 0.3)",
+                fill: idx < glasses ? "hsl(var(--module-study) / 0.18)" : "transparent",
+              }}
+            />
+          ))}
+        </div>
+
+        <p className="text-center text-xs text-muted-foreground">
+          {reached ? "Goal reached — nicely done." : `${((HYDRATION_GOAL_ML - ml) / 1000).toFixed(2)}L to go today.`}
+        </p>
 
         <div className="mt-auto flex items-center gap-2">
           <Tap className="inline-flex">
