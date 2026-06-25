@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <!-- Cardinal needle, parchment-on-red, sized to the adaptive-icon safe zone -->
+  <g transform="translate(112,112) scale(8)">
+    <path d="M50 20 L60 55 L40 55 Z" fill="#FBF5EA"/>
+    <path d="M50 80 L60 55 L40 55 Z" fill="#FBF5EA" fill-opacity="0.55"/>
+  </g>
+</svg>

@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2732" height="2732" viewBox="0 0 2732 2732">
+  <rect width="2732" height="2732" fill="#F5EFE3"/>
+  <!-- Centered needle mark (cardinal red over warm stone) -->
+  <g transform="translate(866,906) scale(10)">
+    <path d="M50 6 L61 53 L39 53 Z" fill="#CB4B33"/>
+    <path d="M50 86 L61 53 L39 53 Z" fill="#C9BBA3"/>
+  </g>
+</svg>
