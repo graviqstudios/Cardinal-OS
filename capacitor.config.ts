@@ -16,7 +16,11 @@ import type { CapacitorConfig } from "@capacitor/cli";
  * For local testing against a LAN dev server, set CAP_SERVER_URL before
  * `npx cap sync` (e.g. http://192.168.x.x:3000) and CAP_SERVER_CLEARTEXT=true.
  */
-const serverUrl = process.env.CAP_SERVER_URL ?? "https://cardinalos.graviq.in";
+// The app opens straight into the product, never the marketing landing page:
+// the start URL is the dashboard (`/today`). Middleware then routes by auth —
+// signed-in users see the dashboard, signed-out users are sent to /login.
+const serverHost = process.env.CAP_SERVER_URL ?? "https://cardinalos.graviq.in";
+const serverUrl = `${serverHost.replace(/\/$/, "")}/today`;
 const cleartext = process.env.CAP_SERVER_CLEARTEXT === "true";
 
 const config: CapacitorConfig = {
