@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Cardinal OS</string>
+    <string name="title_activity_main">Cardinal OS</string>
+    <string name="package_name">cardinal.os</string>
+    <string name="custom_url_scheme">cardinal.os</string>
+</resources>

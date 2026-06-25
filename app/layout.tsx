@@ -5,6 +5,7 @@ import "@/Design/tokens.css";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme/theme-provider";
 import { ThemeScript } from "@/components/theme/theme-script";
+import { NativeBootstrap } from "@/components/native/native-bootstrap";
 import { createClient } from "@/lib/supabase/server";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/site";
 import {
@@ -128,6 +129,7 @@ export default async function RootLayout({
       </head>
       <body className="min-h-dvh bg-background font-sans text-foreground antialiased">
         <ThemeProvider initialPalette={initialPalette} initialAccent={initialAccent}>
+          <NativeBootstrap />
           {children}
         </ThemeProvider>
         <Analytics />

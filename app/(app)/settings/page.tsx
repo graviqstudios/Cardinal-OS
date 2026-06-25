@@ -7,6 +7,7 @@ import { ThemeControls } from "@/components/theme/theme-controls";
 import { ProfileForm } from "@/components/settings/profile-form";
 import { ExamModeToggle } from "@/components/settings/exam-mode-toggle";
 import { AccountActions } from "@/components/settings/account-actions";
+import { ChangePassword } from "@/components/settings/change-password";
 import { PageHeader } from "@/components/shell/page-header";
 
 export default async function SettingsPage() {
@@ -76,6 +77,15 @@ export default async function SettingsPage() {
           <a href="/terms" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
             Terms &amp; Conditions
           </a>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Password</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <ChangePassword email={user!.email!} />
         </CardContent>
       </Card>
 

@@ -5,6 +5,7 @@ export type Profile = {
   id: string;
   email: string;
   name: string | null;
+  username: string | null;
   exam_target: string | null;
   exam_date: string | null; // ISO date (yyyy-mm-dd)
   accent_color: Accent | null;

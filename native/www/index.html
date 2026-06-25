@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Cardinal OS</title>
+    <style>
+      /* Brand parchment surface + cardinal accent. Mirrors Design/tokens.css;
+         this page never loads the app CSS, so the few values are inlined. */
+      :root { color-scheme: light; }
+      html, body {
+        margin: 0; height: 100%;
+        background: #F4ECE0; color: #2A2521;
+        font-family: -apple-system, "Segoe UI", Roboto, sans-serif;
+        display: grid; place-items: center; text-align: center;
+        padding: 24px; box-sizing: border-box;
+      }
+      .mark { width: 40px; height: 40px; margin: 0 auto 20px; }
+      h1 { font-family: Georgia, "Times New Roman", serif; font-weight: 400; font-size: 28px; margin: 0 0 8px; }
+      p { color: #6B625A; font-size: 15px; line-height: 1.5; max-width: 22rem; margin: 0 auto 24px; }
+      button {
+        font: inherit; font-size: 15px; color: #fff; background: #CB4B33;
+        border: 0; border-radius: 12px; padding: 12px 22px; cursor: pointer;
+      }
+      button:active { opacity: .85; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <svg class="mark" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M12 2 L15 11 L12 22 L9 11 Z" fill="#CB4B33" />
+      </svg>
+      <h1>Cardinal OS</h1>
+      <p>You're offline. Reconnect to pick up right where you left off.</p>
+      <button onclick="location.reload()">Try again</button>
+    </main>
+  </body>
+</html>

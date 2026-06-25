@@ -4,7 +4,7 @@ import { createServerClient, type CookieOptions } from "@supabase/ssr";
 type CookieToSet = { name: string; value: string; options: CookieOptions };
 
 /** Routes that are reachable without an authenticated session. */
-const PUBLIC_PATHS = ["/login", "/signup", "/auth", "/api", "/privacy", "/terms"];
+const PUBLIC_PATHS = ["/login", "/signup", "/forgot-password", "/reset-password", "/auth", "/api", "/privacy", "/terms"];
 
 /** SEO/crawler files that must be served to unauthenticated bots, never gated. */
 const PUBLIC_FILES = new Set(["/robots.txt", "/sitemap.xml", "/opengraph-image", "/manifest.webmanifest"]);

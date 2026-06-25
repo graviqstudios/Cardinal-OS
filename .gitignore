@@ -30,3 +30,17 @@ yarn-error.log*
 
 # vercel
 .vercel
+
+# capacitor / android native build artifacts
+/android/.gradle/
+/android/build/
+/android/app/build/
+/android/capacitor-cordova-android-plugins/
+/android/local.properties
+/android/.idea/
+/android/app/release/
+*.keystore
+*.jks
+keystore.properties
+# FCM service account / config — never commit
+android/app/google-services.json

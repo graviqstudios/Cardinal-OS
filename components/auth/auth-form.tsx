@@ -3,7 +3,7 @@
 import * as React from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { Loader2 } from "lucide-react";
+import { Check, Loader2, X } from "lucide-react";
 
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -13,13 +13,18 @@ import { Tap } from "@/components/motion/tap";
 
 type Mode = "login" | "signup";
 
+/** Allowed username shape: 3–20 chars, letters/numbers/underscore. */
+const USERNAME_RE = /^[a-zA-Z0-9_]{3,20}$/;
+
 export function AuthForm({ mode }: { mode: Mode }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const supabase = React.useMemo(() => createClient(), []);
 
+  const [username, setUsername] = React.useState("");
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
+  const [confirm, setConfirm] = React.useState("");
   const [pending, setPending] = React.useState(false);
   const [googlePending, setGooglePending] = React.useState(false);
   const [error, setError] = React.useState<string | null>(
@@ -27,12 +32,54 @@ export function AuthForm({ mode }: { mode: Mode }) {
   );
   const [notice, setNotice] = React.useState<string | null>(null);
 
+  // Live username availability (signup only): null = unknown/checking handled
+  // separately; true/false once a verdict lands.
+  const [checking, setChecking] = React.useState(false);
+  const [available, setAvailable] = React.useState<boolean | null>(null);
+
   const isSignup = mode === "signup";
+  const usernameValid = USERNAME_RE.test(username);
+
+  // Debounced availability check against the SECURITY DEFINER RPC.
+  React.useEffect(() => {
+    if (!isSignup) return;
+    if (!usernameValid) {
+      setAvailable(null);
+      setChecking(false);
+      return;
+    }
+    setChecking(true);
+    const handle = setTimeout(async () => {
+      const { data, error } = await supabase.rpc("is_username_available", {
+        candidate: username,
+      });
+      // On RPC error, don't block the user — the unique index is the backstop.
+      setAvailable(error ? null : Boolean(data));
+      setChecking(false);
+    }, 400);
+    return () => clearTimeout(handle);
+  }, [username, usernameValid, isSignup, supabase]);
 
   async function handleEmail(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
     setNotice(null);
+
+    if (isSignup) {
+      if (!usernameValid) {
+        setError("Pick a name 3–20 characters: letters, numbers, or underscores.");
+        return;
+      }
+      if (available === false) {
+        setError("That name is taken. Try another.");
+        return;
+      }
+      if (password !== confirm) {
+        setError("Passwords don't match.");
+        return;
+      }
+    }
+
     setPending(true);
     try {
       if (isSignup) {
@@ -41,6 +88,7 @@ export function AuthForm({ mode }: { mode: Mode }) {
           password,
           options: {
             emailRedirectTo: `${window.location.origin}/auth/callback`,
+            data: { username },
           },
         });
         if (error) throw error;
@@ -115,6 +163,43 @@ export function AuthForm({ mode }: { mode: Mode }) {
       </div>
 
       <form onSubmit={handleEmail} className="space-y-4">
+        {isSignup && (
+          <div className="space-y-2">
+            <Label htmlFor="username">What should I call you?</Label>
+            <div className="relative">
+              <Input
+                id="username"
+                type="text"
+                autoComplete="username"
+                placeholder="e.g. cardinal_fan"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                aria-invalid={username.length > 0 && !usernameValid}
+                required
+              />
+              {username.length > 0 && usernameValid && (
+                <span className="absolute right-3 top-1/2 -translate-y-1/2">
+                  {checking ? (
+                    <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+                  ) : available === true ? (
+                    <Check className="h-4 w-4 text-emerald-600" />
+                  ) : available === false ? (
+                    <X className="h-4 w-4 text-destructive" />
+                  ) : null}
+                </span>
+              )}
+            </div>
+            {username.length > 0 && !usernameValid && (
+              <p className="text-xs text-muted-foreground">
+                3–20 characters: letters, numbers, or underscores.
+              </p>
+            )}
+            {available === false && (
+              <p className="text-xs text-destructive">That name is taken.</p>
+            )}
+          </div>
+        )}
+
         <div className="space-y-2">
           <Label htmlFor="email">Email</Label>
           <Input
@@ -128,7 +213,17 @@ export function AuthForm({ mode }: { mode: Mode }) {
           />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="password">Password</Label>
+          <div className="flex items-center justify-between">
+            <Label htmlFor="password">Password</Label>
+            {!isSignup && (
+              <Link
+                href="/forgot-password"
+                className="text-xs font-medium text-muted-foreground hover:text-primary hover:underline"
+              >
+                Forgot password?
+              </Link>
+            )}
+          </div>
           <Input
             id="password"
             type="password"
@@ -140,6 +235,26 @@ export function AuthForm({ mode }: { mode: Mode }) {
             required
           />
         </div>
+
+        {isSignup && (
+          <div className="space-y-2">
+            <Label htmlFor="confirm">Verify password</Label>
+            <Input
+              id="confirm"
+              type="password"
+              autoComplete="new-password"
+              placeholder="••••••••"
+              value={confirm}
+              onChange={(e) => setConfirm(e.target.value)}
+              aria-invalid={confirm.length > 0 && confirm !== password}
+              minLength={6}
+              required
+            />
+            {confirm.length > 0 && confirm !== password && (
+              <p className="text-xs text-destructive">Passwords don&apos;t match.</p>
+            )}
+          </div>
+        )}
 
         {error && <p className="text-sm text-destructive">{error}</p>}
         {notice && <p className="text-sm text-muted-foreground">{notice}</p>}
