@@ -6,6 +6,8 @@ import Link from "next/link";
 import { Check, Loader2, X } from "lucide-react";
 
 import { createClient } from "@/lib/supabase/client";
+import { isNative } from "@/lib/native";
+import { signInWithGoogleNative } from "@/lib/native/google-auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -120,6 +122,16 @@ export function AuthForm({ mode }: { mode: Mode }) {
     setError(null);
     setGooglePending(true);
     try {
+      // Inside the native app, Google blocks the embedded-WebView redirect, so
+      // always use the native credential picker (which shows a friendly message
+      // if the app's Google client id isn't configured yet) and exchange the ID
+      // token for a session — never the broken web redirect.
+      if (isNative()) {
+        await signInWithGoogleNative();
+        router.push(searchParams.get("redirectedFrom") ?? "/today");
+        router.refresh();
+        return;
+      }
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {

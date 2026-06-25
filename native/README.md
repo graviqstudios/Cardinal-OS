@@ -57,6 +57,31 @@ npm run cap:run
    ```
 4. Upload the `.aab` in Google Play Console.
 
+## Google sign-in setup (one-time, required for the in-app Google button)
+
+Google blocks OAuth inside embedded WebViews, so the app uses the native Google
+credential picker (@capgo/capacitor-social-login) → a Google ID token →
+Supabase `signInWithIdToken`. For Google to issue that token it must recognise
+the app's package + signing certificate. Do this once:
+
+1. **Google Cloud Console** (same project as the existing web Google login) →
+   APIs & Services → Credentials → Create credentials → OAuth client ID:
+   - Application type: **Android**
+   - Package name: `cardinal.os`
+   - SHA-1: **`4A:5D:EF:59:72:8F:19:45:73:3C:3D:C1:B7:82:37:9D:AC:77:26:FD`**
+     (this is the *debug* key, for testing. For the Play release you'll also add
+     the **Play app-signing SHA-1** from Play Console once the app is uploaded.)
+2. Copy your existing **Web** OAuth client id (`…apps.googleusercontent.com`).
+3. **Supabase** → Authentication → Providers → Google → add that Web client id to
+   **Authorized Client IDs** (comma-separated) so `signInWithIdToken` accepts it.
+4. **Vercel** → Project → Settings → Environment Variables → add
+   `NEXT_PUBLIC_GOOGLE_WEB_CLIENT_ID` = the Web client id, then redeploy. (Also
+   put it in local `.env.local` for browser testing.)
+
+Until step 4's env var is deployed, the in-app Google button shows a friendly
+"Google sign-in isn't configured for the app yet" message and email/password
+still works. The web Google button is unaffected throughout.
+
 ## Still TODO (tracked, done after Android Studio is installed)
 
 - Push notifications: `android/app/google-services.json` from a Firebase project,
