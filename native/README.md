@@ -82,6 +82,27 @@ Until step 4's env var is deployed, the in-app Google button shows a friendly
 "Google sign-in isn't configured for the app yet" message and email/password
 still works. The web Google button is unaffected throughout.
 
+## Push notifications setup (one-time)
+
+Device side uses @capacitor/push-notifications (FCM); server side sends via the
+FCM HTTP v1 API. The Gradle wiring (google-services plugin, applied only when the
+JSON exists) is already in place. To turn it on:
+
+1. **Firebase console** → create/select a project → add an **Android app** with
+   package name `cardinal.os`. Download **`google-services.json`** and place it at
+   **`android/app/google-services.json`** (gitignored). Rebuild the app.
+2. **Run migration `0026_device_tokens.sql`** in Supabase (stores FCM tokens).
+3. **Service account for sending:** Firebase console → Project settings →
+   Service accounts → Generate new private key. Put the whole JSON (stringified)
+   in **`FIREBASE_SERVICE_ACCOUNT`** in Vercel (and `.env.local` for local).
+4. Registration happens automatically: `components/native/push-registrar.tsx`
+   (mounted in the authenticated layout) calls `registerPush()`, which prompts
+   for permission and POSTs the token to `/api/push/register`.
+5. Send from any server job with `sendPushToUser(userId, { title, body })` from
+   `lib/push/send.ts` (no-ops cleanly until the service account is set).
+
+Until steps 1–3 are done, the app simply won't receive pushes; nothing breaks.
+
 ## Still TODO (tracked, done after Android Studio is installed)
 
 - Push notifications: `android/app/google-services.json` from a Firebase project,

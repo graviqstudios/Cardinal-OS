@@ -9,6 +9,7 @@ import { Sidebar } from "@/components/nav/sidebar";
 import { AppHeader } from "@/components/shell/app-header";
 import { Aurora } from "@/components/shell/aurora";
 import { ConsentGate } from "@/components/legal/consent-gate";
+import { PushRegistrar } from "@/components/native/push-registrar";
 import { PageTransition } from "@/components/motion/page-transition";
 
 export default async function AppLayout({
@@ -62,6 +63,7 @@ export default async function AppLayout({
   return (
     <>
       {needsConsent && <ConsentGate />}
+      <PushRegistrar />
       <Aurora />
       <div className="relative z-10 flex min-h-dvh flex-col md:flex-row">
       <Sidebar
