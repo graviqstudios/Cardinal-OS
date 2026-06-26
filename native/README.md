@@ -106,9 +106,13 @@ JSON exists) is already in place. To turn it on:
 3. **Service account for sending:** Firebase console → Project settings →
    Service accounts → Generate new private key. Put the whole JSON (stringified)
    in **`FIREBASE_SERVICE_ACCOUNT`** in Vercel (and `.env.local` for local).
-4. Registration happens automatically: `components/native/push-registrar.tsx`
-   (mounted in the authenticated layout) calls `registerPush()`, which prompts
-   for permission and POSTs the token to `/api/push/register`.
+4. **Set `NEXT_PUBLIC_PUSH_ENABLED=true` in Vercel and redeploy** — ONLY after
+   steps 1–3 and a rebuilt APK that contains google-services.json. Until then,
+   leave it unset: calling the native `register()` without Firebase configured
+   throws "Default FirebaseApp is not initialized" and crashes the app (a native
+   crash a JS try/catch can't stop). Registration happens via
+   `components/native/push-registrar.tsx` (mounted in the authenticated layout),
+   which prompts for permission and POSTs the token to `/api/push/register`.
 5. Send from any server job with `sendPushToUser(userId, { title, body })` from
    `lib/push/send.ts` (no-ops cleanly until the service account is set).
 
