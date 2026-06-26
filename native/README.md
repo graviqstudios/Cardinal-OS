@@ -39,23 +39,34 @@ npm run cap:run
 
 ## Release build (Play Store)
 
-1. Generate an upload keystore (keep it safe — losing it means you can't update the app):
-   ```bash
-   keytool -genkey -v -keystore cardinal-upload.jks -keyalg RSA -keysize 2048 -validity 10000 -alias cardinal
-   ```
-2. Put credentials in `android/keystore.properties` (gitignored):
-   ```
-   storeFile=../cardinal-upload.jks
-   storePassword=...
-   keyAlias=cardinal
-   keyPassword=...
-   ```
-   (Signing wiring in `android/app/build.gradle` is added as part of the release step.)
-3. Build the bundle:
-   ```bash
-   npm run android:bundle   # → android/app/build/outputs/bundle/release/app-release.aab
-   ```
-4. Upload the `.aab` in Google Play Console.
+The upload keystore (`android/cardinal-upload.jks`) and `android/keystore.properties`
+already exist and are **gitignored**. ⚠️ **Back both up** (password manager) — they
+sign every update. With Play App Signing on, the upload key is recoverable if lost.
+
+Build the signed bundle:
+```bash
+npm run android:bundle   # → android/app/build/outputs/bundle/release/app-release.aab
+```
+
+### Upload key fingerprints (register these in Google Cloud for release Google sign-in)
+- SHA-1: `83:85:8B:42:82:3B:0A:0D:8A:02:FC:CB:74:FE:59:25:BF:E7:05:C8`
+- SHA-256: `01:EE:B4:38:DD:19:2E:06:03:32:E7:2A:29:21:4F:EA:82:CA:83:ED:7A:12:F5:B0:45:D4:62:28:EE:F0:1E:2F`
+
+NOTE: with **Play App Signing**, the cert that signs what users install is held by
+Google. After your first upload, copy the **app-signing SHA-1** from Play Console →
+Setup → App signing, and add THAT to the Google Cloud Android OAuth client too, or
+Google sign-in won't work for the Play-distributed build.
+
+### Publishing (your steps — needs a Play Console account, $25 one-time)
+1. Create the app in **Play Console**, package `cardinal.os`.
+2. Upload `app-release.aab` to a testing track (Internal testing first).
+3. Listing: use `native/store/listing.md` (copy) + `native/store/icon-512.png`
+   (app icon) + `native/store/feature-graphic.png` (feature graphic).
+4. **Phone screenshots:** capture 2–8 from the app on your phone while signed in
+   (dashboard, today, habits, money…). With the device connected:
+   `adb -s <device> exec-out screencap -p > shot1.png`
+5. Complete the Data safety form, content rating, and target audience, then roll
+   out to testers → production.
 
 ## Google sign-in setup (one-time, required for the in-app Google button)
 
