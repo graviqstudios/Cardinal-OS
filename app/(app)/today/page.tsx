@@ -6,6 +6,7 @@ import { getLifeScoreSnapshot } from "@/lib/life-score/service";
 import { getHabitsWithToday } from "@/lib/habits/queries";
 import { getTodayTasks } from "@/lib/tasks/queries";
 import { getEvents } from "@/lib/calendar/queries";
+import { hasSubmittedFeedback } from "@/lib/feedback/queries";
 import { buildGreeting } from "@/lib/today/greeting";
 import { TOUR_VERSION } from "@/lib/tour/version";
 import { LifeScoreRecorder } from "@/components/life-score/life-score-recorder";
@@ -28,11 +29,13 @@ export default async function TodayPage() {
   const supabase = await createClient();
 
   // Established users (account ≥ 4 days old) get a one-time, dismissable
-  // feedback nudge. New users are left alone until they've lived in the app.
+  // feedback nudge — but never if they've already submitted feedback (checked
+  // server-side so it stays hidden across every device, not just this one).
   const accountAgeDays = user?.created_at
     ? (Date.now() - new Date(user.created_at).getTime()) / 86_400_000
     : 0;
-  const feedbackEligible = accountAgeDays >= 4;
+  const feedbackEligible =
+    accountAgeDays >= 4 ? !(await hasSubmittedFeedback()) : false;
 
   const now = new Date();
   const dayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString();
