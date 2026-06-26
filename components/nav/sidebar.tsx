@@ -152,7 +152,7 @@ function MobileDrawer({
             exit={reduceMotion ? { opacity: 0 } : { x: "-100%" }}
             transition={{ duration: DURATION.slow, ease: EASE_OUT }}
           >
-            <div className="flex h-14 items-center justify-between px-5">
+            <div className="flex h-[calc(3.5rem+env(safe-area-inset-top))] items-center justify-between px-5 pt-[env(safe-area-inset-top)]">
               <Brand />
               <Tap className="inline-flex">
                 <Button
