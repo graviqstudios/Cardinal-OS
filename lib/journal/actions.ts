@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 
-import { createClient } from "@/lib/supabase/server";
+import { createClient, getUser } from "@/lib/supabase/server";
 import { reindexJournalEntry } from "@/lib/journal/embed";
 import type { JournalType } from "@/lib/journal/types";
 
@@ -20,12 +20,10 @@ export async function saveDailyReflection(input: {
   content: string;
   mood: number | null;
 }): Promise<Result> {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getUser();
   if (!user) return { ok: false, error: "Not authenticated." };
 
+  const supabase = await createClient();
   const day = todayKey();
   const content = input.content.trim() || null;
   const mood = input.mood ?? null;
@@ -72,9 +70,7 @@ export async function createEntry(input: {
   date: string | null;
 }): Promise<Result<{ id: string }>> {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getUser();
   if (!user) return { ok: false, error: "Not authenticated." };
 
   const type = VALID_TYPES.includes(input.type) ? input.type : "note";
@@ -109,9 +105,7 @@ export async function updateEntry(
   input: { title: string | null; content: string; mood: number | null },
 ): Promise<Result> {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getUser();
   if (!user) return { ok: false, error: "Not authenticated." };
 
   const { error } = await supabase
@@ -134,9 +128,7 @@ export async function updateEntry(
 /** Delete a journal entry. */
 export async function deleteEntry(id: string): Promise<Result> {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getUser();
   if (!user) return { ok: false, error: "Not authenticated." };
 
   const { error } = await supabase

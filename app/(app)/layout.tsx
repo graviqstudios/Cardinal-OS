@@ -1,7 +1,7 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
-import { createClient } from "@/lib/supabase/server";
+import { createClient, getUser } from "@/lib/supabase/server";
 import { isOnboarded, type Profile } from "@/lib/types";
 import { LEGAL } from "@/lib/legal/content";
 import { getLifeScoreSnapshot } from "@/lib/life-score/service";
@@ -19,19 +19,20 @@ export default async function AppLayout({
   children: React.ReactNode;
 }) {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getUser();
 
   if (!user) redirect("/login");
 
-  const { data: profile } = await supabase
-    .from("users")
-    .select("*")
-    .eq("id", user.id)
-    .single<Profile>();
+  // Profile, the request pathname, and the Life Score all fetch in parallel.
+  // The score feeds the header on every normal page; computing it alongside the
+  // profile removes a serial round-trip from each navigation. (On the rare
+  // onboarding early-return path it goes unused, which is an acceptable trade.)
+  const [{ data: profile }, pathname, life] = await Promise.all([
+    supabase.from("users").select("*").eq("id", user.id).single<Profile>(),
+    headers().then((h) => h.get("x-pathname") ?? ""),
+    getLifeScoreSnapshot(),
+  ]);
 
-  const pathname = (await headers()).get("x-pathname") ?? "";
   const onOnboarding = pathname.startsWith("/onboarding");
   const onboarded = profile ? isOnboarded(profile) : false;
 
@@ -59,8 +60,6 @@ export default async function AppLayout({
 
   const displayName =
     profile?.name?.trim() || user.email?.split("@")[0] || "there";
-
-  const life = await getLifeScoreSnapshot();
 
   return (
     <>

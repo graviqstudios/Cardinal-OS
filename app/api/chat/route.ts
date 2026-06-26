@@ -1,6 +1,6 @@
 import { convertToCoreMessages, streamText } from "ai";
 
-import { createClient } from "@/lib/supabase/server";
+import { createClient, getUser } from "@/lib/supabase/server";
 import { chatModel } from "@/lib/ai/models";
 import { CHAT_SYSTEM, ragContext } from "@/lib/ai/prompts";
 import { embedQuery } from "@/lib/ai/embeddings";
@@ -12,9 +12,7 @@ export const maxDuration = 30;
 
 export async function POST(req: Request) {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getUser();
   if (!user) return new Response("Unauthorized", { status: 401 });
 
   const rl = await checkRateLimit(user.id, "chat");

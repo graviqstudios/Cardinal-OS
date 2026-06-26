@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { generateObject } from "ai";
 import { z } from "zod";
 
-import { createClient } from "@/lib/supabase/server";
+import { createClient, getUser } from "@/lib/supabase/server";
 import { isMockAI, liteModel } from "@/lib/ai/models";
 import type { ProjectStatus } from "@/lib/projects/types";
 
@@ -12,9 +12,7 @@ type Result<T = void> = { ok: true; data?: T } | { ok: false; error: string };
 
 async function uid() {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getUser();
   return { supabase, userId: user?.id ?? null };
 }
 

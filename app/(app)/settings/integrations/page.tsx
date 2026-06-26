@@ -1,6 +1,6 @@
 import { Plug } from "lucide-react";
 
-import { createClient } from "@/lib/supabase/server";
+import { createClient, getUser } from "@/lib/supabase/server";
 import { PROVIDERS } from "@/lib/integrations/registry";
 import { isProviderConfigured, hasEncryptionKey } from "@/lib/integrations/config";
 import { getConnections } from "@/lib/integrations/queries";
@@ -11,10 +11,8 @@ export default async function IntegrationsPage() {
   const connections = await getConnections();
   const encKey = hasEncryptionKey();
 
+  const user = await getUser();
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
   const { data: profile } = user
     ? await supabase
         .from("users")

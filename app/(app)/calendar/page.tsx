@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 
-import { createClient } from "@/lib/supabase/server";
+import { createClient, getUser } from "@/lib/supabase/server";
 import { getEvents } from "@/lib/calendar/queries";
 import { isProviderConfigured, hasEncryptionKey } from "@/lib/integrations/config";
 import { isoDate, parseLocalDate, rangeForView } from "@/lib/calendar/dates";
@@ -23,10 +23,8 @@ export default async function CalendarPage({
   const [startISO, endISO] = rangeForView(view, anchor);
   const events = await getEvents(startISO, endISO);
 
+  const user = await getUser();
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
   const { data: gcal } = user
     ? await supabase
         .from("integration_tokens")

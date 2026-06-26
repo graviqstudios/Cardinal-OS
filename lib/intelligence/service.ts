@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { createClient, getUser } from "@/lib/supabase/server";
 import { computeForUser } from "@/lib/readiness/service";
 import { computeTimingInsight, type TimingInsight } from "@/lib/intelligence/cognitive";
 import { computeBurnout, type BurnoutSignal } from "@/lib/intelligence/burnout";
@@ -16,9 +16,7 @@ export type Intelligence = {
 
 export async function getIntelligence(): Promise<Intelligence | null> {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getUser();
   if (!user) return null;
 
   const [{ data: practice }, { data: topics }, { data: mocks }, { data: profile }, readiness] =

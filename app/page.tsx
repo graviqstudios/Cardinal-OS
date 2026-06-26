@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 
-import { createClient } from "@/lib/supabase/server";
+import { createClient, getUser } from "@/lib/supabase/server";
 import { LandingPage } from "@/components/landing/landing-page";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/site";
 
@@ -49,10 +49,7 @@ const jsonLd = {
 export default async function Home() {
   let signedIn = false;
   try {
-    const supabase = await createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    const user = await getUser();
     signedIn = Boolean(user);
   } catch {
     // Supabase not configured yet — treat as signed out and show the landing.

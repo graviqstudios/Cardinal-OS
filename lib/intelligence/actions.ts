@@ -2,15 +2,13 @@
 
 import { revalidatePath } from "next/cache";
 
-import { createClient } from "@/lib/supabase/server";
+import { createClient, getUser } from "@/lib/supabase/server";
 
 type Result = { ok: true } | { ok: false; error: string };
 
 async function uid() {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getUser();
   return { supabase, userId: user?.id ?? null };
 }
 

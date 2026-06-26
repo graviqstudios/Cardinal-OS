@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 
-import { createClient } from "@/lib/supabase/server";
+import { createClient, getUser } from "@/lib/supabase/server";
 import { deleteToken, getToken } from "@/lib/integrations/tokens";
 import { freshAccessToken, fetchGoogleEvents } from "@/lib/integrations/google";
 import { notionRecentPages, notionPageText } from "@/lib/integrations/notion";
@@ -15,9 +15,7 @@ type Result<T = void> = { ok: true; data?: T } | { ok: false; error: string };
 /** Disconnect a provider: removes the stored (encrypted) tokens for this user. */
 export async function disconnectProvider(provider: ProviderId): Promise<Result> {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getUser();
   if (!user) return { ok: false, error: "Not authenticated." };
 
   await deleteToken(user.id, provider);
@@ -28,9 +26,7 @@ export async function disconnectProvider(provider: ProviderId): Promise<Result> 
 /** Create tasks from accepted draft titles (e.g. from a Gmail scan). */
 export async function importTasks(titles: string[]): Promise<Result> {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getUser();
   if (!user) return { ok: false, error: "Not authenticated." };
 
   const rows = titles
@@ -50,9 +46,7 @@ export async function importTasks(titles: string[]): Promise<Result> {
 /** Pull the next 30 days of Google Calendar events into Cardinal (dedupe by id). */
 export async function syncGoogleCalendar(): Promise<Result<{ imported: number }>> {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getUser();
   if (!user) return { ok: false, error: "Not authenticated." };
 
   const token = await freshAccessToken(user.id, "google_calendar");
@@ -101,9 +95,7 @@ export async function listNotionPages(): Promise<
   Result<{ pages: { id: string; title: string }[] }>
 > {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getUser();
   if (!user) return { ok: false, error: "Not authenticated." };
 
   const token = await getToken(user.id, "notion");
@@ -119,9 +111,7 @@ export async function listNotionPages(): Promise<
 /** Import one Notion page into the journal as a searchable note. */
 export async function importNotionPage(pageId: string, title: string): Promise<Result> {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getUser();
   if (!user) return { ok: false, error: "Not authenticated." };
 
   const token = await getToken(user.id, "notion");
@@ -158,9 +148,7 @@ export async function listSpotifyPlaylists(): Promise<
   Result<{ playlists: { id: string; name: string }[] }>
 > {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getUser();
   if (!user) return { ok: false, error: "Not authenticated." };
 
   const token = await spotifyAccessToken(user.id);
@@ -176,9 +164,7 @@ export async function listSpotifyPlaylists(): Promise<
 /** Save the chosen "focus playlist" on the user's profile. */
 export async function setFocusPlaylist(id: string, name: string): Promise<Result> {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getUser();
   if (!user) return { ok: false, error: "Not authenticated." };
 
   const { error } = await supabase

@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 
-import { createClient } from "@/lib/supabase/server";
+import { createClient, getUser } from "@/lib/supabase/server";
 import { EVENT_TYPES, type EventType } from "@/lib/calendar/types";
 import { freshAccessToken, insertGoogleEvent } from "@/lib/integrations/google";
 
@@ -10,9 +10,7 @@ type Result<T = void> = { ok: true; data?: T } | { ok: false; error: string };
 
 async function uid() {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getUser();
   return { supabase, userId: user?.id ?? null };
 }
 

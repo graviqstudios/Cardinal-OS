@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { createClient, getUser } from "@/lib/supabase/server";
 
 /**
  * Cross-domain "we noticed" patterns — the thing only a system that sees your
@@ -46,9 +46,7 @@ function median(nums: number[]): number {
 
 export async function getInsights(): Promise<string[]> {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getUser();
   if (!user) return [];
 
   const sinceDate = dayKey(new Date(Date.now() - WINDOW_DAYS * 86_400_000));

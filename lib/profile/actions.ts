@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 
-import { createClient } from "@/lib/supabase/server";
+import { createClient, getUser } from "@/lib/supabase/server";
 import { ACCENT_IDS, PALETTE_IDS } from "@/lib/theme/config";
 
 export type ProfileUpdate = {
@@ -29,11 +29,9 @@ export type ProfileActionResult =
 export async function updateProfile(
   update: ProfileUpdate,
 ): Promise<ProfileActionResult> {
-  const supabase = await createClient();
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getUser();
+  const supabase = await createClient();
 
   if (!user) return { ok: false, error: "Not authenticated." };
 

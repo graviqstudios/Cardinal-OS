@@ -1,6 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 
-import { createClient } from "@/lib/supabase/server";
+import { createClient, getUser } from "@/lib/supabase/server";
 import {
   computeReadiness,
   type ReadinessBreakdown,
@@ -62,9 +62,7 @@ export async function recordReadinessSnapshot(
 /** Dashboard read: live score + 14-day history + previous score for the trend. */
 export async function getReadinessSnapshot(): Promise<ReadinessSnapshot | null> {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getUser();
   if (!user) return null;
 
   const live = await computeForUser(supabase, user.id);

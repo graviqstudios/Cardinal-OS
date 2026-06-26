@@ -1,6 +1,7 @@
+import { cache } from "react";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
-import { createClient } from "@/lib/supabase/server";
+import { createClient, getUser } from "@/lib/supabase/server";
 import {
   computeLifeScore,
   type LifeScoreBreakdown,
@@ -97,12 +98,16 @@ export async function recordLifeScoreSnapshot(
   return score;
 }
 
-/** Live score + 14-day history + previous score for the trend. */
-export async function getLifeScoreSnapshot(): Promise<LifeScoreSnapshot | null> {
+/**
+ * Live score + 14-day history + previous score for the trend.
+ *
+ * Wrapped in React `cache()` so the layout (header) and the Today page reuse a
+ * single computation per request instead of running the 11-query snapshot twice.
+ */
+export const getLifeScoreSnapshot = cache(
+  async function getLifeScoreSnapshot(): Promise<LifeScoreSnapshot | null> {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getUser();
   if (!user) return null;
 
   const live = await computeForUser(supabase, user.id);
@@ -118,4 +123,5 @@ export async function getLifeScoreSnapshot(): Promise<LifeScoreSnapshot | null> 
   const previous = history.filter((h) => h.day !== today).slice(-1)[0]?.score ?? null;
 
   return { score: live.score, breakdown: live.breakdown, history, previous };
-}
+  },
+);

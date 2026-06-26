@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { createClient, getUser } from "@/lib/supabase/server";
 
 export const runtime = "nodejs";
 
@@ -7,10 +7,8 @@ export const runtime = "nodejs";
  * shell after the OS grants push permission and returns a registration token.
  */
 export async function POST(request: Request) {
+  const user = await getUser();
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
   if (!user) return new Response("Unauthorized", { status: 401 });
 
   let body: { token?: string; platform?: string };

@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { createClient, getUser } from "@/lib/supabase/server";
 
 export const runtime = "nodejs";
 
@@ -13,9 +13,7 @@ const TABLES = [
 /** Download all of the signed-in user's data as JSON (DPDP export right). */
 export async function GET() {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getUser();
   if (!user) return new Response("Unauthorized", { status: 401 });
 
   const out: Record<string, unknown> = { exportedAt: new Date().toISOString() };

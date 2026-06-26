@@ -1,6 +1,6 @@
 import { generateText } from "ai";
 
-import { createClient } from "@/lib/supabase/server";
+import { createClient, getUser } from "@/lib/supabase/server";
 import { chatModel, isMockAI } from "@/lib/ai/models";
 import { computeForUser } from "@/lib/life-score/service";
 import { getInsights } from "@/lib/insights/service";
@@ -12,9 +12,7 @@ export const maxDuration = 30;
 /** A calm 2–3 sentence morning briefing for the Today screen (Gemini Flash). */
 export async function POST() {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getUser();
   if (!user) return Response.json({ error: "Unauthorized" }, { status: 401 });
 
   const rl = await checkRateLimit(user.id, "today");

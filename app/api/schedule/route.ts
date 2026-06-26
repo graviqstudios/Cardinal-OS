@@ -1,7 +1,7 @@
 import { generateObject } from "ai";
 import { z } from "zod";
 
-import { createClient } from "@/lib/supabase/server";
+import { createClient, getUser } from "@/lib/supabase/server";
 import { isMockAI, liteModel } from "@/lib/ai/models";
 import { checkRateLimit } from "@/lib/ratelimit";
 import { EVENT_TYPES, type EventType } from "@/lib/calendar/types";
@@ -27,9 +27,7 @@ const schema = z.object({
 /** Parse a natural-language scheduling request into calendar events. */
 export async function POST(req: Request) {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getUser();
   if (!user) return Response.json({ error: "Unauthorized" }, { status: 401 });
 
   const rl = await checkRateLimit(user.id, "schedule");

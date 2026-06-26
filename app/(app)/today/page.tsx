@@ -1,11 +1,11 @@
-import { createClient } from "@/lib/supabase/server";
+import { Suspense } from "react";
+
+import { createClient, getUser } from "@/lib/supabase/server";
 import type { Profile } from "@/lib/types";
 import { getLifeScoreSnapshot } from "@/lib/life-score/service";
 import { getHabitsWithToday } from "@/lib/habits/queries";
 import { getTodayTasks } from "@/lib/tasks/queries";
-import { getTodayReflection } from "@/lib/journal/queries";
 import { getEvents } from "@/lib/calendar/queries";
-import { getInsights } from "@/lib/insights/service";
 import { buildGreeting } from "@/lib/today/greeting";
 import { TOUR_VERSION } from "@/lib/tour/version";
 import { LifeScoreRecorder } from "@/components/life-score/life-score-recorder";
@@ -15,18 +15,16 @@ import { TodayHabits } from "@/components/today/today-habits";
 import { TodayTasks } from "@/components/today/today-tasks";
 import { TodayBriefing } from "@/components/today/today-briefing";
 import { MiniCalendar } from "@/components/today/mini-calendar";
-import { TodayInsights } from "@/components/today/today-insights";
+import { InsightsSection } from "@/components/today/insights-section";
+import { ReflectionSection } from "@/components/today/reflection-section";
 import { FocusTimer } from "@/components/body/focus-timer";
-import { DailyReflection } from "@/components/today/daily-reflection";
 import { QuickCapture } from "@/components/today/quick-capture";
 import { ProductTour } from "@/components/tour/product-tour";
 import { WhatsNew } from "@/components/tour/whats-new";
 
 export default async function TodayPage() {
+  const user = await getUser();
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
 
   const now = new Date();
   const dayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString();
@@ -34,7 +32,9 @@ export default async function TodayPage() {
   const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
   const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 1).toISOString();
 
-  const [{ data: profile }, life, habits, tasks, monthEvents, reflection, insights] =
+  // Primary, above-the-fold data blocks the render. The slower secondary
+  // sections (insights, reflection) stream in via Suspense below.
+  const [{ data: profile }, life, habits, tasks, monthEvents] =
     await Promise.all([
       supabase
         .from("users")
@@ -45,8 +45,6 @@ export default async function TodayPage() {
       getHabitsWithToday(),
       getTodayTasks(),
       getEvents(monthStart, monthEnd),
-      getTodayReflection(),
-      getInsights(),
     ]);
 
   // First-run users get the full guided tour; returning users who predate this
@@ -128,10 +126,14 @@ export default async function TodayPage() {
         </div>
       </div>
 
-      {/* Cross-domain patterns ("we noticed") */}
-      <TodayInsights insights={insights} />
+      {/* Cross-domain patterns ("we noticed") — streamed */}
+      <Suspense fallback={<div className="h-24 animate-pulse rounded-card border bg-muted/50" />}>
+        <InsightsSection />
+      </Suspense>
 
-      <DailyReflection initial={reflection} />
+      <Suspense fallback={<div className="h-40 animate-pulse rounded-card border bg-muted/50" />}>
+        <ReflectionSection />
+      </Suspense>
 
       <QuickCapture />
     </div>

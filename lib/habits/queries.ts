@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { createClient, getUser } from "@/lib/supabase/server";
 import type { Habit, HabitWithToday } from "@/lib/habits/types";
 
 function localDateKey(d: Date) {
@@ -9,10 +9,8 @@ function localDateKey(d: Date) {
 
 /** Active habits with today's completion + current streak. */
 export async function getHabitsWithToday(): Promise<HabitWithToday[]> {
+  const user = await getUser();
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
   if (!user) return [];
 
   const since = new Date(Date.now() - 70 * 86_400_000).toISOString().slice(0, 10);

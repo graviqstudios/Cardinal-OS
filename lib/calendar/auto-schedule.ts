@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 
-import { createClient } from "@/lib/supabase/server";
+import { createClient, getUser } from "@/lib/supabase/server";
 import type { TopicStatus } from "@/lib/study/types";
 
 type Result = { ok: true; added: number } | { ok: false; error: string };
@@ -17,9 +17,7 @@ const PRIORITY: TopicStatus[] = ["weak", "untouched", "moderate"];
  */
 export async function generateStudySchedule(): Promise<Result> {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getUser();
   if (!user) return { ok: false, error: "Not authenticated." };
 
   const [{ data: profile }, { data: topics }] = await Promise.all([

@@ -1,7 +1,7 @@
 import { generateObject } from "ai";
 import { z } from "zod";
 
-import { createClient } from "@/lib/supabase/server";
+import { createClient, getUser } from "@/lib/supabase/server";
 import { isMockAI, liteModel } from "@/lib/ai/models";
 import { checkRateLimit } from "@/lib/ratelimit";
 
@@ -16,10 +16,8 @@ const schema = z.object({
 
 /** Quick capture: parse "call Anuj tomorrow 5pm" into a task and create it. */
 export async function POST(req: Request) {
+  const user = await getUser();
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
   if (!user) return Response.json({ error: "Unauthorized" }, { status: 401 });
 
   const rl = await checkRateLimit(user.id, "tasks-parse");

@@ -1,6 +1,6 @@
 import { Sparkles } from "lucide-react";
 
-import { createClient } from "@/lib/supabase/server";
+import { createClient, getUser } from "@/lib/supabase/server";
 import { getMyPods, getPodDetail } from "@/lib/pods/queries";
 import { getMessages } from "@/lib/pods/chat";
 import { PageHeader } from "@/components/shell/page-header";
@@ -18,10 +18,7 @@ export default async function ConstellationsPage({
   const sp = await searchParams;
   const requested = sp.c ?? sp.pod ?? undefined;
 
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getUser();
 
   const pods = await getMyPods();
   const selectedId =

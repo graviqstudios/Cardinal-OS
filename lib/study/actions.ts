@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { generateText } from "ai";
 
-import { createClient } from "@/lib/supabase/server";
+import { createClient, getUser } from "@/lib/supabase/server";
 import { isMockAI, liteModel } from "@/lib/ai/models";
 import { topicsSystem } from "@/lib/ai/prompts";
 import type { TopicStatus } from "@/lib/study/types";
@@ -14,9 +14,7 @@ type Result<T = void> =
 
 async function uid() {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getUser();
   return { supabase, userId: user?.id ?? null };
 }
 

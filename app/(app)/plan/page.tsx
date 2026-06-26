@@ -1,6 +1,6 @@
 import { LayoutGrid } from "lucide-react";
 
-import { createClient } from "@/lib/supabase/server";
+import { createClient, getUser } from "@/lib/supabase/server";
 import { getHabitsWithToday } from "@/lib/habits/queries";
 import { getTasksGrouped } from "@/lib/tasks/queries";
 import { getProjectsWithCounts } from "@/lib/projects/queries";
@@ -25,9 +25,7 @@ export default async function PlanPage({
   const initialTab: PlanTab = TABS.includes(tab as PlanTab) ? (tab as PlanTab) : "habits";
 
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getUser();
   const { data: profile } = user
     ? await supabase.from("users").select("exam_mode").eq("id", user.id).maybeSingle()
     : { data: null };

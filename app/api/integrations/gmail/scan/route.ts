@@ -1,7 +1,7 @@
 import { generateObject } from "ai";
 import { z } from "zod";
 
-import { createClient } from "@/lib/supabase/server";
+import { createClient, getUser } from "@/lib/supabase/server";
 import { liteModel, isMockAI } from "@/lib/ai/models";
 import { freshAccessToken, fetchGmailDigest } from "@/lib/integrations/google";
 import { checkRateLimit } from "@/lib/ratelimit";
@@ -15,10 +15,7 @@ export const maxDuration = 30;
  * for extraction. The user accepts/rejects the drafts before any task is created.
  */
 export async function POST() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getUser();
   if (!user) return Response.json({ error: "Unauthorized" }, { status: 401 });
 
   const rl = await checkRateLimit(user.id, "gmail-scan");

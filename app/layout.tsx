@@ -6,7 +6,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/theme/theme-provider";
 import { ThemeScript } from "@/components/theme/theme-script";
 import { NativeBootstrap } from "@/components/native/native-bootstrap";
-import { createClient } from "@/lib/supabase/server";
+import { createClient, getUser } from "@/lib/supabase/server";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/site";
 import {
   isAccent,
@@ -98,10 +98,8 @@ export default async function RootLayout({
   let initialAccent: Accent | undefined;
 
   try {
+    const user = await getUser();
     const supabase = await createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
     if (user) {
       const { data } = await supabase
         .from("users")

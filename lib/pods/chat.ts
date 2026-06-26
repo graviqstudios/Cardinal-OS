@@ -1,6 +1,6 @@
 "use server";
 
-import { createClient } from "@/lib/supabase/server";
+import { createClient, getUser } from "@/lib/supabase/server";
 
 export type ConstellationMessage = {
   id: string;
@@ -31,9 +31,7 @@ export async function sendMessage(
   body: string,
 ): Promise<Result<ConstellationMessage>> {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getUser();
   if (!user) return { ok: false, error: "Not authenticated." };
 
   const text = body.trim();

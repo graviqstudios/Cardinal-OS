@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { createClient, getUser } from "@/lib/supabase/server";
 import type {
   ChatMessageRow,
   DocumentRow,
@@ -41,9 +41,7 @@ export async function getDocuments(): Promise<DocumentRow[]> {
 /** Returns the user's chat session id, creating one on first use. */
 export async function getOrCreateChatSession(): Promise<string | null> {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getUser();
   if (!user) return null;
 
   const { data: existing } = await supabase

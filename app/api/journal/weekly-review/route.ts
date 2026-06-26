@@ -1,6 +1,6 @@
 import { generateText } from "ai";
 
-import { createClient } from "@/lib/supabase/server";
+import { createClient, getUser } from "@/lib/supabase/server";
 import { reasoningModel, isMockAI } from "@/lib/ai/models";
 import { computeForUser } from "@/lib/life-score/service";
 import { reindexJournalEntry } from "@/lib/journal/embed";
@@ -24,10 +24,8 @@ function weekLabel(): string {
 }
 
 export async function POST() {
+  const user = await getUser();
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
   if (!user) return Response.json({ error: "Unauthorized" }, { status: 401 });
 
   const rl = await checkRateLimit(user.id, "journal-weekly");

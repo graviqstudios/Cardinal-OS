@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { createClient, getUser } from "@/lib/supabase/server";
 import type {
   Pod,
   PodDetail,
@@ -9,9 +9,7 @@ import type {
 /** Pods the signed-in user belongs to, with member counts. */
 export async function getMyPods(): Promise<PodSummary[]> {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getUser();
   if (!user) return [];
 
   const { data: myMemberships } = await supabase
@@ -40,9 +38,7 @@ export async function getMyPods(): Promise<PodSummary[]> {
 /** Full pod with each member's shared stats (RLS permits co-member reads). */
 export async function getPodDetail(podId: string): Promise<PodDetail | null> {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getUser();
   if (!user) return null;
 
   const { data: pod } = await supabase

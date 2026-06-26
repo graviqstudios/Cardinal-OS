@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 
-import { createClient } from "@/lib/supabase/server";
+import { createClient, getUser } from "@/lib/supabase/server";
 
 /**
  * Guards the opt-in Exam Prep routes (Study, Practice, Heatmap, Voice). When the
@@ -9,11 +9,9 @@ import { createClient } from "@/lib/supabase/server";
  * by direct URL. Call at the top of each exam-only page (before its server work).
  */
 export async function requireExamMode(): Promise<void> {
-  const supabase = await createClient();
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getUser();
+  const supabase = await createClient();
 
   if (!user) redirect("/login");
 

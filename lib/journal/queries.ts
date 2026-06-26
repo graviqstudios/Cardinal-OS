@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { createClient, getUser } from "@/lib/supabase/server";
 
 export type { JournalType, JournalEntry } from "@/lib/journal/types";
 export { JOURNAL_TYPES, journalTypeLabel } from "@/lib/journal/types";
@@ -14,12 +14,10 @@ function todayKey() {
 
 /** All journal entries for the signed-in user, newest first. */
 export async function getJournalEntries(): Promise<JournalEntry[]> {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getUser();
   if (!user) return [];
 
+  const supabase = await createClient();
   const { data } = await supabase
     .from("journal_entries")
     .select("*")

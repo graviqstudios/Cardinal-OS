@@ -1,7 +1,7 @@
 import { generateObject } from "ai";
 import { z } from "zod";
 
-import { createClient } from "@/lib/supabase/server";
+import { createClient, getUser } from "@/lib/supabase/server";
 import { isMockAI, liteModel } from "@/lib/ai/models";
 import { quizSystem } from "@/lib/ai/prompts";
 import { checkRateLimit } from "@/lib/ratelimit";
@@ -17,10 +17,7 @@ const schema = z.object({
 
 /** Generate 5 questions for a topic. Returns questions + reference answers. */
 export async function POST(req: Request) {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getUser();
   if (!user) return Response.json({ error: "Unauthorized" }, { status: 401 });
 
   const rl = await checkRateLimit(user.id, "quiz");

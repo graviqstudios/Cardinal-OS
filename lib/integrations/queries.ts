@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { createClient, getUser } from "@/lib/supabase/server";
 import type { ProviderId } from "@/lib/integrations/registry";
 
 export type Connection = {
@@ -12,10 +12,8 @@ export type Connection = {
  * an empty list if the table doesn't exist yet, so the page renders pre-migration.
  */
 export async function getConnections(): Promise<Connection[]> {
+  const user = await getUser();
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
   if (!user) return [];
 
   const { data, error } = await supabase
