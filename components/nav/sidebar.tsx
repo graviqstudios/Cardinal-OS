@@ -47,7 +47,7 @@ export function Sidebar({
   return (
     <>
       {/* ── Mobile top bar ─────────────────────────────────────── */}
-      <header className="sticky top-0 z-30 flex h-14 items-center gap-3 border-b bg-background/80 px-4 backdrop-blur md:hidden">
+      <header className="sticky top-0 z-30 flex h-[calc(3.5rem+env(safe-area-inset-top))] items-center gap-3 border-b bg-background/80 px-4 pt-[env(safe-area-inset-top)] backdrop-blur md:hidden">
         <Tap className="inline-flex">
           <Button
             variant="ghost"

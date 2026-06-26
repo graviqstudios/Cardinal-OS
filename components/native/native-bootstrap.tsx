@@ -33,6 +33,15 @@ export function NativeBootstrap() {
         /* ignore */
       }
       try {
+        // Draw the web content edge-to-edge under a transparent status bar so the
+        // parchment background shows through instead of an opaque dark bar. The
+        // top inset is reserved in CSS (safe-area-inset-top) so content clears it.
+        const { StatusBar } = await import("@capacitor/status-bar");
+        await StatusBar.setOverlaysWebView({ overlay: true });
+      } catch {
+        /* ignore */
+      }
+      try {
         const { App } = await import("@capacitor/app");
         const handle = await App.addListener("backButton", ({ canGoBack }) => {
           if (canGoBack || window.history.length > 1) {
