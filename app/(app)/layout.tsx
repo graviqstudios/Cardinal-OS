@@ -10,6 +10,7 @@ import { AppHeader } from "@/components/shell/app-header";
 import { Aurora } from "@/components/shell/aurora";
 import { ConsentGate } from "@/components/legal/consent-gate";
 import { PushRegistrar } from "@/components/native/push-registrar";
+import { BiometricGate } from "@/components/native/biometric-gate";
 import { PageTransition } from "@/components/motion/page-transition";
 
 export default async function AppLayout({
@@ -49,6 +50,7 @@ export default async function AppLayout({
   if (onOnboarding) {
     return (
       <>
+        <BiometricGate />
         {needsConsent && <ConsentGate />}
         {children}
       </>
@@ -62,6 +64,7 @@ export default async function AppLayout({
 
   return (
     <>
+      <BiometricGate />
       {needsConsent && <ConsentGate />}
       <PushRegistrar />
       <Aurora />

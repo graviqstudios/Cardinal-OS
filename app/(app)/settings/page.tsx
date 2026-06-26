@@ -8,6 +8,7 @@ import { ProfileForm } from "@/components/settings/profile-form";
 import { ExamModeToggle } from "@/components/settings/exam-mode-toggle";
 import { AccountActions } from "@/components/settings/account-actions";
 import { ChangePassword } from "@/components/settings/change-password";
+import { BiometricLockToggle } from "@/components/settings/biometric-lock-toggle";
 import { PageHeader } from "@/components/shell/page-header";
 
 export default async function SettingsPage() {
@@ -88,6 +89,9 @@ export default async function SettingsPage() {
           <ChangePassword email={user!.email!} />
         </CardContent>
       </Card>
+
+      {/* App lock — only renders inside the native app. */}
+      <BiometricLockToggle />
 
       <Card>
         <CardHeader>
