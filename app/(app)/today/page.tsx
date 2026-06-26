@@ -17,6 +17,7 @@ import { TodayBriefing } from "@/components/today/today-briefing";
 import { MiniCalendar } from "@/components/today/mini-calendar";
 import { InsightsSection } from "@/components/today/insights-section";
 import { ReflectionSection } from "@/components/today/reflection-section";
+import { FeedbackPrompt } from "@/components/feedback/feedback-prompt";
 import { FocusTimer } from "@/components/body/focus-timer";
 import { QuickCapture } from "@/components/today/quick-capture";
 import { ProductTour } from "@/components/tour/product-tour";
@@ -25,6 +26,13 @@ import { WhatsNew } from "@/components/tour/whats-new";
 export default async function TodayPage() {
   const user = await getUser();
   const supabase = await createClient();
+
+  // Established users (account ≥ 4 days old) get a one-time, dismissable
+  // feedback nudge. New users are left alone until they've lived in the app.
+  const accountAgeDays = user?.created_at
+    ? (Date.now() - new Date(user.created_at).getTime()) / 86_400_000
+    : 0;
+  const feedbackEligible = accountAgeDays >= 4;
 
   const now = new Date();
   const dayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString();
@@ -87,6 +95,7 @@ export default async function TodayPage() {
   return (
     <div className="space-y-6">
       <LifeScoreRecorder />
+      <FeedbackPrompt eligible={feedbackEligible} />
       {needsTour && (isNewUser
         ? <ProductTour run returning={false} onceKey={`co-tour-${TOUR_VERSION}`} />
         : <WhatsNew version={TOUR_VERSION} />)}

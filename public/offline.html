@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Offline · Cardinal OS</title>
+    <style>
+      :root { color-scheme: light dark; }
+      html, body { height: 100%; margin: 0; }
+      body {
+        display: grid;
+        place-items: center;
+        background: #14100b;
+        color: #f2e9db;
+        font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+        text-align: center;
+        padding: 24px;
+      }
+      .needle { margin-bottom: 20px; }
+      h1 { font-family: Georgia, "Times New Roman", serif; font-weight: 400; font-size: 28px; margin: 0 0 10px; }
+      p { color: #b6a892; max-width: 320px; line-height: 1.6; margin: 0 auto 24px; }
+      button {
+        appearance: none; border: 0; cursor: pointer;
+        background: #cb4b33; color: #fff; font: inherit; font-weight: 500;
+        padding: 12px 22px; border-radius: 12px;
+      }
+    </style>
+  </head>
+  <body>
+    <div>
+      <svg class="needle" width="44" height="44" viewBox="0 0 100 100" fill="none" aria-hidden="true">
+        <path d="M50 6 L61 53 L39 53 Z" fill="#CB4B33" />
+        <path d="M50 86 L61 53 L39 53 Z" fill="#C9BBA3" />
+      </svg>
+      <h1>You're offline</h1>
+      <p>Cardinal OS needs a connection to load your day. Check your network and try again.</p>
+      <button onclick="location.reload()">Try again</button>
+    </div>
+  </body>
+</html>

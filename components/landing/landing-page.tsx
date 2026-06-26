@@ -3,6 +3,8 @@
 
 import * as React from "react";
 
+import { InstallAppButton } from "@/components/pwa/install-app-button";
+
 /* ────────────────────────────────────────────────────────────────────────────
    Cardinal OS marketing landing. Self-contained dark palette (independent of the
    app theme), accent switcher, scroll-aware nav, reveal-on-scroll, animated Life
@@ -330,6 +332,10 @@ export function LandingPage() {
               <a href="#features" className="inline-flex items-center gap-2.5 rounded-xl border border-[rgba(242,233,219,0.14)] bg-[#241C15] px-6 py-3.5 text-[15px] font-medium text-[#EFE6D6] transition-colors hover:bg-[#2C2219]">
                 Explore features
               </a>
+              <InstallAppButton
+                className="inline-flex items-center gap-2.5 rounded-xl border border-[rgba(242,233,219,0.14)] bg-[#241C15] px-6 py-3.5 text-[15px] font-medium text-[#EFE6D6] transition-colors hover:bg-[#2C2219]"
+                label="Install app"
+              />
             </div>
             <div className="mt-7 flex flex-wrap items-center gap-5 text-[13px] text-[#897C68]">
               <span className="inline-flex items-center gap-2"><Check /> Free during beta</span>
@@ -701,6 +707,10 @@ export function LandingPage() {
             <p className="mx-auto mt-4 max-w-[520px] text-[18px] leading-relaxed text-[#B6A892]">One calm screen for your whole life. Free during beta, no card required. Everything you run, finally in one place.</p>
             <div className="mt-8 flex flex-wrap justify-center gap-3">
               <a href="/signup" className="inline-flex items-center gap-2.5 rounded-xl px-7 py-4 text-base font-medium text-white transition-transform active:scale-[0.97]" style={{ background: "var(--co-accent)" }}>Create your account <Arrow /></a>
+              <InstallAppButton
+                className="inline-flex items-center gap-2.5 rounded-xl border border-[rgba(242,233,219,0.14)] bg-[#241C15] px-6 py-4 text-base font-medium text-[#EFE6D6] transition-colors hover:bg-[#2C2219]"
+                label="Install the app"
+              />
               <a href="/login" className="inline-flex items-center rounded-xl border border-[rgba(242,233,219,0.14)] bg-[#241C15] px-6 py-4 text-base font-medium text-[#EFE6D6] transition-colors hover:bg-[#2C2219]">Log in</a>
             </div>
           </div>

@@ -6,6 +6,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/theme/theme-provider";
 import { ThemeScript } from "@/components/theme/theme-script";
 import { NativeBootstrap } from "@/components/native/native-bootstrap";
+import { ServiceWorkerRegistrar } from "@/components/pwa/service-worker-registrar";
 import { createClient, getUser } from "@/lib/supabase/server";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/site";
 import {
@@ -73,7 +74,7 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: "/brand/favicon.svg",
-    apple: "/brand/app-icon.svg",
+    apple: "/brand/apple-touch-icon.png",
   },
   verification: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION
     ? { google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION }
@@ -129,6 +130,7 @@ export default async function RootLayout({
       <body className="min-h-dvh bg-background font-sans text-foreground antialiased">
         <ThemeProvider initialPalette={initialPalette} initialAccent={initialAccent}>
           <NativeBootstrap />
+          <ServiceWorkerRegistrar />
           {children}
         </ThemeProvider>
         <Analytics />

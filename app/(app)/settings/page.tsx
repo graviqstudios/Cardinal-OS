@@ -9,6 +9,7 @@ import { ExamModeToggle } from "@/components/settings/exam-mode-toggle";
 import { AccountActions } from "@/components/settings/account-actions";
 import { ChangePassword } from "@/components/settings/change-password";
 import { BiometricLockToggle } from "@/components/settings/biometric-lock-toggle";
+import { FeedbackForm } from "@/components/settings/feedback-form";
 import { PageHeader } from "@/components/shell/page-header";
 
 export default async function SettingsPage() {
@@ -62,6 +63,19 @@ export default async function SettingsPage() {
         </CardHeader>
         <CardContent>
           <ExamModeToggle initial={profile?.exam_mode ?? false} />
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Feedback &amp; reviews</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <p className="text-sm text-muted-foreground">
+            Cardinal is free during beta and shaped by the people using it. Tell us
+            what&apos;s working, leave a review, or report a bug.
+          </p>
+          <FeedbackForm />
         </CardContent>
       </Card>
 
