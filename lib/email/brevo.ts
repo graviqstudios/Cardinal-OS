@@ -12,6 +12,8 @@ export async function sendEmail(opts: {
   toName?: string | null;
   subject: string;
   html: string;
+  /** Brevo tags for categorising the message (visible in the Brevo dashboard). */
+  tags?: string[];
 }): Promise<void> {
   const res = await fetch("https://api.brevo.com/v3/smtp/email", {
     method: "POST",
@@ -28,6 +30,7 @@ export async function sendEmail(opts: {
       to: [{ email: opts.to, name: opts.toName ?? undefined }],
       subject: opts.subject,
       htmlContent: opts.html,
+      ...(opts.tags && opts.tags.length ? { tags: opts.tags } : {}),
     }),
   });
   if (!res.ok) {

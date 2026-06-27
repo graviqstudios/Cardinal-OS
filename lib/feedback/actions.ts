@@ -3,8 +3,11 @@
 import { createClient, getUser } from "@/lib/supabase/server";
 import { brevoConfigured, sendEmail } from "@/lib/email/brevo";
 
-/** Where feedback notifications are sent (falls back to the team inbox). */
+/** Where feedback notifications are sent (overridable, defaults to the team inbox). */
 const NOTIFY_TO = process.env.FEEDBACK_NOTIFY_TO || "graviqstudios@gmail.com";
+
+/** Tag applied to every feedback email — subject prefix + Brevo tag. */
+const FEEDBACK_TAG = "Cardinal OS Feedbacks";
 
 export type FeedbackKind = "feedback" | "review" | "bug";
 
@@ -62,7 +65,8 @@ export async function submitFeedback(input: SubmitFeedbackInput): Promise<Result
         s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
       await sendEmail({
         to: NOTIFY_TO,
-        subject: `New ${kind}${rating ? ` (${rating}★)` : ""} · Cardinal OS`,
+        subject: `[${FEEDBACK_TAG}] New ${kind}${rating ? ` (${rating}★)` : ""}`,
+        tags: [FEEDBACK_TAG],
         html: `
           <div style="font-family:sans-serif;font-size:14px;line-height:1.6;color:#1a140f">
             <p><strong>Type:</strong> ${kind}</p>
