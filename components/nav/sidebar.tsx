@@ -74,7 +74,10 @@ export function Sidebar({
       <aside
         data-tour="sidebar"
         className={cn(
-          "sticky top-0 hidden h-dvh shrink-0 flex-col border-r bg-surface/70 backdrop-blur-xl transition-[width] duration-200 md:flex",
+          // Solid surface (not translucent): the sidebar is a full-height column
+          // that never overlaps content, so glassmorphism only muddied contrast
+          // on the light parchment/sage themes — especially in the installed PWA.
+          "sticky top-0 hidden h-dvh shrink-0 flex-col border-r bg-surface transition-[width] duration-200 md:flex",
           collapsed ? "w-[68px]" : "w-64",
         )}
       >
@@ -146,7 +149,7 @@ function MobileDrawer({
             onClick={onClose}
           />
           <motion.aside
-            className="absolute inset-y-0 left-0 flex w-72 max-w-[85%] flex-col border-r bg-surface/85 backdrop-blur-xl"
+            className="absolute inset-y-0 left-0 flex w-72 max-w-[85%] flex-col border-r bg-surface"
             initial={reduceMotion ? { opacity: 0 } : { x: "-100%" }}
             animate={reduceMotion ? { opacity: 1 } : { x: 0 }}
             exit={reduceMotion ? { opacity: 0 } : { x: "-100%" }}
