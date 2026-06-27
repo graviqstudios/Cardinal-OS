@@ -1,6 +1,10 @@
 "use server";
 
 import { createClient, getUser } from "@/lib/supabase/server";
+import { brevoConfigured, sendEmail } from "@/lib/email/brevo";
+
+/** Where feedback notifications are sent (falls back to the team inbox). */
+const NOTIFY_TO = process.env.FEEDBACK_NOTIFY_TO || "graviqstudios@gmail.com";
 
 export type FeedbackKind = "feedback" | "review" | "bug";
 

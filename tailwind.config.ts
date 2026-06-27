@@ -27,7 +27,11 @@ const config: Config = {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         surface: {
-          DEFAULT: "hsl(var(--surface))",
+          // --surface is defined as a hex value in Design/tokens.css (which wins
+          // over the HSL channels in globals.css), so it must be used directly —
+          // wrapping a hex in hsl() yields an invalid, transparent colour. This
+          // matches `border`/`input` above, which are also raw var() tokens.
+          DEFAULT: "var(--surface)",
           foreground: "hsl(var(--surface-foreground))",
         },
         primary: {
