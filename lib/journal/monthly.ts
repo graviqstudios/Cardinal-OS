@@ -18,7 +18,11 @@ export async function generateMonthlyReview(
   admin: SupabaseClient,
   userId: string,
 ): Promise<{ title: string; text: string }> {
-  const since = new Date(Date.now() - 30 * 86_400_000);
+  // Summarise the current calendar month (this cron runs on the month's last
+  // day), from the 1st through today — not a rolling 30 days that would bleed
+  // into the previous month.
+  const now = new Date();
+  const since = new Date(now.getFullYear(), now.getMonth(), 1);
   const sinceDate = since.toISOString().slice(0, 10);
 
   const [{ data: habitLogs }, { data: tasks }, { data: focus }, { data: metrics }, { data: reflections }, score] =

@@ -6,15 +6,30 @@ import { brevoConfigured, sendEmail } from "@/lib/email/brevo";
 export const runtime = "nodejs";
 export const maxDuration = 300;
 
+/** True when `d` is the final calendar day of its month (28/29/30/31). */
+function isLastDayOfMonth(d: Date): boolean {
+  const next = new Date(d);
+  next.setDate(d.getDate() + 1);
+  return next.getMonth() !== d.getMonth();
+}
+
 /**
  * Monthly review cron. Vercel triggers this on a schedule (see vercel.json) and
  * authenticates with the CRON_SECRET. For every user it generates a Claude-written
- * monthly review, saves it to their journal, and emails it via Brevo.
+ * review of the month that's ending, saves it to their journal, and emails it via
+ * Brevo.
+ *
+ * The schedule fires on days 28–31; we only proceed on the actual last day of the
+ * month so the review lands on month-end and summarises the whole month — never on
+ * a phantom "30th" that doesn't exist in February.
  */
 export async function GET(req: Request) {
   const auth = req.headers.get("authorization");
   if (!process.env.CRON_SECRET || auth !== `Bearer ${process.env.CRON_SECRET}`) {
     return new Response("Unauthorized", { status: 401 });
+  }
+  if (!isLastDayOfMonth(new Date())) {
+    return Response.json({ skipped: "not the last day of the month" });
   }
   if (!brevoConfigured()) {
     return Response.json({ skipped: "email not configured" });
