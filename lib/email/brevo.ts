@@ -14,7 +14,13 @@ export async function sendEmail(opts: {
   html: string;
   /** Brevo tags for categorising the message (visible in the Brevo dashboard). */
   tags?: string[];
+  /** Overrides EMAIL_REPLY_TO for this message; where replies should land. */
+  replyTo?: string;
 }): Promise<void> {
+  // Send from the (send-only) EMAIL_FROM address, but route replies to a real
+  // inbox — EMAIL_REPLY_TO (e.g. support@graviq.in) — so noreply@ replies aren't lost.
+  const replyToEmail = opts.replyTo || process.env.EMAIL_REPLY_TO;
+
   const res = await fetch("https://api.brevo.com/v3/smtp/email", {
     method: "POST",
     headers: {
@@ -28,6 +34,7 @@ export async function sendEmail(opts: {
         email: process.env.EMAIL_FROM,
       },
       to: [{ email: opts.to, name: opts.toName ?? undefined }],
+      ...(replyToEmail ? { replyTo: { email: replyToEmail } } : {}),
       subject: opts.subject,
       htmlContent: opts.html,
       ...(opts.tags && opts.tags.length ? { tags: opts.tags } : {}),
