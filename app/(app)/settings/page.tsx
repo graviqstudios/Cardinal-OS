@@ -1,7 +1,8 @@
 import { createClient, getUser } from "@/lib/supabase/server";
 import type { Profile } from "@/lib/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Settings as SettingsIcon } from "lucide-react";
+import { Settings as SettingsIcon, Plug } from "lucide-react";
+import Link from "next/link";
 
 import { ThemeControls } from "@/components/theme/theme-controls";
 import { ProfileForm } from "@/components/settings/profile-form";
@@ -63,6 +64,25 @@ export default async function SettingsPage() {
         </CardHeader>
         <CardContent>
           <ExamModeToggle initial={profile?.exam_mode ?? false} />
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Integrations</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <p className="text-sm text-muted-foreground">
+            Connect Google Calendar, Notion, and Spotify — or disconnect one you no
+            longer want linked.
+          </p>
+          <Link
+            href="/settings/integrations"
+            className="inline-flex items-center gap-2 text-sm font-medium text-primary hover:underline"
+          >
+            <Plug className="h-4 w-4" />
+            Manage connected apps
+          </Link>
         </CardContent>
       </Card>
 
