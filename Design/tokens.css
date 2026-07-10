@@ -69,6 +69,7 @@
   --border:    rgba(0,0,0,0.08);
   --accent:    #C2412E;
   --on-accent: #FFFFFF;
+  color-scheme: light;
 }
 
 /* Study — warm dark */
@@ -81,6 +82,7 @@
   --border:    rgba(242,233,219,0.10);
   --accent:    #D6593E;
   --on-accent: #FFFFFF;
+  color-scheme: dark;
 }
 
 /* Sage — calm light */
@@ -93,6 +95,7 @@
   --border:    rgba(0,0,0,0.07);
   --accent:    #C2412E;
   --on-accent: #FFFFFF;
+  color-scheme: light;
 }
 
 /* Dusk — cool twilight */
@@ -105,6 +108,7 @@
   --border:    rgba(255,255,255,0.08);
   --accent:    #D6593E;
   --on-accent: #FFFFFF;
+  color-scheme: dark;
 }
 
 /* Ink — true black (OLED) */
@@ -117,6 +121,7 @@
   --border:    rgba(242,233,219,0.10);
   --accent:    #DC6045;
   --on-accent: #150E08;
+  color-scheme: dark;
 }
 
 /* ===================================================================
