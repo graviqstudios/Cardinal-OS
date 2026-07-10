@@ -13,7 +13,7 @@ export function LegalDocView({ doc }: { doc: LegalDoc }) {
 
       <h1 className="mt-8 font-serif text-4xl tracking-tight sm:text-5xl">{doc.title}</h1>
       <p className="mt-2 text-sm text-muted-foreground">
-        Last updated {LEGAL.updated}. This is a draft pending legal review.
+        Last updated {LEGAL.updated}.
       </p>
 
       <div className="mt-10 space-y-8">
