@@ -247,3 +247,14 @@ html.theme-transition *::after {
   0%, 100% { transform: scale(0.92); opacity: 0.5; }
   50% { transform: scale(1.12); opacity: 1; }
 }
+
+/* ── Native <select> dropdowns ────────────────────────────────────────────────
+   The option list is rendered by the browser. `color-scheme` alone doesn't
+   reliably darken it, so paint the options with the active theme's surface/text
+   tokens (Chrome and Firefox honour background/color on <option>). Unlayered so
+   it wins over Tailwind's base reset. Keeps the dropdown legible on the dark
+   themes (study / dusk / ink) instead of a white popup with faint grey text. */
+select option {
+  background-color: var(--surface);
+  color: var(--text);
+}
