@@ -7,6 +7,7 @@ import { Maximize2, Minimize2, Pause, Play, RotateCcw } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { logFocusSession } from "@/lib/body/actions";
+import { FOCUS_SOUNDS, DEFAULT_SOUND, scheduleSound } from "@/lib/focus/sounds";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -27,19 +28,25 @@ function mmss(total: number) {
   return `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
 }
 
-function chime() {
+/** Fresh AudioContext (guarded for older WebKit). */
+function makeAudioContext(): AudioContext | null {
   try {
-    const Ctx = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
-    const ctx = new Ctx();
-    const o = ctx.createOscillator();
-    const g = ctx.createGain();
-    o.connect(g); g.connect(ctx.destination);
-    o.type = "sine"; o.frequency.value = 660;
-    g.gain.setValueAtTime(0.0001, ctx.currentTime);
-    g.gain.exponentialRampToValueAtTime(0.18, ctx.currentTime + 0.05);
-    g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 1.1);
-    o.start(); o.stop(ctx.currentTime + 1.15);
-  } catch { /* audio not available */ }
+    const Ctx =
+      window.AudioContext ||
+      (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+    return new Ctx();
+  } catch {
+    return null;
+  }
+}
+
+/** Play a sound immediately, for the picker preview. */
+function previewSound(id: string) {
+  const ctx = makeAudioContext();
+  if (!ctx) return;
+  void ctx.resume();
+  scheduleSound(ctx, id, ctx.currentTime + 0.03);
+  window.setTimeout(() => { try { void ctx.close(); } catch { /* ignore */ } }, 3500);
 }
 
 export function FocusTimer({
@@ -66,35 +73,116 @@ export function FocusTimer({
   const [link, setLink] = React.useState(""); // "task:<id>" | "habit:<id>" | ""
   const [zen, setZen] = React.useState(false);
   const [mounted, setMounted] = React.useState(false);
-  React.useEffect(() => setMounted(true), []);
+  const [sound, setSound] = React.useState(DEFAULT_SOUND);
+  React.useEffect(() => {
+    setMounted(true);
+    try {
+      const saved = localStorage.getItem("focus-sound");
+      if (saved) setSound(saved);
+    } catch { /* ignore */ }
+  }, []);
 
   const wakeRef = React.useRef<{ release: () => Promise<void> } | null>(null);
+
+  // Absolute end timestamp — the countdown is derived from the wall clock, so it
+  // stays accurate even when a background tab throttles our interval to a crawl.
+  const endAtRef = React.useRef(0);
+  // A dedicated AudioContext holding the *scheduled* end alarm. Scheduling the
+  // sound on the audio clock (at start) means it fires on time even while the
+  // tab is in the background; an inaudible keep-alive stops the context being
+  // suspended. `soundRef` keeps the latest choice without re-arming mid-run.
+  const alarmRef = React.useRef<{ ctx: AudioContext; keepAlive: OscillatorNode } | null>(null);
+  const soundRef = React.useRef(sound);
+  React.useEffect(() => { soundRef.current = sound; }, [sound]);
+
+  const disarmAlarm = React.useCallback(() => {
+    const a = alarmRef.current;
+    alarmRef.current = null;
+    if (!a) return;
+    try { a.keepAlive.stop(); } catch { /* ignore */ }
+    try { void a.ctx.close(); } catch { /* ignore */ }
+  }, []);
+
+  const armAlarm = React.useCallback((seconds: number) => {
+    disarmAlarm();
+    const ctx = makeAudioContext();
+    if (!ctx) return;
+    void ctx.resume();
+    const keepAlive = ctx.createOscillator();
+    const kg = ctx.createGain();
+    kg.gain.value = 0.0004; // inaudible; keeps the context from being suspended
+    keepAlive.connect(kg); kg.connect(ctx.destination);
+    keepAlive.start();
+    scheduleSound(ctx, soundRef.current, ctx.currentTime + Math.max(0, seconds));
+    alarmRef.current = { ctx, keepAlive };
+  }, [disarmAlarm]);
+
+  // Release the audio context on unmount.
+  React.useEffect(() => disarmAlarm, [disarmAlarm]);
 
   // Reset the clock only when the chosen focus length changes (not on pause).
   React.useEffect(() => {
     setRunning(false);
+    disarmAlarm();
     setPhase("focus");
     setSecondsLeft(focusMin * 60);
-  }, [focusMin]);
+  }, [focusMin, disarmAlarm]);
 
+  // While running, re-derive the remaining time from the end timestamp every
+  // half-second, and immediately on returning to the tab.
   React.useEffect(() => {
     if (!running) return;
-    const id = window.setInterval(() => setSecondsLeft((s) => Math.max(0, s - 1)), 1000);
-    return () => window.clearInterval(id);
+    const recompute = () =>
+      setSecondsLeft(Math.max(0, Math.round((endAtRef.current - Date.now()) / 1000)));
+    const id = window.setInterval(recompute, 500);
+    const onVisible = () => { if (!document.hidden) recompute(); };
+    document.addEventListener("visibilitychange", onVisible);
+    window.addEventListener("focus", onVisible);
+    return () => {
+      window.clearInterval(id);
+      document.removeEventListener("visibilitychange", onVisible);
+      window.removeEventListener("focus", onVisible);
+    };
   }, [running]);
 
   React.useEffect(() => {
     if (secondsLeft > 0 || !running) return;
+    // The alarm was scheduled at start and has just fired on the audio clock —
+    // don't replay it; let it ring out, then release the context.
     if (phase === "focus") {
       setRunning(false);
-      chime();
       setPhase("reflect");
     } else if (phase === "break") {
       setRunning(false);
       setPhase("focus");
       setSecondsLeft(focusMin * 60);
     }
+    const a = alarmRef.current;
+    if (a) {
+      alarmRef.current = null;
+      window.setTimeout(() => { try { void a.ctx.close(); } catch { /* ignore */ } }, 3500);
+    }
   }, [secondsLeft, phase, running, focusMin]);
+
+  // Start/resume (arms the alarm within the click gesture) or pause.
+  function toggleRun() {
+    setRunning((r) => {
+      const next = !r;
+      if (next) {
+        endAtRef.current = Date.now() + secondsLeft * 1000;
+        armAlarm(secondsLeft);
+      } else {
+        disarmAlarm();
+      }
+      return next;
+    });
+  }
+
+  function changeSound(id: string) {
+    setSound(id);
+    try { localStorage.setItem("focus-sound", id); } catch { /* ignore */ }
+    previewSound(id);
+  }
 
   // Keep the screen awake while a focus block runs in zen mode.
   React.useEffect(() => {
@@ -148,6 +236,7 @@ export function FocusTimer({
 
   function reset() {
     setRunning(false);
+    disarmAlarm();
     setPhase("focus");
     setSecondsLeft(focusMin * 60);
     setNote("");
@@ -191,7 +280,7 @@ export function FocusTimer({
   const controls = (
     <div className="flex items-center gap-2">
       <Tap className="inline-flex">
-        <Button onClick={() => setRunning((r) => !r)}>
+        <Button onClick={toggleRun}>
           {running ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
           {running ? "Pause" : secondsLeft < total ? "Resume" : "Start"}
         </Button>
@@ -223,6 +312,22 @@ export function FocusTimer({
             </optgroup>
           )}
         </select>
+      </div>
+      <div className="flex items-center gap-2">
+        <span className="text-xs text-muted-foreground">End sound</span>
+        <select
+          value={sound}
+          onChange={(e) => changeSound(e.target.value)}
+          aria-label="Timer end sound"
+          className="h-9 flex-1 rounded-button border border-input bg-surface px-2 text-sm"
+        >
+          {FOCUS_SOUNDS.map((s) => <option key={s.id} value={s.id}>{s.label}</option>)}
+        </select>
+        <Tap className="inline-flex">
+          <Button type="button" size="icon" variant="ghost" aria-label="Preview sound" onClick={() => previewSound(sound)}>
+            <Play className="h-4 w-4" />
+          </Button>
+        </Tap>
       </div>
     </div>
   );
