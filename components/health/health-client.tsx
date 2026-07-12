@@ -2,7 +2,23 @@
 
 import * as React from "react";
 import { useRouter } from "next/navigation";
-import { Check, ChevronLeft, ChevronRight, Droplet, Loader2, Minus, Plus, Trash2 } from "lucide-react";
+import {
+  Activity,
+  Apple,
+  Check,
+  ChevronLeft,
+  ChevronRight,
+  Droplet,
+  Dumbbell,
+  Flower2,
+  HeartPulse,
+  Loader2,
+  Minus,
+  Plus,
+  Trash2,
+  Wind,
+  type LucideIcon,
+} from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import {
@@ -50,20 +66,119 @@ const MOOD = ["Low", "Meh", "Okay", "Good", "Great"];
 const STRESS = ["Calm", "Easy", "Some", "High", "Peak"];
 const LBS_PER_KG = 2.2046226218;
 
+type Section = { id: string; label: string; icon: LucideIcon; full?: boolean; node: React.ReactNode };
+
 export function HealthClient({ overview }: { overview: BodyOverview }) {
+  // Section list is built gender-aware: Cycle only appears when tracking is
+  // enabled (users.sex = 'female').
+  const sections: Section[] = [
+    { id: "trends", label: "Trends", icon: Activity, full: true, node: <Trends overview={overview} /> },
+    { id: "check-in", label: "Check-in", icon: HeartPulse, node: <CheckIn today={overview.today} /> },
+    { id: "hydration", label: "Hydration", icon: Droplet, node: <Hydration today={overview.today} /> },
+    { id: "breathing", label: "Breathing", icon: Wind, node: <Breathing todayMinutes={overview.today?.mindfulness_minutes ?? 0} /> },
+    { id: "nutrition", label: "Nutrition", icon: Apple, node: <Nutrition meals={overview.nutritionToday} /> },
+    ...(overview.cycleEnabled && overview.cycle
+      ? [{ id: "cycle", label: "Cycle", icon: Flower2, full: true, node: <Cycle logs={overview.periodLogs} /> } as Section]
+      : []),
+    { id: "workouts", label: "Workouts", icon: Dumbbell, full: true, node: <Workouts workouts={overview.workouts} /> },
+  ];
+
+  const { active, go } = useSectionNav(sections.map((s) => s.id));
+
   return (
-    <div className="grid items-start gap-6 lg:grid-cols-2">
-      <Trends overview={overview} className="lg:col-span-2" />
-      <CheckIn today={overview.today} />
-      <Hydration today={overview.today} />
-      <Breathing todayMinutes={overview.today?.mindfulness_minutes ?? 0} />
-      <Nutrition meals={overview.nutritionToday} />
-      {overview.cycleEnabled && overview.cycle && (
-        <Cycle logs={overview.periodLogs} className="lg:col-span-2" />
-      )}
-      <Workouts workouts={overview.workouts} className="lg:col-span-2" />
+    <div className="lg:flex lg:gap-6">
+      {/* Desktop: sticky vertical rail */}
+      <nav className="sticky top-20 hidden h-max w-44 shrink-0 lg:block">
+        <ul className="space-y-1">
+          {sections.map((s) => {
+            const Icon = s.icon;
+            return (
+              <li key={s.id}>
+                <button
+                  onClick={() => go(s.id)}
+                  aria-current={active === s.id ? "true" : undefined}
+                  className={cn(
+                    "flex w-full items-center gap-2.5 rounded-button px-3 py-2 text-sm transition-colors",
+                    active === s.id
+                      ? "bg-primary/10 font-medium text-foreground"
+                      : "text-muted-foreground hover:bg-accent hover:text-foreground",
+                  )}
+                >
+                  <Icon className="h-4 w-4 shrink-0" />
+                  {s.label}
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+      </nav>
+
+      <div className="min-w-0 flex-1">
+        {/* Mobile: sticky horizontal chip bar */}
+        <div className="sticky top-[calc(3.5rem+env(safe-area-inset-top))] z-20 -mx-4 mb-4 border-b bg-background/85 px-4 py-2 backdrop-blur lg:hidden">
+          <div className="flex gap-1.5 overflow-x-auto pb-0.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            {sections.map((s) => {
+              const Icon = s.icon;
+              return (
+                <button
+                  key={s.id}
+                  onClick={() => go(s.id)}
+                  aria-current={active === s.id ? "true" : undefined}
+                  className={cn(
+                    "inline-flex shrink-0 items-center gap-1.5 rounded-pill border px-3 py-1.5 text-xs font-medium transition-colors",
+                    active === s.id
+                      ? "border-primary bg-primary/10 text-foreground"
+                      : "border-input text-muted-foreground",
+                  )}
+                >
+                  <Icon className="h-3.5 w-3.5" />
+                  {s.label}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        <div className="grid items-start gap-6 lg:grid-cols-2">
+          {sections.map((s) => (
+            <section key={s.id} id={s.id} className={cn("scroll-mt-28 lg:scroll-mt-20", s.full && "lg:col-span-2")}>
+              {s.node}
+            </section>
+          ))}
+        </div>
+      </div>
     </div>
   );
+}
+
+/** Scroll-spy + smooth-scroll for the in-page Health section nav. */
+function useSectionNav(ids: string[]) {
+  const [active, setActive] = React.useState(ids[0]);
+  const key = ids.join(",");
+
+  React.useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((e) => e.isIntersecting)
+          .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
+        if (visible[0]) setActive(visible[0].target.id);
+      },
+      { rootMargin: "-25% 0px -65% 0px", threshold: 0 },
+    );
+    for (const id of key.split(",")) {
+      const el = document.getElementById(id);
+      if (el) observer.observe(el);
+    }
+    return () => observer.disconnect();
+  }, [key]);
+
+  function go(id: string) {
+    document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+    setActive(id);
+  }
+
+  return { active, go };
 }
 
 /* ── shared rating dots (energy / mood / stress) ─────────────────────────── */
