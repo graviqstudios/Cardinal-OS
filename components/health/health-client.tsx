@@ -2,9 +2,19 @@
 
 import * as React from "react";
 import { useRouter } from "next/navigation";
-import { Check, Droplet, Loader2, Minus, Plus, Trash2 } from "lucide-react";
+import { Check, ChevronLeft, ChevronRight, Droplet, Loader2, Minus, Plus, Trash2 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
+import {
+  deriveCycleParams,
+  cycleStatus,
+  dayType,
+  phaseFor,
+  isoKey,
+  PHASE_LABEL,
+  PHASE_BLURB,
+  type CyclePhase,
+} from "@/lib/body/cycle";
 import {
   addWater,
   deleteNutrition,
@@ -49,7 +59,7 @@ export function HealthClient({ overview }: { overview: BodyOverview }) {
       <Breathing todayMinutes={overview.today?.mindfulness_minutes ?? 0} />
       <Nutrition meals={overview.nutritionToday} />
       {overview.cycleEnabled && overview.cycle && (
-        <Cycle cycle={overview.cycle} logs={overview.periodLogs} className="lg:col-span-2" />
+        <Cycle logs={overview.periodLogs} className="lg:col-span-2" />
       )}
       <Workouts workouts={overview.workouts} className="lg:col-span-2" />
     </div>
@@ -368,19 +378,24 @@ function dateKey(d: Date) {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 }
 
-function Cycle({
-  cycle,
-  logs,
-  className,
-}: {
-  cycle: NonNullable<BodyOverview["cycle"]>;
-  logs: PeriodLog[];
-  className?: string;
-}) {
+const PERIOD_COLOR = "var(--module-readiness)"; // red — menstruation
+const FERTILE_COLOR = "var(--module-calendar)"; // green — fertile window / ovulation
+
+function phaseColor(phase: CyclePhase): string {
+  if (phase === "menstrual") return `hsl(${PERIOD_COLOR})`;
+  if (phase === "fertile" || phase === "ovulation") return `hsl(${FERTILE_COLOR})`;
+  return "hsl(var(--primary))";
+}
+
+const WEEKDAYS = ["S", "M", "T", "W", "T", "F", "S"];
+
+function Cycle({ logs, className }: { logs: PeriodLog[]; className?: string }) {
   const router = useRouter();
   const today = dateKey(new Date());
-  const [selected, setSelected] = React.useState(today);
   const [, start] = React.useTransition();
+
+  const params = React.useMemo(() => deriveCycleParams(logs), [logs]);
+  const status = React.useMemo(() => cycleStatus(today, params), [today, params]);
 
   const byDate = React.useMemo(() => {
     const m = new Map<string, PeriodLog>();
@@ -388,153 +403,245 @@ function Cycle({
     return m;
   }, [logs]);
 
+  const [monthCursor, setMonthCursor] = React.useState(() => {
+    const d = new Date();
+    return new Date(d.getFullYear(), d.getMonth(), 1);
+  });
+  const [selected, setSelected] = React.useState(today);
   const current = byDate.get(selected) ?? null;
   const [flow, setFlow] = React.useState<PeriodFlow | null>(current?.flow ?? null);
   const [symptoms, setSymptoms] = React.useState<string[]>(current?.symptoms ?? []);
-
-  // Re-sync the editor when the selected day changes.
   React.useEffect(() => {
     const l = byDate.get(selected) ?? null;
     setFlow(l?.flow ?? null);
     setSymptoms(l?.symptoms ?? []);
   }, [selected, byDate]);
 
-  // Last 14 days, oldest → newest.
-  const strip = Array.from({ length: 14 }, (_, i) => {
-    const d = new Date();
-    d.setDate(d.getDate() - (13 - i));
-    return dateKey(d);
-  });
-
   function toggleSymptom(s: string) {
     setSymptoms((cur) => (cur.includes(s) ? cur.filter((x) => x !== s) : [...cur, s]));
   }
-
   function save() {
-    start(async () => {
-      await savePeriodDay({ date: selected, flow, symptoms });
-      router.refresh();
-    });
+    start(async () => { await savePeriodDay({ date: selected, flow, symptoms }); router.refresh(); });
   }
   function remove() {
-    start(async () => {
-      await deletePeriodDay(selected);
-      router.refresh();
-    });
+    start(async () => { await deletePeriodDay(selected); router.refresh(); });
   }
 
-  const estimate = (() => {
-    if (cycle.daysUntilNext == null || !cycle.nextEstimate) {
-      return "Log a couple of cycles and a gentle estimate will appear here.";
+  // Month grid.
+  const year = monthCursor.getFullYear();
+  const monthIdx = monthCursor.getMonth();
+  const daysInMonth = new Date(year, monthIdx + 1, 0).getDate();
+  const leading = new Date(year, monthIdx, 1).getDay();
+  const cells: (string | null)[] = [];
+  for (let i = 0; i < leading; i++) cells.push(null);
+  for (let d = 1; d <= daysInMonth; d++) cells.push(isoKey(new Date(year, monthIdx, d)));
+  const monthLabel = monthCursor.toLocaleDateString(undefined, { month: "long", year: "numeric" });
+
+  function shiftMonth(delta: number) {
+    setMonthCursor((m) => new Date(m.getFullYear(), m.getMonth() + delta, 1));
+  }
+
+  // Per-day visual (logged period wins over predictions).
+  function cellVisual(iso: string) {
+    const log = byDate.get(iso);
+    if (log?.flow) {
+      return { bg: `hsl(${PERIOD_COLOR} / ${flowOpacity(log.flow)})`, fg: "#fff", ring: null as string | null };
     }
-    const when = new Date(`${cycle.nextEstimate}T00:00:00`).toLocaleDateString(undefined, { month: "short", day: "numeric" });
-    if (cycle.daysUntilNext < 0) return `Period may be a few days late. Around ${when}.`;
-    if (cycle.daysUntilNext === 0) return `Period may begin around today.`;
-    return `Next period around ${when}, about ${cycle.daysUntilNext} day${cycle.daysUntilNext === 1 ? "" : "s"} away.`;
-  })();
+    switch (dayType(iso, params)) {
+      case "predicted-period":
+        return { bg: `hsl(${PERIOD_COLOR} / 0.16)`, fg: "inherit", ring: null };
+      case "ovulation":
+        return { bg: `hsl(${FERTILE_COLOR} / 0.22)`, fg: "inherit", ring: `hsl(${FERTILE_COLOR})` };
+      case "fertile":
+        return { bg: `hsl(${FERTILE_COLOR} / 0.13)`, fg: "inherit", ring: null };
+      default:
+        return { bg: "transparent", fg: "inherit", ring: null };
+    }
+  }
+
+  const selDate = new Date(`${selected}T00:00:00`);
+  const selLabel = selected === today
+    ? "Today"
+    : selDate.toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" });
+  const isFuture = selected > today;
+  const selPhase = phaseFor(selected, params);
+  const nextWhen = status
+    ? new Date(`${status.nextPeriod}T00:00:00`).toLocaleDateString(undefined, { month: "short", day: "numeric" })
+    : null;
 
   return (
     <Card className={className}>
-      <CardContent className="space-y-4 p-6">
+      <CardContent className="space-y-5 p-6">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">Cycle</p>
-          {cycle.avgCycleLength && (
-            <span className="text-xs text-muted-foreground">~{cycle.avgCycleLength}-day cycle</span>
+          {params.predicted && (
+            <span className="text-xs text-muted-foreground">
+              ~{params.cycleLength}-day cycle · {params.periodLength}-day period
+            </span>
           )}
         </div>
 
-        <div
-          className="flex items-start gap-3 rounded-card border p-3"
-          style={{ background: "hsl(var(--module-goals) / 0.08)", borderColor: "hsl(var(--module-goals) / 0.2)" }}
-        >
-          <span className="mt-0.5 h-2 w-2 shrink-0 rounded-full" style={{ background: "hsl(var(--module-goals))" }} />
-          <p className="text-sm text-foreground/90">{estimate}</p>
-        </div>
-
-        {/* 14-day strip */}
-        <div className="flex items-end justify-between gap-1">
-          {strip.map((d) => {
-            const log = byDate.get(d);
-            const isSel = d === selected;
-            const isToday = d === today;
-            const day = new Date(`${d}T00:00:00`);
-            return (
-              <button
-                key={d}
-                onClick={() => setSelected(d)}
-                className={cn(
-                  "flex flex-1 flex-col items-center gap-1 rounded-button py-1 transition-colors",
-                  isSel ? "bg-accent" : "hover:bg-accent/60",
-                )}
-                title={day.toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" })}
-              >
-                <span className={cn("text-[10px]", isToday ? "font-semibold text-foreground" : "text-muted-foreground")}>
-                  {day.getDate()}
-                </span>
-                <span
-                  className="h-3.5 w-3.5 rounded-full border"
-                  style={{
-                    background: log?.flow ? "hsl(var(--module-goals))" : "transparent",
-                    opacity: log?.flow ? flowOpacity(log.flow) : 1,
-                    borderColor: log ? "hsl(var(--module-goals))" : "hsl(var(--input))",
-                  }}
+        {/* ── Status header (Flo-style): current day, phase, next period ── */}
+        {status ? (
+          <div className="flex items-center gap-4 rounded-card border p-4">
+            <div className="relative h-20 w-20 shrink-0">
+              <svg width="80" height="80" viewBox="0 0 140 140" fill="none">
+                <circle cx="70" cy="70" r="60" stroke="hsl(var(--muted))" strokeWidth="12" />
+                <circle
+                  cx="70" cy="70" r="60" stroke={phaseColor(status.phase)} strokeWidth="12" strokeLinecap="round"
+                  pathLength={1000}
+                  strokeDasharray={`${Math.round((status.cycleDay / params.cycleLength) * 1000)} 1000`}
+                  transform="rotate(-90 70 70)"
                 />
-              </button>
-            );
-          })}
+              </svg>
+              <div className="absolute inset-0 flex flex-col items-center justify-center">
+                <span className="text-[10px] uppercase tracking-wide text-muted-foreground">Day</span>
+                <span className="font-serif text-2xl leading-none tabular-nums">{status.cycleDay}</span>
+              </div>
+            </div>
+            <div className="min-w-0 space-y-1">
+              <p className="font-serif text-xl leading-tight" style={{ color: phaseColor(status.phase) }}>
+                {PHASE_LABEL[status.phase]}
+              </p>
+              <p className="text-sm text-muted-foreground">{PHASE_BLURB[status.phase]}</p>
+              <p className="text-sm text-foreground/90">
+                {status.daysUntilNext > 0
+                  ? <>Next period in <span className="font-medium">{status.daysUntilNext} day{status.daysUntilNext === 1 ? "" : "s"}</span> · around {nextWhen}</>
+                  : status.daysUntilNext === 0
+                    ? "Your period may begin around today."
+                    : `Period may be ${Math.abs(status.daysUntilNext)} day${Math.abs(status.daysUntilNext) === 1 ? "" : "s"} late.`}
+              </p>
+            </div>
+          </div>
+        ) : (
+          <div
+            className="rounded-card border p-4 text-sm text-foreground/90"
+            style={{ background: `hsl(${PERIOD_COLOR} / 0.07)`, borderColor: `hsl(${PERIOD_COLOR} / 0.2)` }}
+          >
+            Log the days of your next period below and Cardinal will start predicting your cycle, fertile window and next period.
+          </div>
+        )}
+
+        {/* ── Month calendar ── */}
+        <div>
+          <div className="mb-2 flex items-center justify-between">
+            <button onClick={() => shiftMonth(-1)} aria-label="Previous month" className="rounded-button p-1.5 text-muted-foreground hover:bg-accent hover:text-foreground">
+              <ChevronLeft className="h-4 w-4" />
+            </button>
+            <span className="text-sm font-medium">{monthLabel}</span>
+            <button onClick={() => shiftMonth(1)} aria-label="Next month" className="rounded-button p-1.5 text-muted-foreground hover:bg-accent hover:text-foreground">
+              <ChevronRight className="h-4 w-4" />
+            </button>
+          </div>
+          <div className="grid grid-cols-7 gap-1 text-center">
+            {WEEKDAYS.map((w, i) => (
+              <span key={i} className="pb-1 text-[10px] font-medium uppercase text-muted-foreground">{w}</span>
+            ))}
+            {cells.map((iso, i) => {
+              if (!iso) return <span key={`b${i}`} />;
+              const v = cellVisual(iso);
+              const isSel = iso === selected;
+              const isToday = iso === today;
+              const log = byDate.get(iso);
+              return (
+                <button
+                  key={iso}
+                  onClick={() => setSelected(iso)}
+                  className={cn(
+                    "relative flex aspect-square items-center justify-center rounded-lg text-sm transition-transform active:scale-95",
+                    isSel && "ring-2 ring-primary",
+                    isToday && !isSel && "ring-1 ring-foreground/40",
+                  )}
+                  style={{ background: v.bg, color: v.fg, boxShadow: v.ring ? `inset 0 0 0 1.5px ${v.ring}` : undefined }}
+                >
+                  {Number(iso.slice(-2))}
+                  {log?.symptoms?.length ? (
+                    <span className="absolute bottom-1 h-1 w-1 rounded-full" style={{ background: v.fg === "#fff" ? "#fff" : "hsl(var(--muted-foreground))" }} />
+                  ) : null}
+                </button>
+              );
+            })}
+          </div>
+          {/* legend */}
+          <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1.5 text-[11px] text-muted-foreground">
+            <Legend swatch={`hsl(${PERIOD_COLOR})`}>Period</Legend>
+            <Legend swatch={`hsl(${PERIOD_COLOR} / 0.16)`}>Predicted</Legend>
+            <Legend swatch={`hsl(${FERTILE_COLOR} / 0.13)`}>Fertile</Legend>
+            <Legend swatch={`hsl(${FERTILE_COLOR} / 0.22)`} ring={`hsl(${FERTILE_COLOR})`}>Ovulation</Legend>
+          </div>
         </div>
 
-        {/* editor for the selected day */}
-        <div className="space-y-3 rounded-card border bg-surface/40 p-3">
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="text-sm text-muted-foreground">
-              {selected === today ? "Today" : new Date(`${selected}T00:00:00`).toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" })}
-            </span>
-            <div className="ml-auto flex items-center gap-1">
-              {PERIOD_FLOWS.map((f) => (
+        {/* ── Selected-day editor (past/today) or prediction (future) ── */}
+        {isFuture ? (
+          <div className="rounded-card border bg-surface/40 p-3 text-sm">
+            <span className="font-medium">{selLabel}</span>
+            {selPhase ? (
+              <span className="text-muted-foreground"> · predicted {PHASE_LABEL[selPhase].toLowerCase()}</span>
+            ) : (
+              <span className="text-muted-foreground"> · no prediction yet</span>
+            )}
+          </div>
+        ) : (
+          <div className="space-y-3 rounded-card border bg-surface/40 p-3">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="text-sm text-muted-foreground">{selLabel}</span>
+              <div className="ml-auto flex items-center gap-1">
+                {PERIOD_FLOWS.map((f) => (
+                  <button
+                    key={f.id}
+                    onClick={() => setFlow(flow === f.id ? null : f.id)}
+                    aria-pressed={flow === f.id}
+                    className={cn(
+                      "rounded-pill border px-2 py-0.5 text-[11px] font-medium transition-colors",
+                      flow === f.id ? "border-primary bg-primary/10 text-foreground" : "border-input text-muted-foreground hover:bg-accent",
+                    )}
+                  >
+                    {f.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div className="flex flex-wrap gap-1.5">
+              {PERIOD_SYMPTOMS.map((s) => (
                 <button
-                  key={f.id}
-                  onClick={() => setFlow(flow === f.id ? null : f.id)}
-                  aria-pressed={flow === f.id}
+                  key={s}
+                  onClick={() => toggleSymptom(s)}
+                  aria-pressed={symptoms.includes(s)}
                   className={cn(
-                    "rounded-pill border px-2 py-0.5 text-[11px] font-medium transition-colors",
-                    flow === f.id ? "border-primary bg-primary/10 text-foreground" : "border-input text-muted-foreground hover:bg-accent",
+                    "rounded-pill border px-2.5 py-1 text-xs transition-colors",
+                    symptoms.includes(s) ? "border-primary bg-primary/10 text-foreground" : "border-input text-muted-foreground hover:bg-accent",
                   )}
                 >
-                  {f.label}
+                  {s}
                 </button>
               ))}
             </div>
-          </div>
-          <div className="flex flex-wrap gap-1.5">
-            {PERIOD_SYMPTOMS.map((s) => (
-              <button
-                key={s}
-                onClick={() => toggleSymptom(s)}
-                aria-pressed={symptoms.includes(s)}
-                className={cn(
-                  "rounded-pill border px-2.5 py-1 text-xs transition-colors",
-                  symptoms.includes(s) ? "border-primary bg-primary/10 text-foreground" : "border-input text-muted-foreground hover:bg-accent",
-                )}
-              >
-                {s}
-              </button>
-            ))}
-          </div>
-          <div className="flex items-center justify-end gap-2">
-            {current && (
+            <div className="flex items-center justify-end gap-2">
+              {current && (
+                <Tap className="inline-flex">
+                  <Button size="sm" variant="ghost" onClick={remove}>Clear day</Button>
+                </Tap>
+              )}
               <Tap className="inline-flex">
-                <Button size="sm" variant="ghost" onClick={remove}>Clear day</Button>
+                <Button size="sm" onClick={save} disabled={flow === null && symptoms.length === 0}>Save</Button>
               </Tap>
-            )}
-            <Tap className="inline-flex">
-              <Button size="sm" onClick={save} disabled={flow === null && symptoms.length === 0}>Save</Button>
-            </Tap>
+            </div>
           </div>
-        </div>
-        <p className="text-[11px] text-muted-foreground">Informational only, not medical advice.</p>
+        )}
+        <p className="text-[11px] text-muted-foreground">
+          Predictions are estimates from your logs — informational only, not medical or contraceptive advice.
+        </p>
       </CardContent>
     </Card>
+  );
+}
+
+function Legend({ swatch, ring, children }: { swatch: string; ring?: string; children: React.ReactNode }) {
+  return (
+    <span className="inline-flex items-center gap-1.5">
+      <span className="h-3 w-3 rounded" style={{ background: swatch, boxShadow: ring ? `inset 0 0 0 1.5px ${ring}` : undefined }} />
+      {children}
+    </span>
   );
 }
 
