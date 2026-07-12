@@ -3,11 +3,11 @@
 import * as React from "react";
 import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
-import { Maximize2, Minimize2, Pause, Play, RotateCcw } from "lucide-react";
+import { BellOff, Maximize2, Minimize2, Pause, Play, RotateCcw } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { logFocusSession } from "@/lib/body/actions";
-import { FOCUS_SOUNDS, DEFAULT_SOUND, scheduleSound } from "@/lib/focus/sounds";
+import { FOCUS_SOUNDS, DEFAULT_SOUND, scheduleSound, scheduleAlarm } from "@/lib/focus/sounds";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -113,8 +113,15 @@ export function FocusTimer({
     kg.gain.value = 0.0004; // inaudible; keeps the context from being suspended
     keepAlive.connect(kg); kg.connect(ctx.destination);
     keepAlive.start();
-    scheduleSound(ctx, soundRef.current, ctx.currentTime + Math.max(0, seconds));
+    // Ring loudly and repeatedly from the end time until the user stops it.
+    scheduleAlarm(ctx, soundRef.current, ctx.currentTime + Math.max(0, seconds));
     alarmRef.current = { ctx, keepAlive };
+  }, [disarmAlarm]);
+
+  const [ringing, setRinging] = React.useState(false);
+  const stopAlarm = React.useCallback(() => {
+    disarmAlarm();
+    setRinging(false);
   }, [disarmAlarm]);
 
   // Release the audio context on unmount.
@@ -147,8 +154,10 @@ export function FocusTimer({
 
   React.useEffect(() => {
     if (secondsLeft > 0 || !running) return;
-    // The alarm was scheduled at start and has just fired on the audio clock —
-    // don't replay it; let it ring out, then release the context.
+    // The alarm was scheduled at start and is now ringing (loudly, repeatedly) on
+    // the audio clock. Leave it ringing until the user stops it — don't close the
+    // context here.
+    setRinging(true);
     if (phase === "focus") {
       setRunning(false);
       setPhase("reflect");
@@ -157,15 +166,11 @@ export function FocusTimer({
       setPhase("focus");
       setSecondsLeft(focusMin * 60);
     }
-    const a = alarmRef.current;
-    if (a) {
-      alarmRef.current = null;
-      window.setTimeout(() => { try { void a.ctx.close(); } catch { /* ignore */ } }, 3500);
-    }
   }, [secondsLeft, phase, running, focusMin]);
 
   // Start/resume (arms the alarm within the click gesture) or pause.
   function toggleRun() {
+    setRinging(false);
     setRunning((r) => {
       const next = !r;
       if (next) {
@@ -219,6 +224,7 @@ export function FocusTimer({
   })();
 
   async function finishFocus() {
+    stopAlarm();
     const [kind, id] = link ? link.split(":") : [null, null];
     await logFocusSession({
       duration_minutes: focusMin,
@@ -236,7 +242,7 @@ export function FocusTimer({
 
   function reset() {
     setRunning(false);
-    disarmAlarm();
+    stopAlarm();
     setPhase("focus");
     setSecondsLeft(focusMin * 60);
     setNote("");
@@ -291,6 +297,19 @@ export function FocusTimer({
         </Button>
       </Tap>
     </div>
+  );
+
+  // Shown while the end alarm is ringing — the loud, obvious way to silence it.
+  const stopButton = (
+    <Tap className="block w-full">
+      <Button
+        onClick={stopAlarm}
+        className="w-full animate-pulse bg-destructive text-destructive-foreground hover:bg-destructive/90"
+      >
+        <BellOff className="h-4 w-4" />
+        Stop alarm
+      </Button>
+    </Tap>
   );
 
   const setup = (
@@ -349,6 +368,7 @@ export function FocusTimer({
           </div>
         )}
         {ring(Math.max(320, zenSize))}
+        {ringing && <div className="w-full max-w-sm">{stopButton}</div>}
         {phase === "reflect" ? (
           <div className="w-full max-w-sm space-y-2">
             <Input value={note} onChange={(e) => setNote(e.target.value)} placeholder="How did that go?" className="bg-surface" />
@@ -394,6 +414,8 @@ export function FocusTimer({
         )}
 
         <div className="my-1">{ring(128)}</div>
+
+        {ringing && <div className="w-full">{stopButton}</div>}
 
         {phase === "reflect" ? (
           <div className="w-full space-y-2">
