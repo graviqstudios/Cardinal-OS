@@ -62,15 +62,19 @@ export async function deleteSubject(id: string): Promise<Result> {
 export async function addTopic(
   subjectId: string,
   name: string,
+  chapterId: string | null = null,
 ): Promise<Result> {
   const trimmed = name.trim();
   if (!trimmed) return { ok: false, error: "Name is required." };
   const { supabase, userId } = await uid();
   if (!userId) return { ok: false, error: "Not authenticated." };
 
-  const { error } = await supabase
-    .from("topics")
-    .insert({ user_id: userId, subject_id: subjectId, name: trimmed });
+  const { error } = await supabase.from("topics").insert({
+    user_id: userId,
+    subject_id: subjectId,
+    chapter_id: chapterId,
+    name: trimmed,
+  });
   if (error) return { ok: false, error: error.message };
   revalidatePath("/study");
   return { ok: true };
@@ -104,6 +108,7 @@ export async function setTopicStatus(
 export async function generateTopics(
   subjectId: string,
   subjectName: string,
+  chapterId: string | null = null,
 ): Promise<Result<{ added: number }>> {
   const { supabase, userId } = await uid();
   if (!userId) return { ok: false, error: "Not authenticated." };
@@ -136,6 +141,7 @@ export async function generateTopics(
   const rows = names.map((name) => ({
     user_id: userId,
     subject_id: subjectId,
+    chapter_id: chapterId,
     name,
   }));
   const { error } = await supabase.from("topics").insert(rows);

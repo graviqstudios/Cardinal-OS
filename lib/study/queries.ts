@@ -1,8 +1,11 @@
 import { createClient, getUser } from "@/lib/supabase/server";
 import type {
+  Chapter,
   ChatMessageRow,
   DocumentRow,
+  StudyTask,
   Subject,
+  SubjectPageData,
   SubjectWithTopics,
   Topic,
 } from "@/lib/study/types";
@@ -46,6 +49,46 @@ export async function getSubjectWithTopics(
 
   if (!subject) return null;
   return { ...(subject as Subject), topics: (topics ?? []) as Topic[] };
+}
+
+/**
+ * Full subject-page payload: the subject plus its chapters (ordered), all its
+ * topics (with chapter_id), and its study tasks. Null if not found/owned.
+ */
+export async function getSubjectPageData(
+  subjectId: string,
+): Promise<SubjectPageData | null> {
+  const supabase = await createClient();
+
+  const [{ data: subject }, { data: chapters }, { data: topics }, { data: tasks }] =
+    await Promise.all([
+      supabase.from("subjects").select("*").eq("id", subjectId).maybeSingle(),
+      supabase
+        .from("chapters")
+        .select("*")
+        .eq("subject_id", subjectId)
+        .order("order_index", { ascending: true })
+        .order("created_at", { ascending: true }),
+      supabase
+        .from("topics")
+        .select("*")
+        .eq("subject_id", subjectId)
+        .order("created_at", { ascending: true }),
+      supabase
+        .from("study_tasks")
+        .select("*")
+        .eq("subject_id", subjectId)
+        .order("order_index", { ascending: true })
+        .order("created_at", { ascending: true }),
+    ]);
+
+  if (!subject) return null;
+  return {
+    ...(subject as Subject),
+    chapters: (chapters ?? []) as Chapter[],
+    topics: (topics ?? []) as Topic[],
+    tasks: (tasks ?? []) as StudyTask[],
+  };
 }
 
 /** The signed-in user's exam target (name, date, optional target score). */

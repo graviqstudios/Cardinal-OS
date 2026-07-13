@@ -29,13 +29,55 @@ export type Topic = {
   id: string;
   user_id: string;
   subject_id: string;
+  chapter_id: string | null;
   name: string;
   status: TopicStatus;
   created_at: string;
   updated_at: string;
 };
 
+export type Chapter = {
+  id: string;
+  user_id: string;
+  subject_id: string;
+  name: string;
+  order_index: number;
+  created_at: string;
+  updated_at: string;
+};
+
+export type TaskStatus = "todo" | "doing" | "done";
+
+export const TASK_STATUSES: TaskStatus[] = ["todo", "doing", "done"];
+
+export const TASK_STATUS_META: Record<TaskStatus, { label: string }> = {
+  todo: { label: "To do" },
+  doing: { label: "Doing" },
+  done: { label: "Done" },
+};
+
+export type StudyTask = {
+  id: string;
+  user_id: string;
+  subject_id: string;
+  chapter_id: string | null;
+  topic_id: string | null;
+  title: string;
+  status: TaskStatus;
+  due_date: string | null;
+  order_index: number;
+  created_at: string;
+  updated_at: string;
+};
+
 export type SubjectWithTopics = Subject & { topics: Topic[] };
+
+/** Full subject-page payload: chapters (ordered) + all topics + tasks. */
+export type SubjectPageData = Subject & {
+  chapters: Chapter[];
+  topics: Topic[];
+  tasks: StudyTask[];
+};
 
 export type DocumentRow = {
   id: string;

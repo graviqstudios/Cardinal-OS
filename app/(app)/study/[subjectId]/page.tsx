@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 
-import { getSubjectWithTopics } from "@/lib/study/queries";
+import { getSubjectPageData } from "@/lib/study/queries";
 import { subjectProgress } from "@/lib/study/progress";
 import { requireExamMode } from "@/lib/exam/guard";
 import { SubjectDetail } from "@/components/study/subject-detail";
@@ -16,7 +16,7 @@ export default async function SubjectPage({
   await requireExamMode();
 
   const { subjectId } = await params;
-  const subject = await getSubjectWithTopics(subjectId);
+  const subject = await getSubjectPageData(subjectId);
   if (!subject) notFound();
 
   const progress = subjectProgress(subject.topics);
@@ -33,14 +33,16 @@ export default async function SubjectPage({
 
       <PageHeader
         title={subject.name}
-        description={`${subject.topics.length} topic${
+        description={`${subject.chapters.length} chapter${
+          subject.chapters.length === 1 ? "" : "s"
+        } · ${subject.topics.length} topic${
           subject.topics.length === 1 ? "" : "s"
         } · ${progress}% mastered`}
         colorVar="--module-study"
         mark="/brand/module-study.svg"
       />
 
-      <SubjectDetail subject={subject} />
+      <SubjectDetail data={subject} />
     </div>
   );
 }
