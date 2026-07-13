@@ -31,7 +31,7 @@ export async function updateSession(request: NextRequest) {
     request: { headers: requestHeaders },
   });
 
-  // Before Supabase env is configured, don't attempt auth — let requests through
+  // Before Supabase env is configured, don't attempt auth - let requests through
   // so the app still boots locally.
   if (
     !process.env.NEXT_PUBLIC_SUPABASE_URL ||

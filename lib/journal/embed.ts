@@ -5,7 +5,7 @@ import { embedTexts } from "@/lib/ai/embeddings";
 
 /**
  * (Re)build the searchable chunks for one journal entry: drop its old chunks,
- * then chunk + embed the current content. Best-effort — if embedding fails
+ * then chunk + embed the current content. Best-effort - if embedding fails
  * (e.g. missing AI key on a non-mock path), the entry is still saved, just not
  * yet searchable. Call after any create/update of an entry's content.
  */

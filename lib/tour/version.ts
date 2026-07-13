@@ -4,6 +4,6 @@
  * A user sees the tour while their stored `tour_version` is below this number.
  *
  * History:
- *   1 — Plan hub + Body→Health restructure (2026-06-22).
+ *   1 - Plan hub + Body→Health restructure (2026-06-22).
  */
 export const TOUR_VERSION = 1;

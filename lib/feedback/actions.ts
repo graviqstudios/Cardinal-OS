@@ -6,7 +6,7 @@ import { brevoConfigured, sendEmail } from "@/lib/email/brevo";
 /** Where feedback notifications are sent (overridable, defaults to the team inbox). */
 const NOTIFY_TO = process.env.FEEDBACK_NOTIFY_TO || "graviqstudios@gmail.com";
 
-/** Tag applied to every feedback email — subject prefix + Brevo tag. */
+/** Tag applied to every feedback email - subject prefix + Brevo tag. */
 const FEEDBACK_TAG = "Cardinal OS Feedbacks";
 
 export type FeedbackKind = "feedback" | "review" | "bug";
@@ -55,12 +55,12 @@ export async function submitFeedback(input: SubmitFeedbackInput): Promise<Result
     page: input.page ?? null,
   });
 
-  if (error) return { ok: false, error: "Couldn't save that — please try again." };
+  if (error) return { ok: false, error: "Couldn't save that - please try again." };
 
-  // Notify the team by email — best-effort, never blocks or fails the save.
+  // Notify the team by email - best-effort, never blocks or fails the save.
   if (brevoConfigured()) {
     try {
-      const stars = rating ? "★".repeat(rating) + "☆".repeat(5 - rating) : "—";
+      const stars = rating ? "★".repeat(rating) + "☆".repeat(5 - rating) : "-";
       const esc = (s: string) =>
         s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
       await sendEmail({
@@ -72,14 +72,14 @@ export async function submitFeedback(input: SubmitFeedbackInput): Promise<Result
             <p><strong>Type:</strong> ${kind}</p>
             <p><strong>Rating:</strong> ${stars}</p>
             <p><strong>From:</strong> ${esc(user.email ?? user.id)}</p>
-            <p><strong>Page:</strong> ${esc(input.page ?? "—")} · <strong>Source:</strong> ${esc(input.source ?? "—")}</p>
+            <p><strong>Page:</strong> ${esc(input.page ?? "-")} · <strong>Source:</strong> ${esc(input.source ?? "-")}</p>
             ${input.allowTestimonial ? "<p><strong>✔ OK to use as a testimonial</strong></p>" : ""}
             <p><strong>Message:</strong></p>
             <p style="white-space:pre-wrap;border-left:3px solid #CB4B33;padding-left:12px">${message ? esc(message) : "<em>(no message)</em>"}</p>
           </div>`,
       });
     } catch {
-      // Email failures must not affect the user — the row is already saved.
+      // Email failures must not affect the user - the row is already saved.
     }
   }
 

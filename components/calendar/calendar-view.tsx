@@ -298,7 +298,7 @@ function WeekView({ events, anchor, onPickDay, onPickEvent }: { events: Calendar
             </button>
             <div className="flex-1 space-y-1 p-1.5">
               {dayEvents.length === 0 ? (
-                <p className="px-1 py-2 text-[11px] text-muted-foreground">—</p>
+                <p className="px-1 py-2 text-[11px] text-muted-foreground">-</p>
               ) : (
                 dayEvents.map((ev) => <EventChip key={ev.id} ev={ev} onClick={() => onPickEvent(ev)} />)
               )}

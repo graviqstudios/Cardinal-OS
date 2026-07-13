@@ -67,7 +67,7 @@ export function GoalsClient({
                 {streak} day{streak === 1 ? "" : "s"}
               </p>
               <p className="text-xs text-muted-foreground">
-                Study streak — practice today to keep it alive.
+                Study streak - practice today to keep it alive.
               </p>
             </div>
           </CardContent>

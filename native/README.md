@@ -1,9 +1,9 @@
-# Cardinal OS — Android app (Capacitor)
+# Cardinal OS - Android app (Capacitor)
 
 The Android app is a thin native shell that loads the live site
 (`cardinalos.graviq.in`) in a WebView and adds native features (push,
 biometric lock, haptics, splash/status bar, share, native Google sign-in).
-We ship the same web codebase to the browser and the app — a web deploy updates
+We ship the same web codebase to the browser and the app - a web deploy updates
 the app instantly, no store release needed for UI changes.
 
 ## One-time machine setup (required to build)
@@ -28,7 +28,7 @@ npm run cap:run       # build + launch on a connected device/emulator
 ```
 
 Because we load a remote URL, you usually **don't** need to rebuild the app for
-web changes — just deploy the site. Rebuild only when native config/plugins change.
+web changes - just deploy the site. Rebuild only when native config/plugins change.
 
 ### Testing against a local dev server
 ```bash
@@ -40,7 +40,7 @@ npm run cap:run
 ## Release build (Play Store)
 
 The upload keystore (`android/cardinal-upload.jks`) and `android/keystore.properties`
-already exist and are **gitignored**. ⚠️ **Back both up** (password manager) — they
+already exist and are **gitignored**. ⚠️ **Back both up** (password manager) - they
 sign every update. With Play App Signing on, the upload key is recoverable if lost.
 
 Build the signed bundle:
@@ -57,7 +57,7 @@ Google. After your first upload, copy the **app-signing SHA-1** from Play Consol
 Setup → App signing, and add THAT to the Google Cloud Android OAuth client too, or
 Google sign-in won't work for the Play-distributed build.
 
-### Publishing (your steps — needs a Play Console account, $25 one-time)
+### Publishing (your steps - needs a Play Console account, $25 one-time)
 1. Create the app in **Play Console**, package `cardinal.os`.
 2. Upload `app-release.aab` to a testing track (Internal testing first).
 3. Listing: use `native/store/listing.md` (copy) + `native/store/icon-512.png`
@@ -106,7 +106,7 @@ JSON exists) is already in place. To turn it on:
 3. **Service account for sending:** Firebase console → Project settings →
    Service accounts → Generate new private key. Put the whole JSON (stringified)
    in **`FIREBASE_SERVICE_ACCOUNT`** in Vercel (and `.env.local` for local).
-4. **Set `NEXT_PUBLIC_PUSH_ENABLED=true` in Vercel and redeploy** — ONLY after
+4. **Set `NEXT_PUBLIC_PUSH_ENABLED=true` in Vercel and redeploy** - ONLY after
    steps 1–3 and a rebuilt APK that contains google-services.json. Until then,
    leave it unset: calling the native `register()` without Firebase configured
    throws "Default FirebaseApp is not initialized" and crashes the app (a native
@@ -129,5 +129,5 @@ Until steps 1–3 are done, the app simply won't receive pushes; nothing breaks.
 
 ## App identity
 
-- **App ID / package:** `cardinal.os` (permanent once published — do not change)
+- **App ID / package:** `cardinal.os` (permanent once published - do not change)
 - **App name:** Cardinal OS

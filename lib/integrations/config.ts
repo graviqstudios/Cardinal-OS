@@ -13,7 +13,7 @@ export function isProviderConfigured(id: ProviderId): boolean {
     case "notion":
       return Boolean(process.env.NOTION_CLIENT_ID && process.env.NOTION_CLIENT_SECRET);
     case "spotify":
-      return Boolean(process.env.SPOTIFY_CLIENT_ID); // PKCE — no secret stored
+      return Boolean(process.env.SPOTIFY_CLIENT_ID); // PKCE - no secret stored
     case "evernote":
       return Boolean(process.env.EVERNOTE_CONSUMER_KEY && process.env.EVERNOTE_CONSUMER_SECRET);
     default:

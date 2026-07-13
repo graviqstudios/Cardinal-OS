@@ -7,7 +7,7 @@ type CookieToSet = { name: string; value: string; options: CookieOptions };
 /**
  * Server Supabase client for Server Components, Route Handlers, and Server
  * Actions. In Next.js 15 `cookies()` is async. Writing cookies from a Server
- * Component throws — that's expected and safely ignored, because the middleware
+ * Component throws - that's expected and safely ignored, because the middleware
  * refreshes the session cookie on every request.
  *
  * Wrapped in React `cache()` so a single render pass reuses one client instead
@@ -30,7 +30,7 @@ export const createClient = cache(async function createClient() {
               cookieStore.set(name, value, options),
             );
           } catch {
-            // Called from a Server Component — safe to ignore (middleware refreshes).
+            // Called from a Server Component - safe to ignore (middleware refreshes).
           }
         },
       },

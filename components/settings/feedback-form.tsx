@@ -50,7 +50,7 @@ export function FeedbackForm() {
   if (state === "done") {
     return (
       <div className="rounded-card border border-primary/20 bg-primary/[0.06] p-5 text-sm">
-        <p className="font-medium text-foreground">Thank you — we read every word.</p>
+        <p className="font-medium text-foreground">Thank you - we read every word.</p>
         <p className="mt-1 text-muted-foreground">
           Your note helps shape what we build next.
         </p>

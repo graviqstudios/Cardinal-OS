@@ -3,7 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 /**
  * Per-user rate limiting for every AI route, keyed by `<route>:auth.uid()`.
  * Backed by a Postgres fixed-window counter (see
- * supabase/migrations/0003_rate_limit.sql) — no external service.
+ * supabase/migrations/0003_rate_limit.sql) - no external service.
  *
  * Fails open: if the RPC errors (e.g. the migration hasn't run yet) the request
  * is allowed, so local dev is never blocked by rate limiting.

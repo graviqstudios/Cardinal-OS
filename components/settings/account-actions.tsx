@@ -22,7 +22,7 @@ export function AccountActions() {
     setError(null);
     const res = await deleteAccount();
     if (res.ok) {
-      // Session is now invalid — clear cookies and leave.
+      // Session is now invalid - clear cookies and leave.
       await createClient().auth.signOut();
       router.push("/");
       router.refresh();

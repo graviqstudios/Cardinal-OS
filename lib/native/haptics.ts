@@ -10,7 +10,7 @@ export async function tapHaptic(): Promise<void> {
     const { Haptics, ImpactStyle } = await import("@capacitor/haptics");
     await Haptics.impact({ style: ImpactStyle.Light });
   } catch {
-    // Plugin unavailable — silently ignore.
+    // Plugin unavailable - silently ignore.
   }
 }
 

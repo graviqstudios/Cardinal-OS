@@ -1,5 +1,5 @@
 /**
- * A warm, progress-aware greeting for the Today page — chosen from the user's
+ * A warm, progress-aware greeting for the Today page - chosen from the user's
  * actual state rather than the clock (server time made time-of-day greetings
  * wrong). Voice: calm, supportive, never anxiety-driven (BRAND §Voice).
  *
@@ -39,13 +39,13 @@ export function buildGreeting(s: GreetingSignals): string {
     );
   }
 
-  // Every habit already done today — the strongest signal, so lead with it.
+  // Every habit already done today - the strongest signal, so lead with it.
   if (s.habitsTotal > 0 && s.habitsDone === s.habitsTotal) {
     return pick(
       [
         `Every habit's done already, ${name}. Lovely.`,
         `You've cleared your habits, ${name}. Strong start.`,
-        `All checked off, ${name} — that rhythm suits you.`,
+        `All checked off, ${name} - that rhythm suits you.`,
       ],
       daySeed,
     );

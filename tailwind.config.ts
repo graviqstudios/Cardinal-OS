@@ -3,7 +3,7 @@ import tailwindcssAnimate from "tailwindcss-animate";
 
 /**
  * Tailwind v3 (classic config). Colours are HSL channels exposed as CSS custom
- * properties in globals.css — components read `hsl(var(--token))`, never raw hex.
+ * properties in globals.css - components read `hsl(var(--token))`, never raw hex.
  * `--primary` / `--ring` are driven by the user's chosen accent (data-accent).
  */
 const config: Config = {
@@ -28,7 +28,7 @@ const config: Config = {
         foreground: "hsl(var(--foreground))",
         surface: {
           // --surface is defined as a hex value in Design/tokens.css (which wins
-          // over the HSL channels in globals.css), so it must be used directly —
+          // over the HSL channels in globals.css), so it must be used directly -
           // wrapping a hex in hsl() yields an invalid, transparent colour. This
           // matches `border`/`input` above, which are also raw var() tokens.
           DEFAULT: "var(--surface)",
@@ -62,7 +62,7 @@ const config: Config = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        // Fixed module colours (see project doc) — referenced as e.g. bg-module-study.
+        // Fixed module colours (see project doc) - referenced as e.g. bg-module-study.
         module: {
           study: "hsl(var(--module-study))",
           calendar: "hsl(var(--module-calendar))",

@@ -76,7 +76,7 @@ export function Sidebar({
         className={cn(
           // Solid surface (not translucent): the sidebar is a full-height column
           // that never overlaps content, so glassmorphism only muddied contrast
-          // on the light parchment/sage themes — especially in the installed PWA.
+          // on the light parchment/sage themes - especially in the installed PWA.
           "sticky top-0 hidden h-dvh shrink-0 flex-col border-r bg-surface transition-[width] duration-200 md:flex",
           collapsed ? "w-[68px]" : "w-64",
         )}

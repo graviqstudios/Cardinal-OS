@@ -2,7 +2,7 @@ import Link from "next/link";
 
 import { cn } from "@/lib/utils";
 
-/** The Needle — two-facet compass mark (BRAND §2). Cardinal north, bone south. */
+/** The Needle - two-facet compass mark (BRAND §2). Cardinal north, bone south. */
 export function Needle({ size = 22, className }: { size?: number; className?: string }) {
   return (
     <svg
@@ -26,7 +26,7 @@ export function Brand({
 }: {
   href?: string;
   className?: string;
-  /** Mark-only lockup (no wordmark) — used by the collapsed sidebar. */
+  /** Mark-only lockup (no wordmark) - used by the collapsed sidebar. */
   compact?: boolean;
 }) {
   return (

@@ -2,7 +2,7 @@ import { createClient, getUser } from "@/lib/supabase/server";
 
 /**
  * Whether the signed-in user has ever submitted feedback. Used to permanently
- * suppress the in-app feedback prompt once they've responded — across every
+ * suppress the in-app feedback prompt once they've responded - across every
  * device, not just the one where they dismissed it (localStorage can't do that).
  */
 export async function hasSubmittedFeedback(): Promise<boolean> {

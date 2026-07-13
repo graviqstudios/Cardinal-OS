@@ -152,7 +152,7 @@ export function VoiceExaminer({ topics }: { topics: VoiceTopic[] }) {
       r.start();
       setListening(true);
     } catch {
-      // Already started — that's fine, we're listening.
+      // Already started - that's fine, we're listening.
       setListening(true);
     }
   }
@@ -310,7 +310,7 @@ export function VoiceExaminer({ topics }: { topics: VoiceTopic[] }) {
           <Card key={i}>
             <CardContent className="space-y-1 p-4">
               <p className="text-sm font-medium">{q.question}</p>
-              <p className="text-sm text-muted-foreground"><span className="font-medium text-foreground">You said:</span> {answers[i] || "—"}</p>
+              <p className="text-sm text-muted-foreground"><span className="font-medium text-foreground">You said:</span> {answers[i] || "-"}</p>
               <p className="text-sm text-muted-foreground">{results[i].feedback}</p>
             </CardContent>
           </Card>

@@ -20,7 +20,7 @@ function isLastDayOfMonth(d: Date): boolean {
  * Brevo.
  *
  * The schedule fires on days 28–31; we only proceed on the actual last day of the
- * month so the review lands on month-end and summarises the whole month — never on
+ * month so the review lands on month-end and summarises the whole month - never on
  * a phantom "30th" that doesn't exist in February.
  */
 export async function GET(req: Request) {
@@ -83,7 +83,7 @@ function emailHtml(title: string, name: string, body: string): string {
     <div style="font-size:13px;letter-spacing:0.16em;text-transform:uppercase;color:#C97A63;">${title}</div>
     <h1 style="font-size:24px;font-weight:400;margin:8px 0 16px;">Hello, ${name}.</h1>
     <p style="font-size:16px;line-height:1.7;color:#D7CCBA;white-space:pre-wrap;">${escapeHtml(body)}</p>
-    <p style="font-size:13px;color:#897C68;margin-top:24px;">— Cardinal OS, by GraviQ Studios</p>
+    <p style="font-size:13px;color:#897C68;margin-top:24px;">- Cardinal OS, by GraviQ Studios</p>
   </div>
 </body></html>`;
 }

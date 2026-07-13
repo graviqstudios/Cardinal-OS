@@ -8,7 +8,7 @@ import { createMockChatModel } from "@/lib/ai/mock";
  * Provider factory for Cardinal OS. Per the project doc, the Vercel AI SDK is the
  * AI layer: Gemini Flash/Flash-Lite handle high-volume routes, Claude Sonnet 4.6
  * handles reasoning. When a provider key is missing the factory falls back to a
- * mock model so the whole pipeline still runs locally — swapping in real models
+ * mock model so the whole pipeline still runs locally - swapping in real models
  * later is just setting the env var, no route/UI changes.
  *
  * All AI code runs on the Node.js runtime (never edge).
@@ -49,7 +49,7 @@ export function reasoningModel(): LanguageModelV1 {
 }
 
 /**
- * Embedding model (768-dim). Null when no Gemini key — caller uses mock vectors.
+ * Embedding model (768-dim). Null when no Gemini key - caller uses mock vectors.
  * gemini-embedding-001 is the current GA model; outputDimensionality pins it to
  * 768 to match the document_chunks vector(768) column.
  */

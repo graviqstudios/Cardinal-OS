@@ -22,7 +22,7 @@ export type NavItem = {
   colorVar?: string;
   /** Brand module mark (from Design/assets, served at /brand), if it has one. */
   mark?: string;
-  /** Part of the opt-in Exam Prep template — hidden unless the user enables it. */
+  /** Part of the opt-in Exam Prep template - hidden unless the user enables it. */
   examOnly?: boolean;
   enabled: boolean;
 };

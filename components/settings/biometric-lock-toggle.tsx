@@ -16,7 +16,7 @@ import { Tap } from "@/components/motion/tap";
 
 /**
  * App-lock toggle, shown only inside the native app (the web build renders
- * nothing — no empty card). Enabling requires one successful biometric/passcode
+ * nothing - no empty card). Enabling requires one successful biometric/passcode
  * check so the user can't lock themselves out with an unenrolled device.
  */
 export function BiometricLockToggle() {
@@ -44,7 +44,7 @@ export function BiometricLockToggle() {
       if (!enabled) {
         const ok = await verifyIdentity("Confirm to turn on app lock");
         if (!ok) {
-          setError("Couldn't confirm — app lock not enabled.");
+          setError("Couldn't confirm - app lock not enabled.");
           return;
         }
         setBiometricLockEnabled(true);

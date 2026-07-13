@@ -37,7 +37,7 @@ export function LifeScoreHero({
             </>
           ) : (
             <p className="mt-1 text-sm text-muted-foreground">
-              Add a habit, a task, or a goal — your score grows as your days take shape.
+              Add a habit, a task, or a goal - your score grows as your days take shape.
             </p>
           )}
         </div>

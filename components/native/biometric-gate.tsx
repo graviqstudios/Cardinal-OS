@@ -46,7 +46,7 @@ export function BiometricGate() {
     return () => clearTimeout(t);
   }, [attemptUnlock]);
 
-  // Re-lock on a *real* resume — ignore the transient resume the biometric
+  // Re-lock on a *real* resume - ignore the transient resume the biometric
   // prompt causes (check in flight, or just-unlocked moments ago).
   React.useEffect(() => {
     if (!isNative() || !isBiometricLockEnabled()) return;

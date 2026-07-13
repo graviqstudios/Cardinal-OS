@@ -62,7 +62,7 @@ export async function createEvent(input: EventInput): Promise<Result<{ id: strin
         .eq("id", data.id);
     }
   } catch {
-    /* Google push failed — the event still exists locally. */
+    /* Google push failed - the event still exists locally. */
   }
 
   revalidatePath("/calendar");

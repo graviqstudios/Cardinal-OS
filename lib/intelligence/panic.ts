@@ -56,7 +56,7 @@ export function computePanic(input: {
     triage: triageTopics.slice(0, 12),
     plan,
     text: triggered
-      ? `${daysToExam} days to your exam, with readiness at ${score}/1000. Here's a focused plan — concentrate on these high-impact topics first, in order.`
+      ? `${daysToExam} days to your exam, with readiness at ${score}/1000. Here's a focused plan - concentrate on these high-impact topics first, in order.`
       : undefined,
   };
 }

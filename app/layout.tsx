@@ -19,7 +19,7 @@ import {
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "Cardinal OS — one calm home for your whole life",
+    default: "Cardinal OS - one calm home for your whole life",
     template: "%s · Cardinal OS",
   },
   description: SITE_DESCRIPTION,
@@ -50,7 +50,7 @@ export const metadata: Metadata = {
     type: "website",
     url: SITE_URL,
     siteName: SITE_NAME,
-    title: "Cardinal OS — one calm home for your whole life",
+    title: "Cardinal OS - one calm home for your whole life",
     description: SITE_DESCRIPTION,
     locale: "en_US",
   },
@@ -58,7 +58,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     site: "@GraviQStudios",
     creator: "@GraviQStudios",
-    title: "Cardinal OS — one calm home for your whole life",
+    title: "Cardinal OS - one calm home for your whole life",
     description: SITE_DESCRIPTION,
   },
   robots: {
@@ -113,7 +113,7 @@ export default async function RootLayout({
       }
     }
   } catch {
-    // Supabase not configured yet — fall back to client defaults.
+    // Supabase not configured yet - fall back to client defaults.
   }
 
   return (

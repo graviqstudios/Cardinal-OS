@@ -1,5 +1,5 @@
 /* ===================================================================
-   Cardinal OS — Design Tokens
+   Cardinal OS - Design Tokens
    Drop this in once, then style everything with var(--token).
    Never hard-code a hex in a component. Switch theme by setting
    data-theme on <html> or <body>; switch accent with data-accent.
@@ -53,12 +53,12 @@
 }
 
 /* ===================================================================
-   THEMES  —  set data-theme on <html>
+   THEMES  -  set data-theme on <html>
    Each defines: --bg, --surface, --surface-2, --text, --muted,
    --border, --accent (theme-tuned cardinal that stays legible).
    =================================================================== */
 
-/* Parchment — light, default */
+/* Parchment - light, default */
 :root,
 [data-theme="parchment"] {
   --bg:        #F5EFE3;
@@ -72,7 +72,7 @@
   color-scheme: light;
 }
 
-/* Study — warm dark */
+/* Study - warm dark */
 [data-theme="study"] {
   --bg:        #1A140F;
   --surface:   #241C15;
@@ -85,7 +85,7 @@
   color-scheme: dark;
 }
 
-/* Sage — calm light */
+/* Sage - calm light */
 [data-theme="sage"] {
   --bg:        #EBEDE5;
   --surface:   #FBFCF8;
@@ -98,7 +98,7 @@
   color-scheme: light;
 }
 
-/* Dusk — cool twilight */
+/* Dusk - cool twilight */
 [data-theme="dusk"] {
   --bg:        #16161E;
   --surface:   #1F1F2A;
@@ -111,7 +111,7 @@
   color-scheme: dark;
 }
 
-/* Ink — true black (OLED) */
+/* Ink - true black (OLED) */
 [data-theme="ink"] {
   --bg:        #0B0907;
   --surface:   #141009;
@@ -125,7 +125,7 @@
 }
 
 /* ===================================================================
-   ACCENTS  —  set data-accent on <html> (overrides --accent).
+   ACCENTS  -  set data-accent on <html> (overrides --accent).
    Chosen on first launch. One harmonious key.
    =================================================================== */
 [data-accent="cardinal"] { --accent: #CB4B33; --on-accent: #FFFFFF; }

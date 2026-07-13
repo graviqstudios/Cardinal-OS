@@ -36,7 +36,7 @@ export function computeBurnout(points: PracticePoint[]): BurnoutSignal {
   if (sustainedEffort && declined) {
     return {
       triggered: true,
-      text: "Your scores have dipped a little even though you're putting in the hours. Tomorrow, keep it light — two hours max, no new topics, just revise what you already know.",
+      text: "Your scores have dipped a little even though you're putting in the hours. Tomorrow, keep it light - two hours max, no new topics, just revise what you already know.",
     };
   }
   return { triggered: false };

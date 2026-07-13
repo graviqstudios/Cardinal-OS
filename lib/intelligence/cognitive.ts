@@ -31,7 +31,7 @@ export type TimingInsight = { hasInsight: boolean; text?: string };
 /**
  * "We noticed" timing insight: which part of the day the student performs best.
  * Surfaces only with enough data spanning enough days (avoids noise). Never uses
- * the phrase "cognitive fingerprint" — just "we noticed".
+ * the phrase "cognitive fingerprint" - just "we noticed".
  */
 export function computeTimingInsight(points: PracticePoint[]): TimingInsight {
   const valid = points.filter((p) => frac(p) != null);

@@ -3,7 +3,7 @@ import type { MetadataRoute } from "next";
 import { SITE_DESCRIPTION, SITE_NAME } from "@/lib/site";
 
 /**
- * Web App Manifest — makes Cardinal OS installable as a PWA (Add to Home Screen
+ * Web App Manifest - makes Cardinal OS installable as a PWA (Add to Home Screen
  * / "Install app"). Served at /manifest.webmanifest, which the middleware already
  * treats as a public file. The brand colours mirror the parchment theme so the
  * splash and task-switcher chrome match the app.

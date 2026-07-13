@@ -52,7 +52,7 @@ export default async function Home() {
     const user = await getUser();
     signedIn = Boolean(user);
   } catch {
-    // Supabase not configured yet — treat as signed out and show the landing.
+    // Supabase not configured yet - treat as signed out and show the landing.
   }
 
   // redirect() throws internally, so it must run outside the try/catch above.

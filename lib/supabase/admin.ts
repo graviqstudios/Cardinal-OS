@@ -6,7 +6,7 @@ export function hasServiceRole(): boolean {
 }
 
 /**
- * Service-role Supabase client — bypasses RLS. Server-only, for trusted
+ * Service-role Supabase client - bypasses RLS. Server-only, for trusted
  * background jobs (e.g. the monthly-review cron) that operate across all users.
  * Never import into client code or expose the service key.
  */

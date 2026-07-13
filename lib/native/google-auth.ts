@@ -8,7 +8,7 @@ import { createClient } from "@/lib/supabase/client";
  * Google credential picker (@capgo/capacitor-social-login), get a Google ID
  * token, and exchange it for a Supabase session via signInWithIdToken.
  *
- * Requires NEXT_PUBLIC_GOOGLE_WEB_CLIENT_ID (the Google **Web** OAuth client id —
+ * Requires NEXT_PUBLIC_GOOGLE_WEB_CLIENT_ID (the Google **Web** OAuth client id -
  * its value is the audience Supabase validates, so it must also be listed in the
  * Supabase Google provider's allowed client ids).
  */

@@ -6,7 +6,7 @@ import { JOURNAL_ASK_SYSTEM, journalContext } from "@/lib/ai/prompts";
 import { embedQuery } from "@/lib/ai/embeddings";
 import { checkRateLimit } from "@/lib/ratelimit";
 
-// Node.js runtime — never edge (Supabase SSR + AI assume full Node).
+// Node.js runtime - never edge (Supabase SSR + AI assume full Node).
 export const runtime = "nodejs";
 export const maxDuration = 30;
 

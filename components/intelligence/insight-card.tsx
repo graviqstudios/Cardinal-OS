@@ -6,7 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 
 /**
  * Surfaces the "we noticed" timing insight and/or a gentle burnout nudge.
- * Renders nothing when there's neither — no empty state, no noise.
+ * Renders nothing when there's neither - no empty state, no noise.
  */
 export function InsightCard({
   timing,

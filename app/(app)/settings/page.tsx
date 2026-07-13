@@ -73,7 +73,7 @@ export default async function SettingsPage() {
         </CardHeader>
         <CardContent className="space-y-4">
           <p className="text-sm text-muted-foreground">
-            Connect Google Calendar, Notion, and Spotify — or disconnect one you no
+            Connect Google Calendar, Notion, and Spotify - or disconnect one you no
             longer want linked.
           </p>
           <Link
@@ -122,7 +122,7 @@ export default async function SettingsPage() {
         </CardContent>
       </Card>
 
-      {/* App lock — only renders inside the native app. */}
+      {/* App lock - only renders inside the native app. */}
       <BiometricLockToggle />
 
       <Card>

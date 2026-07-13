@@ -5,7 +5,7 @@ import * as React from "react";
 import { isNative } from "@/lib/native";
 
 /**
- * Registers the PWA service worker — browser only. Inside the Capacitor (native)
+ * Registers the PWA service worker - browser only. Inside the Capacitor (native)
  * shell we skip it entirely: the native app has its own lifecycle and a SW there
  * would only get in the way. Mounted once in the root layout.
  */
@@ -16,7 +16,7 @@ export function ServiceWorkerRegistrar() {
 
     const register = () => {
       navigator.serviceWorker.register("/sw.js").catch(() => {
-        // Registration failures are non-fatal — the app still works online.
+        // Registration failures are non-fatal - the app still works online.
       });
     };
 

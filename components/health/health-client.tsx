@@ -298,7 +298,7 @@ function CheckIn({ today }: { today: BodyOverview["today"] }) {
                 ))}
               </div>
             </div>
-            <Input type="number" step="any" min={0} value={weight} onChange={(e) => setWeight(e.target.value)} placeholder="—" className="bg-surface" />
+            <Input type="number" step="any" min={0} value={weight} onChange={(e) => setWeight(e.target.value)} placeholder="-" className="bg-surface" />
           </div>
         </div>
 
@@ -405,7 +405,7 @@ function Hydration({ today }: { today: BodyOverview["today"] }) {
         </div>
 
         <p className="text-center text-xs text-muted-foreground">
-          {reached ? "Goal reached — nicely done." : `${((HYDRATION_GOAL_ML - ml) / 1000).toFixed(2)}L to go today.`}
+          {reached ? "Goal reached - nicely done." : `${((HYDRATION_GOAL_ML - ml) / 1000).toFixed(2)}L to go today.`}
         </p>
 
         <div className="mt-auto flex items-center gap-2">
@@ -493,8 +493,8 @@ function dateKey(d: Date) {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 }
 
-const PERIOD_COLOR = "var(--module-readiness)"; // red — menstruation
-const FERTILE_COLOR = "var(--module-calendar)"; // green — fertile window / ovulation
+const PERIOD_COLOR = "var(--module-readiness)"; // red - menstruation
+const FERTILE_COLOR = "var(--module-calendar)"; // green - fertile window / ovulation
 
 function phaseColor(phase: CyclePhase): string {
   if (phase === "menstrual") return `hsl(${PERIOD_COLOR})`;
@@ -744,7 +744,7 @@ function Cycle({ logs, className }: { logs: PeriodLog[]; className?: string }) {
           </div>
         )}
         <p className="text-[11px] text-muted-foreground">
-          Predictions are estimates from your logs — informational only, not medical or contraceptive advice.
+          Predictions are estimates from your logs - informational only, not medical or contraceptive advice.
         </p>
       </CardContent>
     </Card>

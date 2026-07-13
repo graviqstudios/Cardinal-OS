@@ -29,7 +29,7 @@ export default async function TodayPage() {
   const supabase = await createClient();
 
   // Established users (account ≥ 4 days old) get a one-time, dismissable
-  // feedback nudge — but never if they've already submitted feedback (checked
+  // feedback nudge - but never if they've already submitted feedback (checked
   // server-side so it stays hidden across every device, not just this one).
   const accountAgeDays = user?.created_at
     ? (Date.now() - new Date(user.created_at).getTime()) / 86_400_000
@@ -138,7 +138,7 @@ export default async function TodayPage() {
         </div>
       </div>
 
-      {/* Cross-domain patterns ("we noticed") — streamed */}
+      {/* Cross-domain patterns ("we noticed") - streamed */}
       <Suspense fallback={<div className="h-24 animate-pulse rounded-card border bg-muted/50" />}>
         <InsightsSection />
       </Suspense>

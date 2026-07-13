@@ -22,7 +22,7 @@ export async function shareText(opts: {
     try {
       await navigator.share(opts);
     } catch {
-      // user cancelled or unsupported — ignore
+      // user cancelled or unsupported - ignore
     }
   }
 }

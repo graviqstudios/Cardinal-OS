@@ -2,7 +2,7 @@ import { createCipheriv, createDecipheriv, randomBytes } from "crypto";
 
 /**
  * AES-256-GCM encryption for integration tokens at rest. The key comes from
- * INTEGRATION_ENC_KEY (32 bytes, supplied as base64 or hex — generate with
+ * INTEGRATION_ENC_KEY (32 bytes, supplied as base64 or hex - generate with
  * `openssl rand -base64 32`). Format: base64(iv).base64(tag).base64(ciphertext).
  *
  * Throws only when actually called without a valid key, so the module is safe

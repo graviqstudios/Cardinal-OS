@@ -2,7 +2,8 @@
   "permissions": {
     "allow": [
       "Bash(npm --version)",
-      "WebFetch(domain:status.supabase.com)"
+      "WebFetch(domain:status.supabase.com)",
+      "Bash(npx tsc *)"
     ]
   }
 }

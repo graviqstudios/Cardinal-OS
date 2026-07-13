@@ -32,7 +32,7 @@ export function ThemeControls({ persist = false }: { persist?: boolean }) {
         <div>
           <h3 className="text-sm font-semibold">Accent</h3>
           <p className="text-sm text-muted-foreground">
-            One key colour — threads through buttons, focus rings, and the readiness ring.
+            One key colour - threads through buttons, focus rings, and the readiness ring.
           </p>
         </div>
         <div className="flex flex-wrap gap-3">

@@ -4,7 +4,7 @@ import type { PeriodLog } from "@/lib/body/types";
  * Client-safe menstrual-cycle predictions (Flo-style). Derives cycle/period
  * length from logged period days and projects the recurring phases forward:
  * menstrual → follicular → fertile window (with ovulation) → luteal. Purely
- * informational — never medical advice.
+ * informational - never medical advice.
  */
 
 export type CyclePhase = "menstrual" | "follicular" | "fertile" | "ovulation" | "luteal";

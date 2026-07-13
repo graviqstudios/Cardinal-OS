@@ -18,7 +18,7 @@ export async function sendEmail(opts: {
   replyTo?: string;
 }): Promise<void> {
   // Send from the (send-only) EMAIL_FROM address, but route replies to a real
-  // inbox — EMAIL_REPLY_TO (e.g. support@graviq.in) — so noreply@ replies aren't lost.
+  // inbox - EMAIL_REPLY_TO (e.g. support@graviq.in) - so noreply@ replies aren't lost.
   const replyToEmail = opts.replyTo || process.env.EMAIL_REPLY_TO;
 
   const res = await fetch("https://api.brevo.com/v3/smtp/email", {

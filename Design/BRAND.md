@@ -1,4 +1,4 @@
-# Cardinal OS — Brand \& Design System
+# Cardinal OS - Brand \& Design System
 
 A developer handoff spec. Everything here is framework-agnostic. Pair it with
 `tokens.css` (all values as CSS variables) and the SVGs in `assets/`.

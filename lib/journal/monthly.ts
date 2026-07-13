@@ -19,7 +19,7 @@ export async function generateMonthlyReview(
   userId: string,
 ): Promise<{ title: string; text: string }> {
   // Summarise the current calendar month (this cron runs on the month's last
-  // day), from the 1st through today — not a rolling 30 days that would bleed
+  // day), from the 1st through today - not a rolling 30 days that would bleed
   // into the previous month.
   const now = new Date();
   const since = new Date(now.getFullYear(), now.getMonth(), 1);

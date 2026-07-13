@@ -177,7 +177,7 @@ export function PracticeClient({ topics }: { topics: PracticeTopic[] }) {
                 </div>
                 <p className="pl-6 text-sm text-muted-foreground">
                   <span className="font-medium text-foreground">Your answer: </span>
-                  {answers[i] || "—"}
+                  {answers[i] || "-"}
                 </p>
                 <p className="pl-6 text-sm text-muted-foreground">{r.feedback}</p>
               </CardContent>

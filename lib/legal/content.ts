@@ -1,6 +1,6 @@
 /**
  * Legal content for Cardinal OS, shared by the /privacy and /terms pages and the
- * landing footer. DRAFT — written to a sensible standard for India's DPDP Act,
+ * landing footer. DRAFT - written to a sensible standard for India's DPDP Act,
  * 2023, but should be reviewed by a lawyer before public launch.
  */
 
@@ -11,7 +11,7 @@ export const LEGAL = {
   grievanceOfficer: "P. S. Satchith, GraviQ Studios",
   jurisdiction: "India",
   updated: "21 June 2026",
-  // Bump this whenever the Terms / Privacy Policy materially change — users who
+  // Bump this whenever the Terms / Privacy Policy materially change - users who
   // accepted an older version will be re-prompted once. (Machine-readable date.)
   effectiveISO: "2026-06-21",
 };

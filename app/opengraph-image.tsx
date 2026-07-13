@@ -3,7 +3,7 @@ import { ImageResponse } from "next/og";
 // Node runtime per project rule (never edge). next/og runs fine on Node.
 export const runtime = "nodejs";
 
-export const alt = "Cardinal OS — one calm home for your whole life";
+export const alt = "Cardinal OS - one calm home for your whole life";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 

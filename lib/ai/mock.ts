@@ -57,7 +57,7 @@ function mockReply(prompt: LanguageModelV1Prompt): string {
   );
 
   return (
-    `**(Demo mode — no AI key configured)**\n\n` +
+    `**(Demo mode - no AI key configured)**\n\n` +
     (question
       ? `You asked: "${question.slice(0, 200)}".\n\n`
       : "") +

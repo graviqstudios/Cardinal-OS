@@ -85,7 +85,7 @@ export function JournalClient({ entries }: { entries: JournalEntry[] }) {
 
       {entries.length === 0 ? (
         <p className="px-1 text-sm text-muted-foreground">
-          Nothing written yet. Start with a note above — even a line is enough.
+          Nothing written yet. Start with a note above - even a line is enough.
         </p>
       ) : (
         <div className="space-y-3">

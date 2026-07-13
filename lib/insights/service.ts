@@ -1,7 +1,7 @@
 import { createClient, getUser } from "@/lib/supabase/server";
 
 /**
- * Cross-domain "we noticed" patterns — the thing only a system that sees your
+ * Cross-domain "we noticed" patterns - the thing only a system that sees your
  * whole life can surface. Deterministic and conservative: a pattern is only
  * returned when there's enough overlapping data and a clear difference, so we
  * never invent noise. Calm, observational tone (never "you failed").

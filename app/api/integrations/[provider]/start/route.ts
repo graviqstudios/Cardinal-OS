@@ -73,7 +73,7 @@ export async function GET(
       return res;
     }
 
-    // evernote — OAuth 1.0a: fetch a request token, then redirect to authorize.
+    // evernote - OAuth 1.0a: fetch a request token, then redirect to authorize.
     const reqToken = await evernoteRequestToken(callback("evernote"));
     const res = NextResponse.redirect(evernoteAuthorizeUrl(reqToken.oauth_token));
     res.cookies.set("int_evernote_secret", reqToken.oauth_token_secret, cookieOpts);

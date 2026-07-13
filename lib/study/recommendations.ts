@@ -12,8 +12,8 @@ export type Recommendation = RecoTopic & { reason: string };
 // Impact = headroom to gain; time = relative effort. Ratio ranks quick wins
 // (weak topics) ahead of from-scratch untouched ones.
 const PROFILE: Record<TopicStatus, { ratio: number; reason: string }> = {
-  weak: { ratio: 0.66, reason: "Quick win — close to solid, small push needed" },
-  untouched: { ratio: 0.45, reason: "Untouched — start here to open up coverage" },
+  weak: { ratio: 0.66, reason: "Quick win - close to solid, small push needed" },
+  untouched: { ratio: 0.45, reason: "Untouched - start here to open up coverage" },
   moderate: { ratio: 0.33, reason: "Solidify to push toward strong" },
   strong: { ratio: 0, reason: "Already strong" },
 };

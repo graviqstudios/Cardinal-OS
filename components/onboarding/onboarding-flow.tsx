@@ -34,7 +34,7 @@ export function OnboardingFlow() {
   async function finish() {
     setPending(true);
     setError(null);
-    // Only preferences are set here — goals, dates and the rest come later, in-app.
+    // Only preferences are set here - goals, dates and the rest come later, in-app.
     const res = await updateProfile({ accent_color: accent, theme: palette });
     if (res.ok) {
       router.push("/today");
@@ -81,7 +81,7 @@ export function OnboardingFlow() {
             {step === 1 && (
               <Section
                 title="You're all set"
-                description="That's all we need to begin. Add habits, tasks, goals and the rest whenever you're ready — Cardinal grows with you."
+                description="That's all we need to begin. Add habits, tasks, goals and the rest whenever you're ready - Cardinal grows with you."
               >
                 <div className="rounded-card border bg-card p-5 text-sm leading-relaxed text-muted-foreground">
                   Your home opens to your Life Score, today&apos;s intention, and a

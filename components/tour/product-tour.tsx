@@ -27,7 +27,7 @@ const STEPS: Step[] = [
   {
     sel: '[data-tour="life-score"]',
     title: "Your Life Score",
-    body: "One gentle number for how things are tracking. It grows as your days take shape — never anything to stress over.",
+    body: "One gentle number for how things are tracking. It grows as your days take shape - never anything to stress over.",
     placement: "bottom",
   },
   {
@@ -45,7 +45,7 @@ const STEPS: Step[] = [
   {
     sel: 'a[href="/journal"]',
     title: "Reflect here",
-    body: "Write daily or weekly notes — and ask your journal anything when you want to look back.",
+    body: "Write daily or weekly notes - and ask your journal anything when you want to look back.",
     placement: "right",
   },
   {
@@ -93,7 +93,7 @@ export function ProductTour({
       const el = document.querySelector(s.sel) as HTMLElement | null;
       return el && el.getClientRects().length > 0;
     }).map((s) =>
-      // Returning users have seen onboarding before — frame the opener as an update.
+      // Returning users have seen onboarding before - frame the opener as an update.
       returning && s.sel === '[data-tour="sidebar"]'
         ? {
             ...s,

@@ -1,9 +1,9 @@
 /**
- * Life Score (0–1000) — the one orienting number (doc §"The One Number").
+ * Life Score (0–1000) - the one orienting number (doc §"The One Number").
  * Four factors: habit consistency, goal/project velocity, task follow-through,
  * and life balance (breadth across active areas). Factors with no data yet are
  * dropped and the weights renormalised, so a new user isn't punished for not
- * having set up, say, habits. Deterministic — never an LLM.
+ * having set up, say, habits. Deterministic - never an LLM.
  *
  * Anti-anxiety: the score moves slowly and is never shown in alarm colours.
  */

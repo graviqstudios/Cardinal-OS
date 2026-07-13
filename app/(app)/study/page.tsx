@@ -38,7 +38,7 @@ export default async function StudyPage() {
 
       {isMockAI && (
         <div className="rounded-lg border border-dashed bg-muted/40 px-4 py-3 text-sm text-muted-foreground">
-          Demo AI mode — add a <code className="font-mono">GEMINI_API_KEY</code> to
+          Demo AI mode - add a <code className="font-mono">GEMINI_API_KEY</code> to
           <code className="font-mono"> .env.local</code> for real answers, embeddings, and grading.
         </div>
       )}

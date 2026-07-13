@@ -2,7 +2,7 @@ import { createHash, randomBytes } from "crypto";
 
 import { getToken, saveToken } from "@/lib/integrations/tokens";
 
-/** Spotify OAuth (PKCE — no client secret) + a couple of Web API helpers. */
+/** Spotify OAuth (PKCE - no client secret) + a couple of Web API helpers. */
 
 const SCOPES = ["playlist-read-private", "playlist-read-collaborative"];
 

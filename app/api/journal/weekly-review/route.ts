@@ -6,7 +6,7 @@ import { computeForUser } from "@/lib/life-score/service";
 import { reindexJournalEntry } from "@/lib/journal/embed";
 import { checkRateLimit } from "@/lib/ratelimit";
 
-// Node.js runtime — never edge (Supabase SSR + AI assume full Node).
+// Node.js runtime - never edge (Supabase SSR + AI assume full Node).
 export const runtime = "nodejs";
 export const maxDuration = 60;
 

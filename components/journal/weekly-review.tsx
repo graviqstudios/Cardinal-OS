@@ -48,7 +48,7 @@ export function WeeklyReview() {
               {isSunday ? "Your week, gently reviewed" : "Reflect on this week"}
             </p>
             <p className="text-sm text-muted-foreground">
-              Cardinal reads your week — habits, tasks and reflections — and writes a calm summary.
+              Cardinal reads your week - habits, tasks and reflections - and writes a calm summary.
             </p>
             {error && <p className="text-xs text-destructive">{error}</p>}
           </div>

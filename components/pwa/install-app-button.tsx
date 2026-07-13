@@ -109,12 +109,12 @@ function InstallSheet({ kind, onClose }: { kind: "ios" | "generic"; onClose: () 
           "Open this page in Safari.",
           "Tap the Share button (the square with an arrow).",
           "Choose “Add to Home Screen”.",
-          "Tap Add — Cardinal will appear like a native app.",
+          "Tap Add - Cardinal will appear like a native app.",
         ]
       : [
           "Open your browser menu (⋮ or ⋯).",
           "Choose “Install app” or “Add to Home screen”.",
-          "Confirm — Cardinal opens in its own window.",
+          "Confirm - Cardinal opens in its own window.",
         ];
 
   return (
@@ -134,7 +134,7 @@ function InstallSheet({ kind, onClose }: { kind: "ios" | "generic"; onClose: () 
             </li>
           ))}
         </ol>
-        <p className="mt-5 text-[13px] leading-relaxed text-[#897C68]">No app store, no download size — it installs straight from the web and updates itself.</p>
+        <p className="mt-5 text-[13px] leading-relaxed text-[#897C68]">No app store, no download size - it installs straight from the web and updates itself.</p>
       </div>
     </div>
   );

@@ -1,13 +1,13 @@
 import type { CapacitorConfig } from "@capacitor/cli";
 
 /**
- * Cardinal OS — Android (Capacitor) shell.
+ * Cardinal OS - Android (Capacitor) shell.
  *
  * The app is a mature Next.js App Router site with server components, server
  * actions and Supabase cookie auth, so it can't be statically exported. Instead
  * the native shell loads the live hosted site in a WebView (`server.url`) and
  * layers native plugins (push, biometric, haptics, splash/status bar, share,
- * native Google sign-in) on top — that native value is also what keeps Play /
+ * native Google sign-in) on top - that native value is also what keeps Play /
  * App review from treating it as a bare website wrapper.
  *
  * `webDir` still has to point at a real folder even in remote-URL mode: it holds
@@ -17,7 +17,7 @@ import type { CapacitorConfig } from "@capacitor/cli";
  * `npx cap sync` (e.g. http://192.168.x.x:3000) and CAP_SERVER_CLEARTEXT=true.
  */
 // The app opens straight into the product, never the marketing landing page:
-// the start URL is the dashboard (`/today`). Middleware then routes by auth —
+// the start URL is the dashboard (`/today`). Middleware then routes by auth -
 // signed-in users see the dashboard, signed-out users are sent to /login.
 const serverHost = process.env.CAP_SERVER_URL ?? "https://cardinalos.graviq.in";
 const serverUrl = `${serverHost.replace(/\/$/, "")}/today`;

@@ -5,7 +5,7 @@ import { STATUS_META } from "@/lib/study/types";
 import type { Recommendation } from "@/lib/study/recommendations";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-/** "What to study today" — 3 topics ranked by impact ÷ time. */
+/** "What to study today" - 3 topics ranked by impact ÷ time. */
 export function TodayCard({ items }: { items: Recommendation[] }) {
   return (
     <Card>

@@ -12,7 +12,7 @@ const KEY = "co-feedback-prompt-v1";
 
 /**
  * A calm, once-only nudge asking established users how Cardinal is going. Shown
- * only when `eligible` (the account is a few days old — decided on the server)
+ * only when `eligible` (the account is a few days old - decided on the server)
  * and never again once the user rates, dismisses, or picks "later" on this
  * device. Appears as a quiet bottom card, not a blocking modal.
  */
@@ -89,7 +89,7 @@ export function FeedbackPrompt({ eligible }: { eligible: boolean }) {
           <>
             <p className="font-serif text-lg leading-tight">How&apos;s Cardinal going?</p>
             <p className="mt-1 text-sm text-muted-foreground">
-              You&apos;ve been here a little while — a quick word would mean a lot.
+              You&apos;ve been here a little while - a quick word would mean a lot.
             </p>
 
             <div className="mt-4">

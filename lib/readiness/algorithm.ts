@@ -1,7 +1,7 @@
 import type { TopicStatus } from "@/lib/study/types";
 
 /**
- * Deterministic Readiness Score (0–1000). Explainable and stable — not an LLM.
+ * Deterministic Readiness Score (0–1000). Explainable and stable - not an LLM.
  * Factors (project doc): syllabus coverage, mastery (weighted topic status),
  * recency-weighted practice scores, topic balance across subjects, plus
  * days-to-exam surfaced as context (it doesn't inflate preparedness itself).
@@ -37,7 +37,7 @@ export type ReadinessResult = {
   breakdown: ReadinessBreakdown;
 };
 
-// Component weights — must sum to 1.
+// Component weights - must sum to 1.
 const W = { mastery: 0.45, coverage: 0.25, practice: 0.2, balance: 0.1 };
 
 export function computeReadiness(input: ReadinessInput): ReadinessResult {

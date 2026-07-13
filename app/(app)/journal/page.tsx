@@ -13,7 +13,7 @@ export default async function JournalPage() {
     <div className="space-y-6">
       <PageHeader
         title="Journal"
-        description="A quiet place to think. Write daily, weekly, or whenever — your notes stay yours."
+        description="A quiet place to think. Write daily, weekly, or whenever - your notes stay yours."
         icon={<NotebookPen className="h-5 w-5" />}
       />
 

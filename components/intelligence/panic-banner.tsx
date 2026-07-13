@@ -5,7 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 
 /**
  * Focus-plan banner. Calmly surfaces a prioritised plan when the exam is near
- * and readiness is low — supportive framing, a priority list, and a short
+ * and readiness is low - supportive framing, a priority list, and a short
  * day-by-day plan. No alarming language (no "panic"/"sprint" in the UI).
  */
 export function PanicBanner({ panic }: { panic: PanicState }) {

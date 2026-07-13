@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 
 /**
- * Cardinal OS — every route runs on the Node.js runtime.
+ * Cardinal OS - every route runs on the Node.js runtime.
  * Never add `export const runtime = "edge"` anywhere: the Supabase SSR auth,
  * AI, and RAG routes assume full Node.
  */
@@ -9,7 +9,7 @@ import type { NextConfig } from "next";
 // Baseline security headers (OWASP A05: secure defaults). Kept conservative so
 // nothing breaks: no Content-Security-Policy yet (the app uses an inline theme
 // bootstrap script plus Supabase/Google/AI origins, so a CSP needs nonce wiring
-// and per-route testing — tracked as a follow-up). HSTS is intentionally without
+// and per-route testing - tracked as a follow-up). HSTS is intentionally without
 // includeSubDomains/preload to avoid affecting sibling graviq.in subdomains.
 const securityHeaders = [
   { key: "X-Frame-Options", value: "SAMEORIGIN" },

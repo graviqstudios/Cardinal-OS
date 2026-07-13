@@ -34,7 +34,7 @@ export default async function ConstellationsPage({
 
       <PageHeader
         title="Constellations"
-        description="A small, private circle of 4–6 people — see everyone's progress and talk it through, live."
+        description="A small, private circle of 4–6 people - see everyone's progress and talk it through, live."
         icon={<Sparkles className="h-5 w-5" />}
       />
 

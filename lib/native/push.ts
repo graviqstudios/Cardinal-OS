@@ -3,7 +3,7 @@ import { isNative, platform } from "./index";
 /**
  * Push is only safe to register once Firebase is configured in the app build
  * (google-services.json present). Without it, the native register() throws
- * "Default FirebaseApp is not initialized" and crashes the app — which a JS
+ * "Default FirebaseApp is not initialized" and crashes the app - which a JS
  * try/catch cannot stop. So registration is gated behind this flag, which the
  * user sets to "true" in Vercel only after adding google-services.json and
  * rebuilding the APK.
@@ -36,12 +36,12 @@ export async function registerPush(): Promise<void> {
           body: JSON.stringify({ token: token.value, platform: platform() }),
         });
       } catch {
-        // Network hiccup — it'll re-register on next launch.
+        // Network hiccup - it'll re-register on next launch.
       }
     });
 
     await PushNotifications.register();
   } catch {
-    // Plugin unavailable — ignore.
+    // Plugin unavailable - ignore.
   }
 }

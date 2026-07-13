@@ -1,7 +1,7 @@
 import type { Transition, Variants } from "framer-motion";
 
 /**
- * Cardinal OS motion budget — disciplined, premium, never showy.
+ * Cardinal OS motion budget - disciplined, premium, never showy.
  *   • Nothing longer than 250ms.
  *   • Soft easeOut easing; no bounce, spin, or springy overshoot.
  *   • Route transitions = fade + a 4–8px rise.
@@ -16,7 +16,7 @@ export const EASE_OUT: [number, number, number, number] = [0.22, 1, 0.36, 1];
 export const DURATION = {
   fast: 0.12,
   base: 0.2,
-  slow: 0.25, // hard ceiling — never exceed
+  slow: 0.25, // hard ceiling - never exceed
 } as const;
 
 export const pageTransition: Transition = {
@@ -38,7 +38,7 @@ export const fadeVariants: Variants = {
   exit: { opacity: 0 },
 };
 
-/** Staggered list container — ~30ms between children. */
+/** Staggered list container - ~30ms between children. */
 export const listContainer: Variants = {
   hidden: {},
   visible: { transition: { staggerChildren: 0.03 } },

@@ -17,7 +17,7 @@ export default async function VoicePage() {
     <div className="space-y-6">
       <PageHeader
         title="Voice examiner"
-        description="Get quizzed aloud and answer by speaking — great for revising on the move. Works best in Chrome or Edge."
+        description="Get quizzed aloud and answer by speaking - great for revising on the move. Works best in Chrome or Edge."
         icon={<Mic className="h-5 w-5" />}
       />
 

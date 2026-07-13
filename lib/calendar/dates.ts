@@ -32,7 +32,7 @@ export function sameDay(a: Date, b: Date): boolean {
   );
 }
 
-/** Local calendar date as YYYY-MM-DD (not UTC — avoids off-by-one in +tz). */
+/** Local calendar date as YYYY-MM-DD (not UTC - avoids off-by-one in +tz). */
 export function isoDate(d: Date): string {
   const x = startOfDay(d);
   const y = x.getFullYear();

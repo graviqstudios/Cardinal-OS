@@ -58,7 +58,7 @@ export async function POST() {
     const { text } = await generateText({
       model: chatModel(),
       system:
-        "You are Cardinal, a calm, warm life companion. Write ONE short sentence (max ~16 words) for the user based on the facts — a gentle nudge toward the one thing worth doing today. Never gushing, no exclamation marks, no 'Great job'. No preamble.",
+        "You are Cardinal, a calm, warm life companion. Write ONE short sentence (max ~16 words) for the user based on the facts - a gentle nudge toward the one thing worth doing today. Never gushing, no exclamation marks, no 'Great job'. No preamble.",
       prompt: facts,
     });
     return Response.json({ text: text.trim() });
@@ -69,10 +69,10 @@ export async function POST() {
 
 function mockBriefing(done: number, total: number, openTasks: number) {
   if (total === 0 && openTasks === 0) {
-    return "A clean slate — add your first habit or task to get going.";
+    return "A clean slate - add your first habit or task to get going.";
   }
   if (openTasks > 0) {
     return `Pick the one task that matters most and start there.`;
   }
-  return `${done} of ${total} habits done — a calm, steady day ahead.`;
+  return `${done} of ${total} habits done - a calm, steady day ahead.`;
 }

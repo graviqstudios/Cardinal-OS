@@ -1,12 +1,12 @@
-# Cardinal OS — Project Conventions
+# Cardinal OS - Project Conventions
 
 This file is read automatically by Claude Code. Follow it for ALL work in this repo.
 
 ## Design system is mandatory
 The complete brand and design system lives in:
-- `Design/BRAND.md`      — the spec (logo, type, color, motion, components, the "why")
-- `Design/tokens.css` — every color, font, radius, spacing, and motion value as CSS variables
-- `Design/assets/`      — logo and module-mark SVG assets
+- `Design/BRAND.md`      - the spec (logo, type, color, motion, components, the "why")
+- `Design/tokens.css` - every color, font, radius, spacing, and motion value as CSS variables
+- `Design/assets/`      - logo and module-mark SVG assets
 - `Design/index.html` - the entire html file containing the themes and design idea
 
 **Rules:**
@@ -19,7 +19,7 @@ The complete brand and design system lives in:
 3. Typography: **Instrument Serif** for brand moments, headings, and large
    readiness numerals; **Instrument Sans** for all UI, body, and labels. Numerals
    use `font-variant-numeric: tabular-nums`.
-4. Use the logo and module marks from `Design/assets/` — do not redraw them.
+4. Use the logo and module marks from `Design/assets/` - do not redraw them.
 5. Motion: soft easing `cubic-bezier(0.2,0,0,1)`, no bounce/spin, and no
    interaction animation longer than 250ms. Respect `prefers-reduced-motion`.
 6. Module identity colors are fixed: Readiness `#CB4B33`, Study `#2D5FB0`,

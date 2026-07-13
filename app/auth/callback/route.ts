@@ -8,7 +8,7 @@ import { createClient } from "@/lib/supabase/server";
  * land on the dashboard; the (app) layout bounces them into onboarding if their
  * profile isn't set up yet.
  *
- * Node.js runtime (default) — never edge.
+ * Node.js runtime (default) - never edge.
  */
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
@@ -30,6 +30,6 @@ export async function GET(request: Request) {
     }
   }
 
-  // Something went wrong — back to login with an error flag.
+  // Something went wrong - back to login with an error flag.
   return NextResponse.redirect(`${origin}/login?error=auth_callback_failed`);
 }

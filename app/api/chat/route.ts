@@ -6,7 +6,7 @@ import { CHAT_SYSTEM, ragContext } from "@/lib/ai/prompts";
 import { embedQuery } from "@/lib/ai/embeddings";
 import { checkRateLimit } from "@/lib/ratelimit";
 
-// Node.js runtime — never edge (Supabase SSR + AI assume full Node).
+// Node.js runtime - never edge (Supabase SSR + AI assume full Node).
 export const runtime = "nodejs";
 export const maxDuration = 30;
 
@@ -44,7 +44,7 @@ export async function POST(req: Request) {
       });
       contextBlock = ragContext((chunks ?? []) as { content: string }[]);
     } catch {
-      // Embedding/search failed (e.g. bad AI key) — answer without retrieval.
+      // Embedding/search failed (e.g. bad AI key) - answer without retrieval.
       contextBlock = null;
     }
   }

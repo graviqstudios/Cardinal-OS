@@ -92,7 +92,7 @@ export function MoneyClient({ transactions }: { transactions: Transaction[] }) {
           <p className="mb-2 px-1 text-sm font-medium text-muted-foreground">This month</p>
           {transactions.length === 0 ? (
             <p className="px-1 py-4 text-sm text-muted-foreground">
-              No transactions yet. Log your first above — 3 taps.
+              No transactions yet. Log your first above - 3 taps.
             </p>
           ) : (
             <div className="space-y-1">

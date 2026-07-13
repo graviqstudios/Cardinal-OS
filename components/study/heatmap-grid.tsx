@@ -84,7 +84,7 @@ function Cell({ topic, animate }: { topic: Topic; animate: boolean }) {
       variants={animate ? listItem : undefined}
       onClick={cycle}
       disabled={pending}
-      title={`${topic.name} — ${meta.label} (click to change)`}
+      title={`${topic.name} - ${meta.label} (click to change)`}
       className={cn(
         "flex min-h-[56px] flex-col justify-between rounded-lg border p-2.5 text-left transition-colors disabled:opacity-60",
       )}

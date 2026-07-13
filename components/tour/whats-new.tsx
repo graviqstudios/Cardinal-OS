@@ -13,7 +13,7 @@ const KEY = "co-whatsnew-seen";
 /**
  * A calm, dismissable "what's new" banner shown once to returning users after a
  * tour version bump. Either action (take the tour or dismiss) marks the update
- * seen — in the DB via completeTour, and in localStorage so it never reappears
+ * seen - in the DB via completeTour, and in localStorage so it never reappears
  * on this device even if the DB write can't persist yet.
  */
 export function WhatsNew({ version }: { version: number }) {

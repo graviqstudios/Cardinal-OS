@@ -125,7 +125,7 @@ export function TasksClient({
               <span className="text-muted-foreground/60">{items.length || ""}</span>
             </h2>
             {items.length === 0 ? (
-              <p className="px-1 text-sm text-muted-foreground/70">—</p>
+              <p className="px-1 text-sm text-muted-foreground/70">-</p>
             ) : (
               <Card>
                 <CardContent className="space-y-1 p-3">

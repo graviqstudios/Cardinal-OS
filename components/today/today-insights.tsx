@@ -1,6 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card";
 
-/** Cross-domain "we noticed" patterns — only rendered when there are any. */
+/** Cross-domain "we noticed" patterns - only rendered when there are any. */
 export function TodayInsights({ insights }: { insights: string[] }) {
   if (insights.length === 0) return null;
   return (

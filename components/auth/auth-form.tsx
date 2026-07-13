@@ -55,7 +55,7 @@ export function AuthForm({ mode }: { mode: Mode }) {
       const { data, error } = await supabase.rpc("is_username_available", {
         candidate: username,
       });
-      // On RPC error, don't block the user — the unique index is the backstop.
+      // On RPC error, don't block the user - the unique index is the backstop.
       setAvailable(error ? null : Boolean(data));
       setChecking(false);
     }, 400);
@@ -125,7 +125,7 @@ export function AuthForm({ mode }: { mode: Mode }) {
       // Inside the native app, Google blocks the embedded-WebView redirect, so
       // always use the native credential picker (which shows a friendly message
       // if the app's Google client id isn't configured yet) and exchange the ID
-      // token for a session — never the broken web redirect.
+      // token for a session - never the broken web redirect.
       if (isNative()) {
         await signInWithGoogleNative();
         router.push(searchParams.get("redirectedFrom") ?? "/today");
