@@ -2,21 +2,26 @@ import type { Message } from "@ai-sdk/react";
 
 import {
   getChatMessages,
-  getDocuments,
   getOrCreateChatSession,
+  getStudyTarget,
   getSubjectsWithTopics,
 } from "@/lib/study/queries";
+import { getReadinessSnapshot } from "@/lib/readiness/service";
 import { isMockAI } from "@/lib/ai/models";
 import { requireExamMode } from "@/lib/exam/guard";
-import { StudyWorkspace } from "@/components/study/study-workspace";
+import { TargetBanner } from "@/components/study/target-banner";
+import { SubjectGrid } from "@/components/study/subject-grid";
+import { HeatmapGrid } from "@/components/study/heatmap-grid";
+import { ChatPanel } from "@/components/study/chat-panel";
 import { PageHeader } from "@/components/shell/page-header";
 
 export default async function StudyPage() {
   await requireExamMode();
 
-  const [subjects, documents, sessionId] = await Promise.all([
+  const [subjects, target, readiness, sessionId] = await Promise.all([
     getSubjectsWithTopics(),
-    getDocuments(),
+    getStudyTarget(),
+    getReadinessSnapshot(),
     getOrCreateChatSession(),
   ]);
 
@@ -27,11 +32,13 @@ export default async function StudyPage() {
     content: m.content,
   }));
 
+  const hasTopics = subjects.some((s) => s.topics.length > 0);
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <PageHeader
         title="Study"
-        description="Manage subjects and topics, upload notes, and chat with your material."
+        description="Your exam prep in one place - track your target, plan each subject, and revise."
         colorVar="--module-study"
         mark="/brand/module-study.svg"
       />
@@ -43,12 +50,43 @@ export default async function StudyPage() {
         </div>
       )}
 
-      <StudyWorkspace
-        subjects={subjects}
-        documents={documents}
-        sessionId={sessionId}
-        initialMessages={initialMessages}
-      />
+      {readiness && (
+        <TargetBanner
+          target={
+            target ?? {
+              exam_target: null,
+              exam_date: null,
+              exam_target_score: null,
+            }
+          }
+          score={readiness.score}
+          previous={readiness.previous}
+          history={readiness.history}
+        />
+      )}
+
+      <div className="grid gap-8 lg:grid-cols-[1fr_360px]">
+        <div className="space-y-8">
+          <SubjectGrid subjects={subjects} />
+
+          {hasTopics && (
+            <section className="space-y-4">
+              <h2 className="font-serif text-xl tracking-tight">
+                Whole syllabus
+              </h2>
+              <HeatmapGrid subjects={subjects} />
+            </section>
+          )}
+        </div>
+
+        <aside className="lg:sticky lg:top-6 lg:self-start">
+          <ChatPanel
+            sessionId={sessionId}
+            subjectId={null}
+            initialMessages={initialMessages}
+          />
+        </aside>
+      </div>
     </div>
   );
 }

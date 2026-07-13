@@ -1,27 +1,10 @@
-import { Mic } from "lucide-react";
+import { redirect } from "next/navigation";
 
-import { getSubjectsWithTopics } from "@/lib/study/queries";
-import { requireExamMode } from "@/lib/exam/guard";
-import { VoiceExaminer } from "@/components/voice/voice-examiner";
-import { PageHeader } from "@/components/shell/page-header";
-
-export default async function VoicePage() {
-  await requireExamMode();
-
-  const subjects = await getSubjectsWithTopics();
-  const topics = subjects.flatMap((s) =>
-    s.topics.map((t) => ({ id: t.id, name: t.name, subjectName: s.name })),
-  );
-
-  return (
-    <div className="space-y-6">
-      <PageHeader
-        title="Voice examiner"
-        description="Get quizzed aloud and answer by speaking - great for revising on the move. Works best in Chrome or Edge."
-        icon={<Mic className="h-5 w-5" />}
-      />
-
-      <VoiceExaminer topics={topics} />
-    </div>
-  );
+/**
+ * The voice examiner is no longer a top-level tab — it now lives inside each
+ * subject in the single Study hub. Keep the route as a redirect so old
+ * bookmarks/PWA shortcuts don't 404.
+ */
+export default function VoiceRedirect() {
+  redirect("/study");
 }

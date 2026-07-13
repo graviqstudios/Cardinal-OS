@@ -12,10 +12,10 @@ export function TodayCard({ items }: { items: Recommendation[] }) {
       <CardHeader className="flex-row items-center justify-between space-y-0">
         <CardTitle className="text-base">What to study today</CardTitle>
         <Link
-          href="/practice"
+          href="/study"
           className="inline-flex items-center gap-1 text-xs font-medium text-primary hover:underline"
         >
-          Practice <ArrowRight className="h-3 w-3" />
+          Study <ArrowRight className="h-3 w-3" />
         </Link>
       </CardHeader>
       <CardContent className="space-y-2">

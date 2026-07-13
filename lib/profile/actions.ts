@@ -9,6 +9,7 @@ export type ProfileUpdate = {
   name?: string | null;
   exam_target?: string | null;
   exam_date?: string | null;
+  exam_target_score?: number | null;
   accent_color?: string | null;
   theme?: string | null;
   sex?: "female" | "male" | "other" | null;
@@ -46,6 +47,14 @@ export async function updateProfile(
   }
   if (update.sex != null && !SEX_VALUES.includes(update.sex)) {
     return { ok: false, error: "Invalid value." };
+  }
+  if (
+    update.exam_target_score != null &&
+    (!Number.isFinite(update.exam_target_score) ||
+      update.exam_target_score < 0 ||
+      update.exam_target_score > 1000)
+  ) {
+    return { ok: false, error: "Target score must be between 0 and 1000." };
   }
 
   const { error } = await supabase

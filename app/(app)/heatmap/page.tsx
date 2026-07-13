@@ -1,23 +1,10 @@
-import { getSubjectsWithTopics } from "@/lib/study/queries";
-import { requireExamMode } from "@/lib/exam/guard";
-import { HeatmapGrid } from "@/components/study/heatmap-grid";
-import { PageHeader } from "@/components/shell/page-header";
+import { redirect } from "next/navigation";
 
-export default async function HeatmapPage() {
-  await requireExamMode();
-
-  const subjects = await getSubjectsWithTopics();
-
-  return (
-    <div className="space-y-6">
-      <PageHeader
-        title="Heat map"
-        description="Your whole syllabus at a glance. Tap a topic to update its mastery."
-        colorVar="--module-readiness"
-        mark="/brand/module-readiness.svg"
-      />
-
-      <HeatmapGrid subjects={subjects} />
-    </div>
-  );
+/**
+ * The whole-syllabus heat map now lives on the Study dashboard, and each subject
+ * has its own heat map. Keep the route as a redirect so old bookmarks/PWA
+ * shortcuts don't 404.
+ */
+export default function HeatmapRedirect() {
+  redirect("/study");
 }

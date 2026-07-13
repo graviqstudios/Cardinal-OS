@@ -50,8 +50,9 @@ export function ExamModeToggle({ initial }: { initial: boolean }) {
             {enabled ? "Exam Prep is installed" : "Add Exam Prep"}
           </p>
           <p className="text-sm text-muted-foreground">
-            Studying for an exam? Add the prep tools - Study, Practice, Heat map
-            and Voice - to your sidebar. You can remove them any time.
+            Studying for an exam? Add the Study hub - a dashboard with your
+            target, subjects, heat map, practice and voice - to your sidebar. You
+            can remove it any time.
           </p>
         </div>
       </div>

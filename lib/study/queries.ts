@@ -29,6 +29,48 @@ export async function getSubjectsWithTopics(): Promise<SubjectWithTopics[]> {
   }));
 }
 
+/** One subject with its topics (RLS-scoped), or null if not found/owned. */
+export async function getSubjectWithTopics(
+  subjectId: string,
+): Promise<SubjectWithTopics | null> {
+  const supabase = await createClient();
+
+  const [{ data: subject }, { data: topics }] = await Promise.all([
+    supabase.from("subjects").select("*").eq("id", subjectId).maybeSingle(),
+    supabase
+      .from("topics")
+      .select("*")
+      .eq("subject_id", subjectId)
+      .order("created_at", { ascending: true }),
+  ]);
+
+  if (!subject) return null;
+  return { ...(subject as Subject), topics: (topics ?? []) as Topic[] };
+}
+
+/** The signed-in user's exam target (name, date, optional target score). */
+export async function getStudyTarget(): Promise<{
+  exam_target: string | null;
+  exam_date: string | null;
+  exam_target_score: number | null;
+} | null> {
+  const supabase = await createClient();
+  const user = await getUser();
+  if (!user) return null;
+
+  const { data } = await supabase
+    .from("users")
+    .select("exam_target, exam_date, exam_target_score")
+    .eq("id", user.id)
+    .maybeSingle();
+
+  return {
+    exam_target: (data?.exam_target as string | null) ?? null,
+    exam_date: (data?.exam_date as string | null) ?? null,
+    exam_target_score: (data?.exam_target_score as number | null) ?? null,
+  };
+}
+
 export async function getDocuments(): Promise<DocumentRow[]> {
   const supabase = await createClient();
   const { data } = await supabase
