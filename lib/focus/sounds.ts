@@ -307,40 +307,99 @@ export function startAmbient(ctx: Ctx, id: string): (() => void) | null {
   };
 }
 
-/** How long (seconds) a single play of each sound roughly occupies. */
-const SOUND_SPAN: Record<string, number> = {
-  gong: 2.6,
-  bowl: 2.6,
-  bell: 1.8,
-  soft: 1.8,
-  chime: 1.1,
-  ding: 0.5,
-  double: 0.7,
-  marimba: 0.6,
-  rise: 0.7,
-  digital: 0.35,
-  pulse: 0.5,
-  arcade: 0.55,
+/**
+ * Alarm voice per sound id: sustained oscillators (not decaying one-shots) gated
+ * by a fast square LFO so the ring pulses on/off continuously like a real
+ * alarm-clock buzzer. `beepRate` 0 = a steady drone; `siren` sweeps the pitch.
+ */
+type AlarmSpec = {
+  freqs: number[];
+  wave: OscillatorType;
+  beepRate: number; // Hz of the on/off pulse (0 = continuous)
+  siren?: [number, number]; // sweep low..high instead of fixed freqs
+};
+
+const ALARM_SPEC: Record<string, AlarmSpec> = {
+  chime: { freqs: [660, 990], wave: "sine", beepRate: 4 },
+  bell: { freqs: [660, 990, 1320], wave: "triangle", beepRate: 3 },
+  ding: { freqs: [1046, 1568], wave: "triangle", beepRate: 5 },
+  double: { freqs: [880, 1174], wave: "square", beepRate: 4 },
+  marimba: { freqs: [523, 784], wave: "triangle", beepRate: 5 },
+  rise: { freqs: [520], wave: "sawtooth", beepRate: 0, siren: [440, 880] },
+  gong: { freqs: [130, 195, 260], wave: "sawtooth", beepRate: 2 },
+  bowl: { freqs: [320, 480], wave: "sine", beepRate: 0 },
+  digital: { freqs: [800, 1000], wave: "square", beepRate: 8 },
+  pulse: { freqs: [620, 930], wave: "square", beepRate: 6 },
+  soft: { freqs: [440, 554], wave: "sine", beepRate: 3 },
+  arcade: { freqs: [700], wave: "square", beepRate: 0, siren: [660, 1320] },
 };
 
 /**
- * Schedule the chosen sound to ring *repeatedly and loudly* starting at `startAt`,
- * so it keeps sounding until the user stops it (which closes the context and
- * cancels every scheduled repeat). All repeats are queued on the audio clock up
- * front, so the alarm keeps ringing even while the tab is backgrounded. Rings for
- * up to ~`maxSeconds` as a safety cap for a truly unattended timer.
+ * Ring a loud, continuous alarm-clock buzzer from `startAt` for up to
+ * `maxSeconds`. Uses a few sustained oscillators through a fast amplitude gate
+ * (or a pitch sweep), so it's one long insistent ring rather than a repeated
+ * chime. Everything runs on the audio clock, so it keeps ringing even when the
+ * tab is backgrounded; stopping the timer closes the context and cuts it.
  */
-export function scheduleAlarm(
-  ctx: Ctx,
-  id: string,
-  startAt: number,
-  maxSeconds = 600,
-) {
-  // Repeat back-to-back (no silent gap) so it reads as one long, insistent ring
-  // like a phone/alarm-clock, and play it loud.
-  const gap = SOUND_SPAN[id] ?? 0.9;
-  const repeats = Math.ceil(maxSeconds / gap);
-  for (let i = 0; i < repeats; i++) {
-    scheduleSound(ctx, id, startAt + i * gap, 4.6); // loud
+export function scheduleAlarm(ctx: Ctx, id: string, startAt: number, maxSeconds = 600) {
+  const spec = ALARM_SPEC[id] ?? ALARM_SPEC.chime;
+  const end = startAt + maxSeconds;
+
+  const master = ctx.createGain();
+  master.gain.value = 0.9; // loud
+  master.connect(ctx.destination);
+
+  // Amplitude gate → the pulsing "brrt brrt". Floor at 0.12 so it never fully
+  // silences (reads as a continuous ring, not separate beeps).
+  const gate = ctx.createGain();
+  gate.connect(master);
+  if (spec.beepRate > 0) {
+    gate.gain.value = 0.56;
+    const lfo = ctx.createOscillator();
+    lfo.type = "square";
+    lfo.frequency.value = spec.beepRate;
+    const depth = ctx.createGain();
+    depth.gain.value = 0.44;
+    lfo.connect(depth);
+    depth.connect(gate.gain);
+    lfo.start(startAt);
+    lfo.stop(end);
+  } else {
+    gate.gain.value = 0.95;
   }
+
+  // Optional continuous pitch sweep (siren).
+  let sweepGain: GainNode | null = null;
+  let baseFreq = 0;
+  if (spec.siren) {
+    const [lo, hi] = spec.siren;
+    baseFreq = (lo + hi) / 2;
+    const sweep = ctx.createOscillator();
+    sweep.type = "triangle";
+    sweep.frequency.value = 2; // sweeps per second
+    sweepGain = ctx.createGain();
+    sweepGain.gain.value = (hi - lo) / 2;
+    sweep.connect(sweepGain);
+    sweep.start(startAt);
+    sweep.stop(end);
+  }
+
+  const perOsc = 0.9 / spec.freqs.length;
+  for (const f of spec.freqs) {
+    const o = ctx.createOscillator();
+    o.type = spec.wave;
+    o.frequency.value = spec.siren ? baseFreq : f;
+    if (sweepGain) sweepGain.connect(o.frequency);
+    const g = ctx.createGain();
+    g.gain.value = perOsc;
+    o.connect(g);
+    g.connect(gate);
+    o.start(startAt);
+    o.stop(end);
+  }
+}
+
+/** A short taste of the alarm ring, for the settings preview. */
+export function previewAlarm(ctx: Ctx, id: string) {
+  scheduleAlarm(ctx, id, ctx.currentTime + 0.02, 1.6);
 }

@@ -12,7 +12,7 @@ import {
   DEFAULT_SOUND,
   WHITE_NOISE,
   DEFAULT_NOISE,
-  scheduleSound,
+  previewAlarm,
   scheduleAlarm,
   startAmbient,
 } from "@/lib/focus/sounds";
@@ -48,13 +48,13 @@ function makeAudioContext(): AudioContext | null {
   }
 }
 
-/** Play an alarm sound immediately, for the picker preview. */
+/** Play a short taste of the alarm ring, for the picker preview. */
 function previewSound(id: string) {
   const ctx = makeAudioContext();
   if (!ctx) return;
   void ctx.resume();
-  scheduleSound(ctx, id, ctx.currentTime + 0.03);
-  window.setTimeout(() => { try { void ctx.close(); } catch { /* ignore */ } }, 3500);
+  previewAlarm(ctx, id);
+  window.setTimeout(() => { try { void ctx.close(); } catch { /* ignore */ } }, 2200);
 }
 
 /** Play a few seconds of an ambience, for the white-noise preview. */
