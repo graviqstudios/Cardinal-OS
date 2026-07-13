@@ -14,6 +14,7 @@ import {
   Plus,
   Sparkles,
   Trash2,
+  Wand2,
 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
@@ -48,6 +49,7 @@ import {
   type TopicStatus,
 } from "@/lib/study/types";
 import { HeatmapGrid } from "@/components/study/heatmap-grid";
+import { AssistantPanel } from "@/components/study/assistant-panel";
 import { PracticeClient } from "@/components/practice/practice-client";
 import { VoiceExaminer } from "@/components/voice/voice-examiner";
 import { Button } from "@/components/ui/button";
@@ -55,11 +57,12 @@ import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { Tap } from "@/components/motion/tap";
 
-type Tab = "plan" | "tasks" | "heatmap" | "practice" | "voice";
+type Tab = "plan" | "tasks" | "assistant" | "heatmap" | "practice" | "voice";
 
 const TABS: { id: Tab; label: string; icon: React.ReactNode }[] = [
   { id: "plan", label: "Plan", icon: <ListChecks className="h-4 w-4" /> },
   { id: "tasks", label: "Tasks", icon: <ListTodo className="h-4 w-4" /> },
+  { id: "assistant", label: "Assistant", icon: <Wand2 className="h-4 w-4" /> },
   { id: "heatmap", label: "Heat map", icon: <Grid3x3 className="h-4 w-4" /> },
   { id: "practice", label: "Practice", icon: <Dumbbell className="h-4 w-4" /> },
   { id: "voice", label: "Voice", icon: <Mic className="h-4 w-4" /> },
@@ -113,6 +116,9 @@ export function SubjectDetail({ data }: { data: SubjectPageData }) {
 
       {tab === "plan" && <PlanEditor data={data} />}
       {tab === "tasks" && <TasksBoard data={data} />}
+      {tab === "assistant" && (
+        <AssistantPanel subjectId={data.id} subjectName={data.name} />
+      )}
       {tab === "heatmap" && <HeatmapGrid subjects={subjectForHeatmap} />}
       {tab === "practice" && <PracticeClient topics={topics} />}
       {tab === "voice" && <VoiceExaminer topics={topics} />}

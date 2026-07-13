@@ -12,6 +12,7 @@ export type PodStat = {
   name: string | null;
   readiness: number;
   streak: number;
+  study_minutes: number;
   current_goal: string | null;
   updated_at: string;
 };
@@ -26,3 +27,12 @@ export type PodMemberView = {
 export type PodSummary = Pod & { memberCount: number };
 
 export type PodDetail = Pod & { members: PodMemberView[] };
+
+export type PodTimer = {
+  pod_id: string;
+  ends_at: string | null;
+  label: string | null;
+  phase: "focus" | "break";
+  started_by: string | null;
+  updated_at: string;
+};

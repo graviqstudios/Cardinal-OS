@@ -60,25 +60,50 @@ export async function publishPodStats(): Promise<Result> {
   const { supabase, userId } = await uid();
   if (!userId) return { ok: false, error: "Not authenticated." };
 
-  const [{ data: profile }, { data: practice }, { data: goal }, readiness] =
-    await Promise.all([
-      supabase.from("users").select("name, email").eq("id", userId).single(),
-      supabase
-        .from("practice_sessions")
-        .select("created_at")
-        .eq("user_id", userId)
-        .order("created_at", { ascending: false })
-        .limit(400),
-      supabase
-        .from("goals")
-        .select("title, progress")
-        .eq("user_id", userId)
-        .lt("progress", 100)
-        .order("updated_at", { ascending: false })
-        .limit(1)
-        .maybeSingle(),
-      computeForUser(supabase, userId),
-    ]);
+  const weekAgo = new Date(Date.now() - 7 * 86_400_000).toISOString();
+
+  const [
+    { data: profile },
+    { data: practice },
+    { data: goal },
+    { data: focus },
+    { data: recentPractice },
+    readiness,
+  ] = await Promise.all([
+    supabase.from("users").select("name, email").eq("id", userId).single(),
+    supabase
+      .from("practice_sessions")
+      .select("created_at")
+      .eq("user_id", userId)
+      .order("created_at", { ascending: false })
+      .limit(400),
+    supabase
+      .from("goals")
+      .select("title, progress")
+      .eq("user_id", userId)
+      .lt("progress", 100)
+      .order("updated_at", { ascending: false })
+      .limit(1)
+      .maybeSingle(),
+    supabase
+      .from("focus_sessions")
+      .select("duration_minutes")
+      .eq("user_id", userId)
+      .gte("created_at", weekAgo),
+    supabase
+      .from("practice_sessions")
+      .select("duration_minutes")
+      .eq("user_id", userId)
+      .gte("created_at", weekAgo),
+    computeForUser(supabase, userId),
+  ]);
+
+  // Study minutes over the last 7 days: focus sessions + graded practice.
+  const sumMinutes = (rows: { duration_minutes: number | null }[] | null) =>
+    (rows ?? []).reduce((acc, r) => acc + (r.duration_minutes ?? 0), 0);
+  const studyMinutes = Math.round(
+    sumMinutes(focus) + sumMinutes(recentPractice),
+  );
 
   // Streak: consecutive days with practice ending today/yesterday.
   const dayKey = (d: Date) => `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
@@ -99,6 +124,7 @@ export async function publishPodStats(): Promise<Result> {
       name,
       readiness: readiness.score,
       streak,
+      study_minutes: studyMinutes,
       current_goal: goal?.title ?? null,
       updated_at: new Date().toISOString(),
     },
