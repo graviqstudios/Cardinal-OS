@@ -22,7 +22,7 @@ export async function POST(req: Request) {
     });
   }
 
-  const { messages, sessionId, subjectId } = await req.json();
+  const { messages, subjectId } = await req.json();
   const coreMessages = convertToCoreMessages(messages);
 
   const lastUser = [...messages]
@@ -49,33 +49,12 @@ export async function POST(req: Request) {
     }
   }
 
+  // Persistence is client-owned (saveSessionMessages) so edit/regenerate stay
+  // consistent - the route only streams the reply.
   const result = streamText({
     model: chatModel(),
     system: contextBlock ? `${CHAT_SYSTEM}\n\n${contextBlock}` : CHAT_SYSTEM,
     messages: coreMessages,
-    async onFinish({ text }) {
-      if (!sessionId) return;
-      const rows = [];
-      if (lastUser?.content) {
-        rows.push({
-          user_id: user.id,
-          chat_session_id: sessionId,
-          role: "user",
-          content: lastUser.content,
-        });
-      }
-      rows.push({
-        user_id: user.id,
-        chat_session_id: sessionId,
-        role: "assistant",
-        content: text,
-      });
-      await supabase.from("chat_messages").insert(rows);
-      await supabase
-        .from("chat_sessions")
-        .update({ updated_at: new Date().toISOString() })
-        .eq("id", sessionId);
-    },
   });
 
   return result.toDataStreamResponse();

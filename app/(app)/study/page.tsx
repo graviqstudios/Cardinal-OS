@@ -6,6 +6,7 @@ import {
   getStudyTarget,
   getSubjectsWithTopics,
 } from "@/lib/study/queries";
+import { listChatSessions } from "@/lib/study/chat-actions";
 import { getReadinessSnapshot } from "@/lib/readiness/service";
 import { isMockAI } from "@/lib/ai/models";
 import { requireExamMode } from "@/lib/exam/guard";
@@ -18,12 +19,15 @@ import { PageHeader } from "@/components/shell/page-header";
 export default async function StudyPage() {
   await requireExamMode();
 
-  const [subjects, target, readiness, sessionId] = await Promise.all([
+  const [subjects, target, readiness, sessionId, sessionsRes] = await Promise.all([
     getSubjectsWithTopics(),
     getStudyTarget(),
     getReadinessSnapshot(),
     getOrCreateChatSession(),
+    listChatSessions(),
   ]);
+
+  const sessions = sessionsRes.ok && sessionsRes.data ? sessionsRes.data : [];
 
   const history = sessionId ? await getChatMessages(sessionId) : [];
   const initialMessages: Message[] = history.map((m) => ({
@@ -81,6 +85,7 @@ export default async function StudyPage() {
 
         <aside className="lg:sticky lg:top-6 lg:self-start">
           <ChatPanel
+            sessions={sessions}
             sessionId={sessionId}
             subjectId={null}
             initialMessages={initialMessages}
