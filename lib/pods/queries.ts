@@ -4,6 +4,7 @@ import type {
   PodDetail,
   PodStat,
   PodSummary,
+  PodTimer,
 } from "@/lib/pods/types";
 
 /** Pods the signed-in user belongs to, with member counts. */
@@ -33,6 +34,17 @@ export async function getMyPods(): Promise<PodSummary[]> {
     ...p,
     memberCount: counts.get(p.id) ?? 0,
   }));
+}
+
+/** Current shared study-room timer for a pod, if one is set. */
+export async function getPodTimer(podId: string): Promise<PodTimer | null> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("pod_timer")
+    .select("*")
+    .eq("pod_id", podId)
+    .maybeSingle();
+  return (data as PodTimer | null) ?? null;
 }
 
 /** Full pod with each member's shared stats (RLS permits co-member reads). */

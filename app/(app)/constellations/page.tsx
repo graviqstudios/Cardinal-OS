@@ -1,13 +1,15 @@
 import { Sparkles } from "lucide-react";
 
 import { createClient, getUser } from "@/lib/supabase/server";
-import { getMyPods, getPodDetail } from "@/lib/pods/queries";
+import { getMyPods, getPodDetail, getPodTimer } from "@/lib/pods/queries";
 import { getMessages } from "@/lib/pods/chat";
+import { getToken } from "@/lib/integrations/tokens";
 import { PageHeader } from "@/components/shell/page-header";
 import { PodsClient } from "@/components/pods/pods-client";
 import { PodDetailView } from "@/components/pods/pod-detail-view";
 import { PodStatsPublisher } from "@/components/pods/pod-stats-publisher";
 import { ConstellationChat } from "@/components/pods/constellation-chat";
+import { StudyRoom } from "@/components/pods/study-room";
 import { Card, CardContent } from "@/components/ui/card";
 
 export default async function ConstellationsPage({
@@ -23,10 +25,17 @@ export default async function ConstellationsPage({
   const pods = await getMyPods();
   const selectedId =
     requested && pods.some((p) => p.id === requested) ? requested : null;
-  const [detail, messages] = await Promise.all([
+  const [detail, messages, timer, googleToken] = await Promise.all([
     selectedId ? getPodDetail(selectedId) : Promise.resolve(null),
     selectedId ? getMessages(selectedId) : Promise.resolve([]),
+    selectedId ? getPodTimer(selectedId) : Promise.resolve(null),
+    user ? getToken(user.id, "google_calendar") : Promise.resolve(null),
   ]);
+
+  const myName =
+    detail?.members.find((m) => m.isYou)?.stat?.name ??
+    user?.email?.split("@")[0] ??
+    "Member";
 
   return (
     <div className="space-y-6">
@@ -44,6 +53,15 @@ export default async function ConstellationsPage({
           {detail ? (
             <>
               <PodDetailView pod={detail} />
+              <StudyRoom
+                podId={detail.id}
+                podName={detail.name}
+                roomName={`Cardinal-${detail.id}-${detail.invite_code}`}
+                currentUserId={user?.id ?? ""}
+                currentName={myName}
+                initialTimer={timer}
+                googleConnected={Boolean(googleToken)}
+              />
               <ConstellationChat
                 podId={detail.id}
                 initialMessages={messages}

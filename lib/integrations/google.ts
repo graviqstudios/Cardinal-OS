@@ -208,3 +208,47 @@ export async function insertGoogleEvent(
   const data = (await res.json()) as { id: string };
   return data.id;
 }
+
+/**
+ * Create a Google Calendar event with a Google Meet conference attached, and
+ * return the join link. Used by Constellation study rooms as a free video
+ * option for members who've connected Google Calendar.
+ */
+export async function createGoogleMeet(
+  accessToken: string,
+  opts: { summary: string; minutes?: number },
+): Promise<string | null> {
+  const start = new Date();
+  const end = new Date(Date.now() + (opts.minutes ?? 60) * 60_000);
+  const res = await fetch(
+    "https://www.googleapis.com/calendar/v3/calendars/primary/events?conferenceDataVersion=1",
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        summary: opts.summary,
+        start: { dateTime: start.toISOString() },
+        end: { dateTime: end.toISOString() },
+        conferenceData: {
+          createRequest: {
+            requestId: `cardinal-${Date.now()}`,
+            conferenceSolutionKey: { type: "hangoutsMeet" },
+          },
+        },
+      }),
+    },
+  );
+  if (!res.ok) throw new Error(`Meet create failed: ${res.status}`);
+  const data = (await res.json()) as {
+    hangoutLink?: string;
+    conferenceData?: { entryPoints?: { uri?: string }[] };
+  };
+  return (
+    data.hangoutLink ??
+    data.conferenceData?.entryPoints?.find((e) => e.uri)?.uri ??
+    null
+  );
+}
