@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion, useReducedMotion } from "framer-motion";
 
@@ -26,9 +27,9 @@ export function HeatmapGrid({ subjects }: { subjects: SubjectWithTopics[] }) {
       {!hasTopics && (
         <Card className="p-6 text-sm text-muted-foreground">
           No topics yet. Add subjects and topics in{" "}
-          <a href="/study" className="font-medium text-primary hover:underline">
+          <Link href="/study" className="font-medium text-primary hover:underline">
             Study
-          </a>{" "}
+          </Link>{" "}
           to fill your heat map.
         </Card>
       )}

@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { CheckCircle2, Circle, Loader2, MinusCircle, XCircle } from "lucide-react";
 
@@ -101,9 +102,9 @@ export function PracticeClient({ topics }: { topics: PracticeTopic[] }) {
           <Card>
             <CardContent className="p-6 text-sm text-muted-foreground">
               No topics yet. Add subjects and topics in{" "}
-              <a href="/study" className="font-medium text-primary hover:underline">
+              <Link href="/study" className="font-medium text-primary hover:underline">
                 Study
-              </a>{" "}
+              </Link>{" "}
               first.
             </CardContent>
           </Card>
