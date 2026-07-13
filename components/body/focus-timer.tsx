@@ -3,11 +3,19 @@
 import * as React from "react";
 import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
-import { BellOff, Maximize2, Minimize2, Pause, Play, RotateCcw } from "lucide-react";
+import { BellOff, Maximize2, Minimize2, Pause, Play, RotateCcw, Settings2, X } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { logFocusSession } from "@/lib/body/actions";
-import { FOCUS_SOUNDS, DEFAULT_SOUND, scheduleSound, scheduleAlarm } from "@/lib/focus/sounds";
+import {
+  FOCUS_SOUNDS,
+  DEFAULT_SOUND,
+  WHITE_NOISE,
+  DEFAULT_NOISE,
+  scheduleSound,
+  scheduleAlarm,
+  startAmbient,
+} from "@/lib/focus/sounds";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -40,13 +48,26 @@ function makeAudioContext(): AudioContext | null {
   }
 }
 
-/** Play a sound immediately, for the picker preview. */
+/** Play an alarm sound immediately, for the picker preview. */
 function previewSound(id: string) {
   const ctx = makeAudioContext();
   if (!ctx) return;
   void ctx.resume();
   scheduleSound(ctx, id, ctx.currentTime + 0.03);
   window.setTimeout(() => { try { void ctx.close(); } catch { /* ignore */ } }, 3500);
+}
+
+/** Play a few seconds of an ambience, for the white-noise preview. */
+function previewAmbient(id: string) {
+  if (id === "none") return;
+  const ctx = makeAudioContext();
+  if (!ctx) return;
+  void ctx.resume();
+  const stop = startAmbient(ctx, id);
+  window.setTimeout(() => {
+    try { stop?.(); } catch { /* ignore */ }
+    window.setTimeout(() => { try { void ctx.close(); } catch { /* ignore */ } }, 600);
+  }, 3000);
 }
 
 export function FocusTimer({
@@ -73,37 +94,44 @@ export function FocusTimer({
   const [link, setLink] = React.useState(""); // "task:<id>" | "habit:<id>" | ""
   const [zen, setZen] = React.useState(false);
   const [mounted, setMounted] = React.useState(false);
-  const [sound, setSound] = React.useState(DEFAULT_SOUND);
+  // Three independent sound channels, like the well-known Pomodoro apps.
+  const [focusAlarm, setFocusAlarm] = React.useState(DEFAULT_SOUND);
+  const [breakAlarm, setBreakAlarm] = React.useState(DEFAULT_SOUND);
+  const [whiteNoise, setWhiteNoise] = React.useState(DEFAULT_NOISE);
+  const [showSettings, setShowSettings] = React.useState(false);
   React.useEffect(() => {
     setMounted(true);
     try {
-      const saved = localStorage.getItem("focus-sound");
-      if (saved) setSound(saved);
+      setFocusAlarm(localStorage.getItem("focus-alarm") || DEFAULT_SOUND);
+      setBreakAlarm(localStorage.getItem("break-alarm") || DEFAULT_SOUND);
+      setWhiteNoise(localStorage.getItem("focus-whitenoise") || DEFAULT_NOISE);
     } catch { /* ignore */ }
   }, []);
 
   const wakeRef = React.useRef<{ release: () => Promise<void> } | null>(null);
 
-  // Absolute end timestamp — the countdown is derived from the wall clock, so it
+  // Absolute end timestamp - the countdown is derived from the wall clock, so it
   // stays accurate even when a background tab throttles our interval to a crawl.
   const endAtRef = React.useRef(0);
-  // A dedicated AudioContext holding the *scheduled* end alarm. Scheduling the
-  // sound on the audio clock (at start) means it fires on time even while the
-  // tab is in the background; an inaudible keep-alive stops the context being
-  // suspended. `soundRef` keeps the latest choice without re-arming mid-run.
-  const alarmRef = React.useRef<{ ctx: AudioContext; keepAlive: OscillatorNode } | null>(null);
-  const soundRef = React.useRef(sound);
-  React.useEffect(() => { soundRef.current = sound; }, [sound]);
+  // A dedicated AudioContext holding the *scheduled* end alarm plus any looping
+  // white noise. Scheduling the alarm on the audio clock (at start) means it
+  // fires on time even while the tab is backgrounded; the white noise keeps the
+  // context alive so nothing gets suspended.
+  const alarmRef = React.useRef<{ ctx: AudioContext; keepAlive: OscillatorNode; stopNoise?: (() => void) | null } | null>(null);
+  // Latest choices without re-arming mid-run.
+  const cfgRef = React.useRef({ focusAlarm, breakAlarm, whiteNoise });
+  React.useEffect(() => { cfgRef.current = { focusAlarm, breakAlarm, whiteNoise }; }, [focusAlarm, breakAlarm, whiteNoise]);
 
   const disarmAlarm = React.useCallback(() => {
     const a = alarmRef.current;
     alarmRef.current = null;
     if (!a) return;
+    try { a.stopNoise?.(); } catch { /* ignore */ }
     try { a.keepAlive.stop(); } catch { /* ignore */ }
     try { void a.ctx.close(); } catch { /* ignore */ }
   }, []);
 
-  const armAlarm = React.useCallback((seconds: number) => {
+  const armAlarm = React.useCallback((seconds: number, phase: Phase) => {
     disarmAlarm();
     const ctx = makeAudioContext();
     if (!ctx) return;
@@ -113,9 +141,13 @@ export function FocusTimer({
     kg.gain.value = 0.0004; // inaudible; keeps the context from being suspended
     keepAlive.connect(kg); kg.connect(ctx.destination);
     keepAlive.start();
-    // Ring loudly and repeatedly from the end time until the user stops it.
-    scheduleAlarm(ctx, soundRef.current, ctx.currentTime + Math.max(0, seconds));
-    alarmRef.current = { ctx, keepAlive };
+    // Ring loudly and repeatedly from the end time until the user stops it,
+    // using the alarm for the phase that's ending.
+    const alarm = phase === "break" ? cfgRef.current.breakAlarm : cfgRef.current.focusAlarm;
+    scheduleAlarm(ctx, alarm, ctx.currentTime + Math.max(0, seconds));
+    // White noise plays through the focus block only.
+    const stopNoise = phase === "focus" ? startAmbient(ctx, cfgRef.current.whiteNoise) : null;
+    alarmRef.current = { ctx, keepAlive, stopNoise };
   }, [disarmAlarm]);
 
   const [ringing, setRinging] = React.useState(false);
@@ -155,8 +187,10 @@ export function FocusTimer({
   React.useEffect(() => {
     if (secondsLeft > 0 || !running) return;
     // The alarm was scheduled at start and is now ringing (loudly, repeatedly) on
-    // the audio clock. Leave it ringing until the user stops it — don't close the
-    // context here.
+    // the audio clock. Leave it ringing until the user stops it - don't close the
+    // context here. Fade the white noise out so only the alarm sounds.
+    try { alarmRef.current?.stopNoise?.(); } catch { /* ignore */ }
+    if (alarmRef.current) alarmRef.current.stopNoise = null;
     setRinging(true);
     if (phase === "focus") {
       setRunning(false);
@@ -175,7 +209,7 @@ export function FocusTimer({
       const next = !r;
       if (next) {
         endAtRef.current = Date.now() + secondsLeft * 1000;
-        armAlarm(secondsLeft);
+        armAlarm(secondsLeft, phase);
       } else {
         disarmAlarm();
       }
@@ -183,10 +217,20 @@ export function FocusTimer({
     });
   }
 
-  function changeSound(id: string) {
-    setSound(id);
-    try { localStorage.setItem("focus-sound", id); } catch { /* ignore */ }
+  function changeFocusAlarm(id: string) {
+    setFocusAlarm(id);
+    try { localStorage.setItem("focus-alarm", id); } catch { /* ignore */ }
     previewSound(id);
+  }
+  function changeBreakAlarm(id: string) {
+    setBreakAlarm(id);
+    try { localStorage.setItem("break-alarm", id); } catch { /* ignore */ }
+    previewSound(id);
+  }
+  function changeWhiteNoise(id: string) {
+    setWhiteNoise(id);
+    try { localStorage.setItem("focus-whitenoise", id); } catch { /* ignore */ }
+    previewAmbient(id);
   }
 
   // Keep the screen awake while a focus block runs in zen mode.
@@ -299,7 +343,7 @@ export function FocusTimer({
     </div>
   );
 
-  // Shown while the end alarm is ringing — the loud, obvious way to silence it.
+  // Shown while the end alarm is ringing - the loud, obvious way to silence it.
   const stopButton = (
     <Tap className="block w-full">
       <Button
@@ -319,7 +363,7 @@ export function FocusTimer({
       <div className="flex items-center gap-2">
         <span className="text-xs text-muted-foreground">Link to Task</span>
         <select value={link} onChange={(e) => setLink(e.target.value)} aria-label="Link to a task or habit" className="h-9 flex-1 rounded-button border border-input bg-transparent px-2 text-sm">
-          <option value="">Nothing — just focus</option>
+          <option value="">Nothing - just focus</option>
           {tasks.length > 0 && (
             <optgroup label="Tasks">
               {tasks.map((t) => <option key={t.id} value={`task:${t.id}`}>{t.name}</option>)}
@@ -332,24 +376,29 @@ export function FocusTimer({
           )}
         </select>
       </div>
-      <div className="flex items-center gap-2">
-        <span className="text-xs text-muted-foreground">End sound</span>
-        <select
-          value={sound}
-          onChange={(e) => changeSound(e.target.value)}
-          aria-label="Timer end sound"
-          className="h-9 flex-1 rounded-button border border-input bg-surface px-2 text-sm"
-        >
-          {FOCUS_SOUNDS.map((s) => <option key={s.id} value={s.id}>{s.label}</option>)}
-        </select>
-        <Tap className="inline-flex">
-          <Button type="button" size="icon" variant="ghost" aria-label="Preview sound" onClick={() => previewSound(sound)}>
-            <Play className="h-4 w-4" />
-          </Button>
-        </Tap>
-      </div>
+      <Tap className="block">
+        <Button type="button" variant="ghost" size="sm" className="w-full justify-start gap-2 text-muted-foreground" onClick={() => setShowSettings(true)}>
+          <Settings2 className="h-4 w-4" />
+          Sounds - focus &amp; break alarm, white noise
+        </Button>
+      </Tap>
     </div>
   );
+
+  const settingsModal = showSettings && mounted
+    ? createPortal(
+        <SoundSettings
+          focusAlarm={focusAlarm}
+          breakAlarm={breakAlarm}
+          whiteNoise={whiteNoise}
+          onFocusAlarm={changeFocusAlarm}
+          onBreakAlarm={changeBreakAlarm}
+          onWhiteNoise={changeWhiteNoise}
+          onClose={() => setShowSettings(false)}
+        />,
+        document.body,
+      )
+    : null;
 
   // ── Zen / full-screen mode ──────────────────────────────────────────────────
   if (zen) {
@@ -384,11 +433,12 @@ export function FocusTimer({
         )}
       </div>
     );
-    return mounted ? createPortal(overlay, document.body) : null;
+    return mounted ? <>{createPortal(overlay, document.body)}{settingsModal}</> : null;
   }
 
   // ── Compact card ────────────────────────────────────────────────────────────
   return (
+    <>
     <Card>
       <CardContent className="flex flex-col items-center gap-3 p-5">
         <div className="flex w-full items-center justify-between gap-2">
@@ -427,5 +477,96 @@ export function FocusTimer({
         )}
       </CardContent>
     </Card>
+    {settingsModal}
+    </>
+  );
+}
+
+/* ── Sound settings modal (focus alarm · break alarm · white noise) ────────── */
+function SoundSettings({
+  focusAlarm,
+  breakAlarm,
+  whiteNoise,
+  onFocusAlarm,
+  onBreakAlarm,
+  onWhiteNoise,
+  onClose,
+}: {
+  focusAlarm: string;
+  breakAlarm: string;
+  whiteNoise: string;
+  onFocusAlarm: (id: string) => void;
+  onBreakAlarm: (id: string) => void;
+  onWhiteNoise: (id: string) => void;
+  onClose: () => void;
+}) {
+  React.useEffect(() => {
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [onClose]);
+
+  return (
+    <div className="fixed inset-0 z-[200] flex items-end justify-center p-0 sm:items-center sm:p-6" role="dialog" aria-modal="true">
+      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
+      <div className="relative max-h-[85vh] w-full max-w-lg overflow-y-auto rounded-t-card border bg-card p-6 shadow-xl sm:rounded-card">
+        <div className="mb-4 flex items-center justify-between">
+          <h2 className="font-serif text-xl">Focus sounds</h2>
+          <button onClick={onClose} aria-label="Close" className="text-muted-foreground hover:text-foreground">
+            <X className="h-5 w-5" />
+          </button>
+        </div>
+
+        <SoundGroup title="Focus alarm" hint="Rings loudly when a focus block ends." options={FOCUS_SOUNDS} value={focusAlarm} onPick={onFocusAlarm} />
+        <SoundGroup title="Break alarm" hint="Rings when a break ends." options={FOCUS_SOUNDS} value={breakAlarm} onPick={onBreakAlarm} />
+        <SoundGroup title="White noise" hint="Plays quietly through your focus block." options={WHITE_NOISE} value={whiteNoise} onPick={onWhiteNoise} />
+
+        <p className="mt-2 text-[11px] text-muted-foreground">Tap any option to hear a preview. Choices are saved on this device.</p>
+      </div>
+    </div>
+  );
+}
+
+function SoundGroup({
+  title,
+  hint,
+  options,
+  value,
+  onPick,
+}: {
+  title: string;
+  hint: string;
+  options: { id: string; label: string }[];
+  value: string;
+  onPick: (id: string) => void;
+}) {
+  return (
+    <div className="mb-5">
+      <p className="text-sm font-medium">{title}</p>
+      <p className="mb-2 text-xs text-muted-foreground">{hint}</p>
+      <div className="grid grid-cols-2 gap-1.5 sm:grid-cols-3">
+        {options.map((o) => (
+          <button
+            key={o.id}
+            onClick={() => onPick(o.id)}
+            aria-pressed={value === o.id}
+            className={cn(
+              "flex items-center gap-2 rounded-button border px-3 py-2 text-left text-sm transition-colors",
+              value === o.id
+                ? "border-primary bg-primary/10 text-foreground"
+                : "border-input text-muted-foreground hover:bg-accent hover:text-foreground",
+            )}
+          >
+            <span
+              className={cn(
+                "h-2 w-2 shrink-0 rounded-full",
+                value === o.id ? "bg-primary" : "bg-muted-foreground/30",
+              )}
+            />
+            <span className="truncate">{o.label}</span>
+          </button>
+        ))}
+      </div>
+    </div>
   );
 }

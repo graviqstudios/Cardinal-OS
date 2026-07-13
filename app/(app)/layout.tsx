@@ -47,7 +47,7 @@ export default async function AppLayout({
     (!profile?.terms_accepted_at ||
       new Date(profile.terms_accepted_at) < new Date(LEGAL.effectiveISO));
 
-  // Onboarding is a focused, full-screen flow — no sidebar shell.
+  // Onboarding is a focused, full-screen flow - no sidebar shell.
   if (onOnboarding) {
     return (
       <>
@@ -75,7 +75,7 @@ export default async function AppLayout({
       />
       <main className="flex-1">
         <AppHeader score={life?.score ?? 0} previous={life?.previous ?? null} />
-        <PageTransition className="mx-auto w-full max-w-5xl px-4 py-6 md:px-8 md:py-10">
+        <PageTransition className="mx-auto w-full max-w-6xl px-4 py-6 md:px-10 md:py-10 lg:px-12">
           {children}
         </PageTransition>
       </main>
