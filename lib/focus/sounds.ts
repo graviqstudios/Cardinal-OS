@@ -213,6 +213,7 @@ export function startAmbient(ctx: Ctx, id: string): (() => void) | null {
     const s = ctx.createBufferSource();
     s.buffer = buf;
     s.loop = true;
+    s.start(); // <- was missing: without this the ambience never played
     nodes.push(s);
     return s;
   };
@@ -308,11 +309,18 @@ export function startAmbient(ctx: Ctx, id: string): (() => void) | null {
 
 /** How long (seconds) a single play of each sound roughly occupies. */
 const SOUND_SPAN: Record<string, number> = {
-  gong: 2.7,
-  bowl: 2.7,
-  bell: 1.9,
-  soft: 1.9,
-  chime: 1.2,
+  gong: 2.6,
+  bowl: 2.6,
+  bell: 1.8,
+  soft: 1.8,
+  chime: 1.1,
+  ding: 0.5,
+  double: 0.7,
+  marimba: 0.6,
+  rise: 0.7,
+  digital: 0.35,
+  pulse: 0.5,
+  arcade: 0.55,
 };
 
 /**
@@ -328,9 +336,11 @@ export function scheduleAlarm(
   startAt: number,
   maxSeconds = 600,
 ) {
-  const gap = (SOUND_SPAN[id] ?? 1.0) + 0.5;
+  // Repeat back-to-back (no silent gap) so it reads as one long, insistent ring
+  // like a phone/alarm-clock, and play it loud.
+  const gap = SOUND_SPAN[id] ?? 0.9;
   const repeats = Math.ceil(maxSeconds / gap);
   for (let i = 0; i < repeats; i++) {
-    scheduleSound(ctx, id, startAt + i * gap, 3.2); // loud
+    scheduleSound(ctx, id, startAt + i * gap, 4.6); // loud
   }
 }

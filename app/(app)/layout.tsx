@@ -75,7 +75,7 @@ export default async function AppLayout({
       />
       <main className="flex-1">
         <AppHeader score={life?.score ?? 0} previous={life?.previous ?? null} />
-        <PageTransition className="mx-auto w-full max-w-6xl px-4 py-6 md:px-10 md:py-10 lg:px-12">
+        <PageTransition className="mx-auto w-full max-w-[100rem] px-4 py-6 md:px-10 md:py-10 lg:px-12">
           {children}
         </PageTransition>
       </main>
