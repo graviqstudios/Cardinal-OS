@@ -1,11 +1,12 @@
 import { redirect } from "next/navigation";
-import { Volume2 } from "lucide-react";
 
 import { getUser } from "@/lib/supabase/server";
-import { getMyPods, getServerDetail } from "@/lib/pods/queries";
+import { getMyPods, getPodTimer, getServerDetail } from "@/lib/pods/queries";
 import { getMessages } from "@/lib/pods/chat";
+import { isLiveKitConfigured } from "@/lib/livekit/config";
 import { ServerShell } from "@/components/pods/server-shell";
 import { ConstellationChat } from "@/components/pods/constellation-chat";
+import { VoiceRoom } from "@/components/pods/voice-room";
 import { PodStatsPublisher } from "@/components/pods/pod-stats-publisher";
 
 export default async function ServerPage({
@@ -35,6 +36,8 @@ export default async function ServerPage({
 
   const messages =
     active && active.type === "text" ? await getMessages(active.id) : [];
+  const timer =
+    active && active.type === "voice" ? await getPodTimer(server.id) : null;
 
   return (
     <div className="space-y-4">
@@ -55,7 +58,13 @@ export default async function ServerPage({
             currentUserId={user?.id ?? ""}
           />
         ) : (
-          <VoicePane channelName={active.name} />
+          <VoiceRoom
+            channelId={active.id}
+            channelName={active.name}
+            podId={server.id}
+            configured={isLiveKitConfigured}
+            initialTimer={timer}
+          />
         )}
       </ServerShell>
     </div>
@@ -66,21 +75,6 @@ function EmptyPane() {
   return (
     <div className="flex h-full items-center justify-center p-8 text-center text-sm text-muted-foreground">
       No channels yet. Owners can add text and voice channels from the sidebar.
-    </div>
-  );
-}
-
-function VoicePane({ channelName }: { channelName: string }) {
-  return (
-    <div className="flex h-full flex-col items-center justify-center gap-3 p-8 text-center">
-      <span className="flex h-14 w-14 items-center justify-center rounded-full bg-primary/10 text-primary">
-        <Volume2 className="h-6 w-6" />
-      </span>
-      <p className="text-sm font-medium">{channelName}</p>
-      <p className="max-w-xs text-sm text-muted-foreground">
-        Live voice &amp; video rooms are coming to this channel. For now, use a
-        text channel to chat.
-      </p>
     </div>
   );
 }

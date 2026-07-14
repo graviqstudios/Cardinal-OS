@@ -15,12 +15,12 @@ const securityHeaders = [
   { key: "X-Frame-Options", value: "SAMEORIGIN" },
   { key: "X-Content-Type-Options", value: "nosniff" },
   { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
-  // Camera/mic/screen-share are enabled for our own origin and the embedded
-  // Jitsi study-room iframe (Constellations). Geolocation/topics stay off.
+  // Camera/mic/screen-share are enabled for our own origin (LiveKit voice
+  // rooms render first-party). Geolocation/topics stay off.
   {
     key: "Permissions-Policy",
     value:
-      'camera=(self "https://meet.jit.si"), microphone=(self "https://meet.jit.si"), display-capture=(self "https://meet.jit.si"), geolocation=(), browsing-topics=()',
+      "camera=(self), microphone=(self), display-capture=(self), geolocation=(), browsing-topics=()",
   },
   { key: "Strict-Transport-Security", value: "max-age=31536000" },
   { key: "X-DNS-Prefetch-Control", value: "on" },
