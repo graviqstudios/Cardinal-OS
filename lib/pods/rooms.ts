@@ -2,7 +2,6 @@
 
 import { createClient, getUser } from "@/lib/supabase/server";
 import { createGoogleMeet, freshAccessToken } from "@/lib/integrations/google";
-import { sendMessage } from "@/lib/pods/chat";
 
 type Result<T = void> = { ok: true; data?: T } | { ok: false; error: string };
 
@@ -80,7 +79,6 @@ export async function createPodMeet(
       minutes: 90,
     });
     if (!url) return { ok: false, error: "Google did not return a Meet link." };
-    await sendMessage(podId, `Google Meet room: ${url}`);
     return { ok: true, data: { url } };
   } catch (e) {
     return {

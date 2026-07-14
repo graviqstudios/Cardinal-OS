@@ -5,6 +5,7 @@ import { createClient, getUser } from "@/lib/supabase/server";
 export type ConstellationMessage = {
   id: string;
   pod_id: string;
+  channel_id: string | null;
   user_id: string;
   author_name: string | null;
   body: string;
@@ -13,20 +14,23 @@ export type ConstellationMessage = {
 
 type Result<T = void> = { ok: true; data?: T } | { ok: false; error: string };
 
-/** Recent messages for a constellation, oldest first (RLS limits to members). */
-export async function getMessages(podId: string): Promise<ConstellationMessage[]> {
+/** Recent messages for a channel, oldest first (RLS limits to pod members). */
+export async function getMessages(
+  channelId: string,
+): Promise<ConstellationMessage[]> {
   const supabase = await createClient();
   const { data } = await supabase
     .from("constellation_messages")
     .select("*")
-    .eq("pod_id", podId)
+    .eq("channel_id", channelId)
     .order("created_at", { ascending: true })
     .limit(200);
   return (data ?? []) as ConstellationMessage[];
 }
 
-/** Post a message to a constellation. RLS guarantees the user is a member. */
+/** Post a message to a channel. RLS guarantees the user is a pod member. */
 export async function sendMessage(
+  channelId: string,
   podId: string,
   body: string,
 ): Promise<Result<ConstellationMessage>> {
@@ -48,7 +52,13 @@ export async function sendMessage(
 
   const { data, error } = await supabase
     .from("constellation_messages")
-    .insert({ pod_id: podId, user_id: user.id, author_name: authorName, body: text })
+    .insert({
+      pod_id: podId,
+      channel_id: channelId,
+      user_id: user.id,
+      author_name: authorName,
+      body: text,
+    })
     .select("*")
     .single();
 

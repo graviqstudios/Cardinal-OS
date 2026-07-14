@@ -13,20 +13,73 @@ async function uid() {
   return { supabase, userId: user?.id ?? null };
 }
 
-export async function createPod(name: string, examTarget: string): Promise<Result<{ id: string }>> {
+export async function createServer(input: {
+  name: string;
+  exam?: string;
+  description?: string;
+  visibility?: "public" | "private";
+}): Promise<Result<{ id: string }>> {
   const { supabase, userId } = await uid();
   if (!userId) return { ok: false, error: "Not authenticated." };
-  if (!name.trim()) return { ok: false, error: "A name is required." };
+  if (!input.name.trim()) return { ok: false, error: "A name is required." };
 
   const { data, error } = await supabase.rpc("create_pod", {
-    p_name: name.trim(),
-    p_exam: examTarget.trim(),
+    p_name: input.name.trim(),
+    p_exam: (input.exam ?? "").trim(),
+    p_description: (input.description ?? "").trim(),
+    p_visibility: input.visibility ?? "private",
   });
   if (error) return { ok: false, error: error.message };
 
   await publishPodStats();
   revalidatePath("/constellations");
   return { ok: true, data: { id: data as string } };
+}
+
+/** Owner-only server edits (RLS enforces ownership on pods update). */
+export async function updateServer(
+  serverId: string,
+  patch: {
+    name?: string;
+    description?: string | null;
+    visibility?: "public" | "private";
+    icon_url?: string | null;
+  },
+): Promise<Result> {
+  const { supabase, userId } = await uid();
+  if (!userId) return { ok: false, error: "Not authenticated." };
+  const update: Record<string, unknown> = {};
+  if (patch.name != null) {
+    if (!patch.name.trim()) return { ok: false, error: "Name is required." };
+    update.name = patch.name.trim();
+  }
+  if (patch.description !== undefined)
+    update.description = patch.description?.trim() || null;
+  if (patch.visibility != null) update.visibility = patch.visibility;
+  if (patch.icon_url !== undefined) update.icon_url = patch.icon_url;
+
+  const { error } = await supabase.from("pods").update(update).eq("id", serverId);
+  if (error) return { ok: false, error: error.message };
+  revalidatePath(`/constellations/${serverId}`);
+  revalidatePath("/constellations");
+  return { ok: true };
+}
+
+export async function deleteServer(serverId: string): Promise<Result> {
+  const { supabase, userId } = await uid();
+  if (!userId) return { ok: false, error: "Not authenticated." };
+  // RLS: only the owner may delete the pod row (cascade removes channels etc.).
+  const { data: pod } = await supabase
+    .from("pods")
+    .select("created_by")
+    .eq("id", serverId)
+    .maybeSingle();
+  if (!pod || pod.created_by !== userId)
+    return { ok: false, error: "Only the owner can delete this server." };
+  const { error } = await supabase.from("pods").delete().eq("id", serverId);
+  if (error) return { ok: false, error: error.message };
+  revalidatePath("/constellations");
+  return { ok: true };
 }
 
 export async function joinPod(code: string): Promise<Result<{ id: string }>> {

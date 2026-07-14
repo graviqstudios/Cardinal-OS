@@ -1,10 +1,14 @@
 import { createClient, getUser } from "@/lib/supabase/server";
 import type {
+  Channel,
+  ChannelCategory,
   Pod,
   PodDetail,
   PodStat,
   PodSummary,
   PodTimer,
+  Server,
+  ServerDetail,
 } from "@/lib/pods/types";
 
 /** Pods the signed-in user belongs to, with member counts. */
@@ -30,10 +34,68 @@ export async function getMyPods(): Promise<PodSummary[]> {
   for (const m of allMembers ?? [])
     counts.set(m.pod_id as string, (counts.get(m.pod_id as string) ?? 0) + 1);
 
-  return ((pods ?? []) as Pod[]).map((p) => ({
+  return ((pods ?? []) as Server[]).map((p) => ({
     ...p,
     memberCount: counts.get(p.id) ?? 0,
   }));
+}
+
+/** Full server: details + categories + channels + members (RLS: members). */
+export async function getServerDetail(
+  serverId: string,
+): Promise<ServerDetail | null> {
+  const supabase = await createClient();
+  const user = await getUser();
+  if (!user) return null;
+
+  const { data: pod } = await supabase
+    .from("pods")
+    .select("*")
+    .eq("id", serverId)
+    .maybeSingle();
+  if (!pod) return null;
+
+  const [{ data: categories }, { data: channels }, { data: members }] =
+    await Promise.all([
+      supabase
+        .from("channel_categories")
+        .select("*")
+        .eq("pod_id", serverId)
+        .order("position", { ascending: true }),
+      supabase
+        .from("channels")
+        .select("*")
+        .eq("pod_id", serverId)
+        .order("position", { ascending: true })
+        .order("created_at", { ascending: true }),
+      supabase
+        .from("pod_members")
+        .select("user_id, joined_at")
+        .eq("pod_id", serverId)
+        .order("joined_at", { ascending: true }),
+    ]);
+
+  const memberRows = (members ?? []) as { user_id: string; joined_at: string }[];
+  const userIds = memberRows.map((m) => m.user_id);
+  const { data: stats } = await supabase
+    .from("pod_stats")
+    .select("*")
+    .in("user_id", userIds.length ? userIds : ["00000000-0000-0000-0000-000000000000"]);
+  const statByUser = new Map<string, PodStat>();
+  for (const s of (stats ?? []) as PodStat[]) statByUser.set(s.user_id, s);
+
+  return {
+    ...(pod as Server),
+    categories: (categories ?? []) as ChannelCategory[],
+    channels: (channels ?? []) as Channel[],
+    members: memberRows.map((m) => ({
+      user_id: m.user_id,
+      joined_at: m.joined_at,
+      stat: statByUser.get(m.user_id) ?? null,
+      isYou: m.user_id === user.id,
+    })),
+    isOwner: (pod as Pod).created_by === user.id,
+  };
 }
 
 /** Current shared study-room timer for a pod, if one is set. */

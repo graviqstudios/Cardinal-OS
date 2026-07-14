@@ -1,82 +1,17 @@
-import { Sparkles } from "lucide-react";
-
-import { createClient, getUser } from "@/lib/supabase/server";
-import { getMyPods, getPodDetail, getPodTimer } from "@/lib/pods/queries";
-import { getMessages } from "@/lib/pods/chat";
-import { getToken } from "@/lib/integrations/tokens";
-import { PageHeader } from "@/components/shell/page-header";
-import { PodsClient } from "@/components/pods/pods-client";
-import { PodDetailView } from "@/components/pods/pod-detail-view";
+import { getMyPods } from "@/lib/pods/queries";
+import { ServerRail } from "@/components/pods/server-rail";
+import { ConstellationsHome } from "@/components/pods/constellations-home";
 import { PodStatsPublisher } from "@/components/pods/pod-stats-publisher";
-import { ConstellationChat } from "@/components/pods/constellation-chat";
-import { StudyRoom } from "@/components/pods/study-room";
-import { Card, CardContent } from "@/components/ui/card";
 
-export default async function ConstellationsPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ c?: string; pod?: string }>;
-}) {
-  const sp = await searchParams;
-  const requested = sp.c ?? sp.pod ?? undefined;
-
-  const user = await getUser();
-
-  const pods = await getMyPods();
-  const selectedId =
-    requested && pods.some((p) => p.id === requested) ? requested : null;
-  const [detail, messages, timer, googleToken] = await Promise.all([
-    selectedId ? getPodDetail(selectedId) : Promise.resolve(null),
-    selectedId ? getMessages(selectedId) : Promise.resolve([]),
-    selectedId ? getPodTimer(selectedId) : Promise.resolve(null),
-    user ? getToken(user.id, "google_calendar") : Promise.resolve(null),
-  ]);
-
-  const myName =
-    detail?.members.find((m) => m.isYou)?.stat?.name ??
-    user?.email?.split("@")[0] ??
-    "Member";
+export default async function ConstellationsPage() {
+  const servers = await getMyPods();
 
   return (
-    <div className="space-y-6">
+    <div className="flex h-[78vh] overflow-hidden rounded-card border">
       <PodStatsPublisher />
-
-      <PageHeader
-        title="Constellations"
-        description="A small, private circle of 4–6 people - see everyone's progress and talk it through, live."
-        icon={<Sparkles className="h-5 w-5" />}
-      />
-
-      <div className="grid gap-6 lg:grid-cols-[340px_1fr]">
-        <PodsClient pods={pods} selectedId={selectedId} />
-        <div className="space-y-6">
-          {detail ? (
-            <>
-              <PodDetailView pod={detail} />
-              <StudyRoom
-                podId={detail.id}
-                podName={detail.name}
-                roomName={`Cardinal-${detail.id}-${detail.invite_code}`}
-                currentUserId={user?.id ?? ""}
-                currentName={myName}
-                initialTimer={timer}
-                googleConnected={Boolean(googleToken)}
-              />
-              <ConstellationChat
-                podId={detail.id}
-                initialMessages={messages}
-                currentUserId={user?.id ?? ""}
-              />
-            </>
-          ) : (
-            <Card>
-              <CardContent className="p-8 text-center text-sm text-muted-foreground">
-                Select a constellation to see everyone&apos;s progress, or create
-                one to get started.
-              </CardContent>
-            </Card>
-          )}
-        </div>
+      <ServerRail servers={servers} activeId={null} />
+      <div className="flex-1 overflow-y-auto p-8">
+        <ConstellationsHome servers={servers} />
       </div>
     </div>
   );
