@@ -46,6 +46,7 @@ export default async function ServerPage({
         servers={servers}
         server={server}
         activeChannelId={active?.id ?? null}
+        currentUserId={user?.id ?? ""}
       >
         {!active ? (
           <EmptyPane />

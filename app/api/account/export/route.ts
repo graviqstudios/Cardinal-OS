@@ -7,7 +7,7 @@ const TABLES = [
   "career_targets", "journal_entries", "body_metrics", "workout_logs",
   "nutrition_logs", "period_logs",
   "focus_sessions", "events", "transactions", "budgets", "savings_goals",
-  "life_scores", "constellation_messages",
+  "life_scores", "constellation_messages", "pod_members", "pod_stats",
 ];
 
 /** Download all of the signed-in user's data as JSON (DPDP export right). */
