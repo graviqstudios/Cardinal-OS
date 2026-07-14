@@ -20,8 +20,10 @@ export default async function ServerPage({
     getMyPods(),
     getServerDetail(serverId),
   ]);
-  // RLS returns the server only to members (private) — otherwise send home.
+  // RLS returns private servers only to members; public servers are visible to
+  // everyone, so require membership here and send non-members to Discover.
   if (!server) redirect("/constellations");
+  if (!server.members.some((m) => m.isYou)) redirect("/constellations/discover");
 
   const active =
     (channelId?.[0]

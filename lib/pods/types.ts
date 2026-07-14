@@ -58,6 +58,16 @@ export type PodSummary = Server & { memberCount: number };
 
 export type PodDetail = Pod & { members: PodMemberView[] };
 
+/** A public server as shown in the Discover directory. */
+export type PublicServer = {
+  id: string;
+  name: string;
+  description: string | null;
+  icon_url: string | null;
+  member_count: number;
+  created_at: string;
+};
+
 /** Full server view: details + categories + channels + members. */
 export type ServerDetail = Server & {
   categories: ChannelCategory[];

@@ -4,8 +4,32 @@ import { revalidatePath } from "next/cache";
 
 import { createClient, getUser } from "@/lib/supabase/server";
 import { computeForUser } from "@/lib/readiness/service";
+import { listPublicServers } from "@/lib/pods/queries";
+import type { PublicServer } from "@/lib/pods/types";
 
 type Result<T = void> = { ok: true; data?: T } | { ok: false; error: string };
+
+/** Search the public server directory (client-callable). */
+export async function searchPublicServers(
+  search: string,
+): Promise<PublicServer[]> {
+  return listPublicServers(search);
+}
+
+/** Join a public server directly (no invite code). */
+export async function joinPublicServer(
+  podId: string,
+): Promise<Result<{ id: string }>> {
+  const { supabase, userId } = await uid();
+  if (!userId) return { ok: false, error: "Not authenticated." };
+  const { data, error } = await supabase.rpc("join_pod_public", {
+    p_pod: podId,
+  });
+  if (error) return { ok: false, error: error.message.replace(/^.*?:\s*/, "") };
+  await publishPodStats();
+  revalidatePath("/constellations");
+  return { ok: true, data: { id: data as string } };
+}
 
 async function uid() {
   const supabase = await createClient();

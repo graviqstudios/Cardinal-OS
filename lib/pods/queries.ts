@@ -7,9 +7,24 @@ import type {
   PodStat,
   PodSummary,
   PodTimer,
+  PublicServer,
   Server,
   ServerDetail,
 } from "@/lib/pods/types";
+
+/** Public servers for the Discover directory (member counts via SECURITY DEFINER). */
+export async function listPublicServers(
+  search?: string,
+): Promise<PublicServer[]> {
+  const supabase = await createClient();
+  const { data } = await supabase.rpc("list_public_servers", {
+    p_search: search?.trim() || null,
+  });
+  return ((data ?? []) as PublicServer[]).map((s) => ({
+    ...s,
+    member_count: Number(s.member_count),
+  }));
+}
 
 /** Pods the signed-in user belongs to, with member counts. */
 export async function getMyPods(): Promise<PodSummary[]> {
