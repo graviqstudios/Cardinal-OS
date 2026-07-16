@@ -2,10 +2,17 @@ import { redirect } from "next/navigation";
 
 import { createClient, getUser } from "@/lib/supabase/server";
 import { LandingPage } from "@/components/landing/landing-page";
-import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/site";
+import {
+  SITE_ALTERNATE_NAMES,
+  SITE_DESCRIPTION,
+  SITE_NAME,
+  SITE_URL,
+} from "@/lib/site";
 
-// Structured data so search engines understand the product and publisher. Helps
-// surface Cardinal for "life OS / productivity app / Notion alternative" queries.
+// Structured data so search engines understand the product and publisher, and
+// so the SERP shows "Cardinal OS" as the site name rather than falling back to
+// the parent domain (graviq.in). Google picks the name automatically from
+// WebSite.name → alternateName → og:site_name → <title>/headings.
 const jsonLd = {
   "@context": "https://schema.org",
   "@graph": [
@@ -26,6 +33,7 @@ const jsonLd = {
       "@id": `${SITE_URL}/#website`,
       url: SITE_URL,
       name: SITE_NAME,
+      alternateName: SITE_ALTERNATE_NAMES,
       description: SITE_DESCRIPTION,
       publisher: { "@id": `${SITE_URL}/#organization` },
     },

@@ -8,7 +8,7 @@ import { ThemeScript } from "@/components/theme/theme-script";
 import { NativeBootstrap } from "@/components/native/native-bootstrap";
 import { ServiceWorkerRegistrar } from "@/components/pwa/service-worker-registrar";
 import { createClient, getUser } from "@/lib/supabase/server";
-import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/site";
+import { SITE_DESCRIPTION, SITE_NAME, SITE_TITLE, SITE_URL } from "@/lib/site";
 import {
   isAccent,
   isPalette,
@@ -19,27 +19,26 @@ import {
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "Cardinal OS - one calm home for your whole life",
+    default: SITE_TITLE,
     template: "%s · Cardinal OS",
   },
   description: SITE_DESCRIPTION,
   applicationName: SITE_NAME,
+  // Note: Google has ignored the keywords meta tag since 2009 — kept only for
+  // the minor engines that still read it, and aligned to the student framing.
   keywords: [
     "Cardinal OS",
-    "life OS",
-    "life operating system",
-    "productivity app",
-    "Notion alternative",
-    "habit tracker",
-    "task manager",
-    "goal tracking app",
-    "journal app",
-    "second brain",
-    "daily planner",
+    "student planner",
+    "student planner app",
+    "all in one student app",
+    "study planner",
+    "study tracker",
+    "habit tracker for students",
+    "goal tracker",
+    "task manager for students",
+    "student budget tracker",
+    "AI study planner",
     "Life Score",
-    "AI planner",
-    "student productivity",
-    "GraviQ Studios",
   ],
   authors: [{ name: "GraviQ Studios", url: SITE_URL }],
   creator: "GraviQ Studios",
@@ -50,7 +49,7 @@ export const metadata: Metadata = {
     type: "website",
     url: SITE_URL,
     siteName: SITE_NAME,
-    title: "Cardinal OS - one calm home for your whole life",
+    title: SITE_TITLE,
     description: SITE_DESCRIPTION,
     locale: "en_US",
   },
@@ -58,7 +57,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     site: "@GraviQStudios",
     creator: "@GraviQStudios",
-    title: "Cardinal OS - one calm home for your whole life",
+    title: SITE_TITLE,
     description: SITE_DESCRIPTION,
   },
   robots: {
