@@ -74,5 +74,5 @@ function mockBriefing(done: number, total: number, openTasks: number) {
   if (openTasks > 0) {
     return `Pick the one task that matters most and start there.`;
   }
-  return `${done} of ${total} habits done - a calm, steady day ahead.`;
+  return `${done} of ${total} habits done - a steady day ahead.`;
 }

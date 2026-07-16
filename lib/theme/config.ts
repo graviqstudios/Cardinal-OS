@@ -7,7 +7,7 @@
 export const PALETTES = [
   { id: "parchment", label: "Parchment", hint: "light, warm white", swatch: "#F5EFE3" },
   { id: "study", label: "Study", hint: "warm dark", swatch: "#1A140F" },
-  { id: "sage", label: "Sage", hint: "calm light", swatch: "#EBEDE5" },
+  { id: "sage", label: "Sage", hint: "soft light", swatch: "#EBEDE5" },
   { id: "dusk", label: "Dusk", hint: "cool twilight", swatch: "#16161E" },
   { id: "ink", label: "Ink", hint: "true black", swatch: "#0B0907" },
 ] as const;

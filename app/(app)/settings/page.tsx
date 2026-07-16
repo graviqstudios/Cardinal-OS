@@ -27,7 +27,7 @@ export default async function SettingsPage() {
     <div className="space-y-8">
       <PageHeader
         title="Settings"
-        description="Manage your appearance and profile."
+        description="Manage your profile, appearance, connected apps and account."
         icon={<SettingsIcon className="h-5 w-5" />}
       />
 

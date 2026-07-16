@@ -18,7 +18,7 @@ export const SITE_NAME = "Cardinal OS";
  */
 export const SITE_ALTERNATE_NAMES = ["CardinalOS", "Cardinal"];
 
-export const SITE_TAGLINE = "One compass for everything.";
+export const SITE_TAGLINE = "One app for your whole student life.";
 
 /**
  * Kept under ~155 characters so Google can show it whole: the previous copy ran
@@ -26,7 +26,7 @@ export const SITE_TAGLINE = "One compass for everything.";
  * are not a ranking signal — this exists to win the click.
  */
 export const SITE_DESCRIPTION =
-  "One calm app for students: study, habits, goals, tasks, money and health together, with AI planning and one honest Life Score to show how you're really doing.";
+  "Study, habits, goals, tasks, money and health in one app for students, with AI that plans your day and one honest Life Score to show how you're really doing.";
 
 /** Home-page <title>. Lead with real queries ("student planner"), brand first. */
 export const SITE_TITLE =

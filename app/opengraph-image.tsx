@@ -3,7 +3,7 @@ import { ImageResponse } from "next/og";
 // Node runtime per project rule (never edge). next/og runs fine on Node.
 export const runtime = "nodejs";
 
-export const alt = "Cardinal OS - one calm home for your whole life";
+export const alt = "Cardinal OS - the all-in-one app for students";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -58,7 +58,7 @@ export default function OpengraphImage() {
 
           <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
             <div style={{ fontSize: 66, lineHeight: 1.04, letterSpacing: -1.5, maxWidth: 700 }}>
-              One calm home for your whole life.
+              The all-in-one app for students.
             </div>
             <div style={{ fontSize: 28, color: "#B6A892", maxWidth: 640, lineHeight: 1.4 }}>
               Habits, goals, money, body and mind, with AI woven through and one honest number to orient by.

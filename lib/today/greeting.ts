@@ -90,7 +90,7 @@ export function buildGreeting(s: GreetingSignals): string {
 
   return pick(
     [
-      `A calm, open day, ${name}.`,
+      `An open, steady day, ${name}.`,
       `Good to see you, ${name}.`,
       `Here's your day, ${name}.`,
     ],

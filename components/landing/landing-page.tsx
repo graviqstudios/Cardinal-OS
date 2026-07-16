@@ -317,13 +317,13 @@ export function LandingPage() {
           <div>
             <div className="inline-flex items-center gap-2.5 rounded-full border border-[rgba(242,233,219,0.14)] px-3.5 py-1.5 text-[13px] text-[#C9BBA3]">
               <span className="h-1.5 w-1.5 rounded-full" style={{ background: "var(--co-accent)" }} />
-              One compass for everything
+              One app for your whole student life
             </div>
             <h1 className="mt-6 font-serif text-5xl font-normal leading-[1.02] tracking-[-0.015em] sm:text-6xl lg:text-[74px]">
-              The operating system for your <span className="italic" style={{ color: "var(--co-accent)" }}>life</span>.
+              The all-in-one app for <span className="italic" style={{ color: "var(--co-accent)" }}>students</span>.
             </h1>
             <p className="mt-6 max-w-[540px] text-[17px] leading-relaxed text-[#B6A892] sm:text-[19px]">
-              One calm, premium home for your days, habits, goals, money, body and mind, with AI woven through everything and one honest number to orient by.
+              Study, habits, goals, money and health in one place, with AI that plans your day and one honest Life Score that shows how you&apos;re really doing.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <a href="/signup" className="inline-flex items-center gap-2.5 rounded-xl px-6 py-3.5 text-[15px] font-medium text-white transition-transform active:scale-[0.97]" style={{ background: "var(--co-accent)" }}>
@@ -385,7 +385,7 @@ export function LandingPage() {
               </div>
               <div className="mt-6 flex items-start gap-3 rounded-[14px] border p-4" style={{ background: "rgba(var(--co-accent-rgb),0.08)", borderColor: "rgba(var(--co-accent-rgb),0.18)" }}>
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--co-accent)" strokeWidth="1.8" className="mt-0.5 shrink-0"><circle cx="12" cy="12" r="9" /><path d="M12 8v4M12 16h.01" strokeLinecap="round" /></svg>
-                <p className="text-sm leading-relaxed text-[#D7CCBA]">Anti-anxiety by design. The ring never shows red. A 300 wears the same calm color as an 800, and one missed day cannot collapse it.</p>
+                <p className="text-sm leading-relaxed text-[#D7CCBA]">Anti-anxiety by design. The ring never shows red. A 300 wears the same steady color as an 800, and one missed day cannot collapse it.</p>
               </div>
             </Reveal>
             <Reveal className="flex flex-col rounded-[24px] border border-[rgba(242,233,219,0.10)] bg-[#1A140F] p-8 sm:p-11">
@@ -650,7 +650,7 @@ export function LandingPage() {
           </div>
           <h2 className="mt-5 font-serif text-4xl font-normal leading-[1.1] tracking-[-0.01em] sm:text-5xl">An independent, design-led studio, building in public from India.</h2>
           <p className="mx-auto mt-6 max-w-[680px] text-[18px] leading-[1.7] text-[#B6A892]">
-            GraviQ Studios builds one product at a time, openly. Gravity pulls things into orbit, orbits become stars, stars become constellations. Cardinal OS is our attempt at a calm operating partner for a generation running their lives across too many tabs.
+            GraviQ Studios builds one product at a time, openly. Gravity pulls things into orbit, orbits become stars, stars become constellations. Cardinal OS is our attempt at a steady operating partner for a generation running their lives across too many tabs.
           </p>
         </Reveal>
       </section>
@@ -704,7 +704,7 @@ export function LandingPage() {
           <div className="relative">
             <div className="flex justify-center" style={{ filter: "drop-shadow(0 8px 22px rgba(var(--co-accent-rgb),0.35))" }}><Needle s={46} /></div>
             <h2 className="mt-5 font-serif text-4xl font-normal leading-[1.05] tracking-[-0.01em] sm:text-[54px]">Find your north.</h2>
-            <p className="mx-auto mt-4 max-w-[520px] text-[18px] leading-relaxed text-[#B6A892]">One calm screen for your whole life. Free during beta, no card required. Everything you run, finally in one place.</p>
+            <p className="mx-auto mt-4 max-w-[520px] text-[18px] leading-relaxed text-[#B6A892]">One screen for your whole student life. Free during beta, no card required. Everything you run, finally in one place.</p>
             <div className="mt-8 flex flex-wrap justify-center gap-3">
               <a href="/signup" className="inline-flex items-center gap-2.5 rounded-xl px-7 py-4 text-base font-medium text-white transition-transform active:scale-[0.97]" style={{ background: "var(--co-accent)" }}>Create your account <Arrow /></a>
               <InstallAppButton
@@ -726,7 +726,7 @@ export function LandingPage() {
                 <Needle s={22} />
                 <span className="font-serif text-xl">Cardinal</span><span className="pt-1 text-[11px] font-semibold tracking-[0.18em] text-[#897C68]">OS</span>
               </div>
-              <p className="mt-4 max-w-[260px] font-serif text-[17px] italic text-[#897C68]">One compass for everything.</p>
+              <p className="mt-4 max-w-[260px] font-serif text-[17px] italic text-[#897C68]">One app for your whole student life.</p>
               <div className="mt-5 flex gap-2.5">
                 {[
                   { href: "https://x.com/GraviQStudios", label: "X", d: "M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" },
@@ -889,12 +889,12 @@ const TRUST = [
 ];
 
 const REVIEWS = [
-  { quote: "I closed four apps the week I started. The morning briefing actually knows what my day looks like. It feels calm, not naggy.", name: "Aditi R.", role: "NEET aspirant, Kochi", color: "#2D5FB0" },
+  { quote: "I closed four apps the week I started. The morning briefing actually knows what my day looks like. It feels steady, not naggy.", name: "Aditi R.", role: "NEET aspirant, Kochi", color: "#2D5FB0" },
   { quote: "The Sunday review reads like a letter from someone who's paying attention. I've screenshotted every one of them.", name: "Karthik M.", role: "Early-career dev, Bengaluru", color: "#7A4C8F" },
   { quote: "My constellation is the only reason I still wake up at 5. Nobody's performing, we just show up for each other quietly.", name: "Sneha P.", role: "Design student, Pune", color: "#2F7D5B" },
   { quote: "It told me my spending spikes when my sleep drops. No spreadsheet ever did that. Slightly unnerving, mostly brilliant.", name: "Rohan D.", role: "Creator, Hyderabad", color: "#B57A1E" },
   { quote: "I came for exam prep and stayed for everything else. Readiness is still there, but now my whole life has a dashboard.", name: "Nandini V.", role: "JEE aspirant, Chennai", color: "#C4622D" },
-  { quote: "The focus timer cues my playlist and collapses everything else. Thirty calm minutes, then it asks how it went.", name: "Tanvi S.", role: "Final-year student, Delhi", color: "#3B4F72" },
+  { quote: "The focus timer cues my playlist and collapses everything else. Thirty undisturbed minutes, then it asks how it went.", name: "Tanvi S.", role: "Final-year student, Delhi", color: "#3B4F72" },
 ];
 
 const FAQS = [
@@ -902,7 +902,7 @@ const FAQS = [
   { q: "What exactly is the Life Score?", a: "One number from 0 to 1000 that blends habit consistency, goal and project velocity, task follow-through, and how evenly you're engaging across your life. It rewards a whole, balanced life rather than grinding a single area, and it never shows red." },
   { q: "Is my data private?", a: "Yes. Your data is yours: row-level security means only you, and the Cardinal team running the service, can ever access it, never other users. Nothing you write is used to train any AI model, and you can export or delete it whenever you want." },
   { q: "What are Constellations?", a: "Small groups of four to six people who help each other stay on course. You share a Life Score and a quiet dashboard, with live chat when members are online. No feeds, no likes, no notifications to outsiders. A quiet room, not a Discord server." },
-  { q: "Does it still work for exam prep?", a: "Absolutely. Exam Prep is an installable template with Readiness Score, syllabus heat map, practice, mock predictor, a calm focus mode and a voice examiner. Your Exam Readiness becomes a domain score that feeds the main Life Score with extra weight as your exam nears." },
+  { q: "Does it still work for exam prep?", a: "Absolutely. Exam Prep is an installable template with Readiness Score, syllabus heat map, practice, mock predictor, a distraction-free focus mode and a voice examiner. Your Exam Readiness becomes a domain score that feeds the main Life Score with extra weight as your exam nears." },
   { q: "Who makes Cardinal OS?", a: `GraviQ Studios, an independent, design-led studio in India that builds one product at a time, in public. Reach us any time at ${EMAIL}.` },
 ];
 

@@ -85,7 +85,7 @@ export function OnboardingFlow() {
               >
                 <div className="rounded-card border bg-card p-5 text-sm leading-relaxed text-muted-foreground">
                   Your home opens to your Life Score, today&apos;s intention, and a
-                  calm view of what matters. Nothing to set up first.
+                  clear view of what matters. Nothing to set up first.
                 </div>
               </Section>
             )}

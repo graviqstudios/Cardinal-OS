@@ -15,7 +15,7 @@ const STEPS: Step[] = [
   {
     sel: '[data-tour="sidebar"]',
     title: "Everything in one place",
-    body: "Your whole life in one calm place: Today, Plan, Journal, Calendar, Money and Health. Switch between them any time.",
+    body: "Your whole life in one place: Today, Plan, Journal, Calendar, Money and Health. Switch between them any time.",
     placement: "right",
   },
   {
