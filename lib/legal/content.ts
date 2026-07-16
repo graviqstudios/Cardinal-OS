@@ -10,10 +10,12 @@ export const LEGAL = {
   email: "graviqstudios@gmail.com",
   grievanceOfficer: "P. S. Satchith, GraviQ Studios",
   jurisdiction: "India",
-  updated: "21 June 2026",
+  updated: "14 July 2026",
   // Bump this whenever the Terms / Privacy Policy materially change - users who
   // accepted an older version will be re-prompted once. (Machine-readable date.)
-  effectiveISO: "2026-06-21",
+  // Bumped for Constellations servers (public discovery, shared stats,
+  // presence), live voice/video rooms, and the AI study assistant.
+  effectiveISO: "2026-07-14",
 };
 
 export type LegalDoc = {
@@ -34,9 +36,12 @@ export const PRIVACY: LegalDoc = {
       h: "What we collect",
       body: [
         "Account details from your Google sign-in: your name and email address.",
-        "The content you create inside Cardinal: habits, tasks, projects, goals, journal entries, body metrics, focus sessions, constellation messages and similar.",
+        "The content you create inside Cardinal: habits, tasks, projects, goals, journal entries, body metrics, focus sessions and similar.",
+        "Your study content: subjects, chapters, topics, study tasks, practice answers and scores, and any notes or documents you upload (which we convert into a searchable form so the AI can answer from them).",
+        "Your Constellations activity: the servers you create or join, the messages you post in their channels, and the study stats you publish to them.",
+        "If you join a voice or video room, your camera, microphone and screen-share streams are carried in real time to the other people in that room. We do not record or store them.",
         "Basic, non-identifying usage and device information that helps us keep the product reliable.",
-        "If you connect Google Calendar, the calendar events needed to sync, accessed only while connected.",
+        "If you connect Google Calendar, Notion or Spotify, only the data that feature needs, accessed only while connected.",
       ],
     },
     {
@@ -56,22 +61,43 @@ export const PRIVACY: LegalDoc = {
       ],
     },
     {
+      h: "Constellations: what other people can see",
+      body: [
+        "Most of Cardinal is private to you. Constellations are the deliberate exception: they are shared spaces, so some of your information becomes visible to the other members of a server you join.",
+        "Members of a server you are in can see your display name, anything you post in its channels, whether you are currently online, and the study stats you publish: your readiness score, your day streak, your recent study minutes and your current goal.",
+        "A server is either private (joinable only with its invite code) or public. Public servers are listed in Discover, where any signed-in Cardinal user can see the server's name, description, icon and member count, and can join without an invite. Once they join, they can see the information above about you, even though you do not know them.",
+        "Please treat a Constellation as a public place and do not post anything there you would not want its members to have. You can leave a server at any time, and if you own a server you can make it private or delete it.",
+      ],
+    },
+    {
+      h: "Voice and video rooms",
+      body: [
+        "Voice channels let you talk with the other members of a server in real time, using LiveKit as our real-time media provider.",
+        "Your camera and microphone stay off until you choose to join a room and your browser asks your permission. You can mute, turn your camera off, or leave at any time.",
+        "While you are in a room, your audio, video and any screen you share are relayed live to the other people in that room. We do not record, store or listen to them, and they are not used for AI or analytics.",
+        "We cannot control what other people in a room do. Anyone present can see and hear you, and could capture it using tools outside Cardinal. Only join rooms with people you are comfortable with, and only share a screen you are happy for them to see.",
+      ],
+    },
+    {
       h: "AI processing",
       body: [
-        "To deliver a feature (such as your daily briefing, weekly and monthly reviews, or asking your own notes), the minimum content necessary is processed by our AI providers, Google (Gemini) and Anthropic (Claude), solely to return your result.",
+        "To deliver a feature (such as your daily briefing, weekly and monthly reviews, asking your own notes, or the study assistant drafting a plan), the minimum content necessary is processed by our AI providers, Google (Gemini) and Anthropic (Claude), solely to return your result.",
+        "For the study assistant, that can include the subject, chapters and uploaded notes relevant to your question. Nothing is applied to your plan until you review and confirm it.",
+        "We count how many AI tokens your account uses each day so we can apply fair-use limits. That is a count, not a copy of what you asked.",
         "This content is not used by us or by those providers to train their models.",
       ],
     },
     {
       h: "Connected apps",
       body: [
-        "When you connect Google Calendar, we access only what the feature needs to sync your events. Access tokens are encrypted before they are stored, and you can disconnect at any time, which revokes our access immediately.",
+        "Connecting an app is always your choice, and we request only the access the feature needs: Google Calendar (to sync your events), Notion (to import the pages you choose) and Spotify (to see your playlists for focus sessions).",
+        "Access tokens are encrypted before they are stored, and you can disconnect at any time from Settings, which revokes our access immediately.",
       ],
     },
     {
       h: "Processors we rely on",
       body: [
-        "We use a small number of trusted service providers to run Cardinal: Supabase (database, authentication and storage), Vercel (application hosting), Google Gemini and Anthropic Claude (AI features), and Brevo (email). Each processes data only as needed to provide their service to us.",
+        "We use a small number of trusted service providers to run Cardinal: Supabase (database, authentication and storage), Vercel (application hosting), Google Gemini and Anthropic Claude (AI features), LiveKit (real-time voice and video) and Brevo (email). Each processes data only as needed to provide their service to us.",
       ],
     },
     {
@@ -83,7 +109,8 @@ export const PRIVACY: LegalDoc = {
     {
       h: "Retention",
       body: [
-        "Constellation chat history is kept for 90 days. Everything else is kept until you delete it or close your account, after which it is removed within a reasonable period save where the law requires us to retain it.",
+        "Constellation channel messages are kept for 90 days. Voice and video are never recorded, so there is nothing to retain once a room ends.",
+        "Everything else is kept until you delete it or close your account, after which it is removed within a reasonable period save where the law requires us to retain it. Note that messages you posted in a shared server stay visible to that server for the 90-day window.",
       ],
     },
     {
@@ -116,10 +143,20 @@ export const TERMS: LegalDoc = {
     { h: "Beta and availability", body: ['Cardinal is currently in beta and is provided "as is" and "as available". Features may change, pause, or be removed as we learn from real use, and we do not guarantee uninterrupted or error-free operation.'] },
     { h: "Pricing", body: ["Cardinal is free for everyone during the testing period. If pricing is introduced later, it will be transparent, communicated in advance, and never a dark pattern."] },
     { h: "Your account", body: ["You are responsible for keeping your login secure and for activity under your account. Tell us promptly if you suspect unauthorised use."] },
-    { h: "Acceptable use", body: ["Do not misuse the service: no illegal, harmful, infringing or abusive activity; no scraping, reverse engineering, or attempts to break security; and treat the members of your constellation with respect."] },
-    { h: "Your content", body: ["You own the content you create. You grant GraviQ Studios a limited, worldwide licence to store, process and display it solely to provide the service to you. You are responsible for the content you add and for having the right to add it."] },
-    { h: "Connected services", body: ["Your use of the Google Calendar integration (and any future integrations) is also subject to those companies' own terms and policies."] },
-    { h: "AI features and no professional advice", body: ["Cardinal's AI features can be wrong or incomplete. They support your own judgement and are not medical, financial, legal, or other professional advice. The Life Score is informational only."] },
+    { h: "Acceptable use", body: ["Do not misuse the service: no illegal, harmful, infringing or abusive activity; no scraping, reverse engineering, or attempts to break security."] },
+    {
+      h: "Constellations and live rooms",
+      body: [
+        "Constellations are shared spaces, and public servers can be joined by people you do not know. Treat everyone in them with respect.",
+        "In any channel or voice/video room, do not harass, bully, threaten or impersonate anyone; do not share sexual, hateful, violent or illegal content; and do not share other people's personal information.",
+        "Do not record, photograph or re-stream another member's camera, microphone or screen share without their clear permission.",
+        "If you create a server you are responsible for it, including what you make public and who you invite. We may remove content, servers or accounts, or suspend access, where they breach these Terms or harm other users.",
+        "Anything you post or say in a shared server is visible to its members. Do not put anything there you would not want them to have.",
+      ],
+    },
+    { h: "Your content", body: ["You own the content you create. You grant GraviQ Studios a limited, worldwide licence to store, process and display it solely to provide the service to you. You are responsible for the content you add and for having the right to add it.", "Content you post in a Constellation is additionally shared with that server's members, and in a public server with anyone who joins it."] },
+    { h: "Connected services", body: ["Your use of the Google Calendar, Notion and Spotify integrations (and any future integrations) is also subject to those companies' own terms and policies."] },
+    { h: "AI features and no professional advice", body: ["Cardinal's AI features can be wrong or incomplete. They support your own judgement and are not medical, financial, legal, or other professional advice. The Life Score is informational only.", "AI features carry fair-use limits, including a daily allowance, so the service stays available to everyone. We may change those limits."] },
     { h: "Intellectual property", body: [`Cardinal OS, the Needle mark, and all related branding and software belong to ${LEGAL.company}. These Terms do not grant you any rights to them beyond using the service.`] },
     { h: "Disclaimers and liability", body: [`To the maximum extent permitted by law, ${LEGAL.company} is not liable for indirect, incidental, or consequential damages, or for loss of data or profits, arising from your use of the service.`] },
     { h: "Termination", body: ["You may stop using Cardinal and delete your account at any time. We may suspend or terminate accounts that breach these Terms or harm the service or other users."] },
