@@ -3,13 +3,28 @@
 import "@livekit/components-styles";
 
 import * as React from "react";
-import { LiveKitRoom, VideoConference } from "@livekit/components-react";
+import dynamic from "next/dynamic";
 import { Loader2, Video, Volume2 } from "lucide-react";
 
 import type { PodTimer } from "@/lib/pods/types";
 import { Button } from "@/components/ui/button";
 import { Tap } from "@/components/motion/tap";
 import { RoomTimer } from "@/components/pods/room-timer";
+
+/**
+ * The LiveKit SDK is ~170kB and only matters once you actually join a call, so
+ * it's loaded on demand. Statically importing it put the whole SDK in the
+ * Constellations bundle even for people just reading a text channel.
+ * ssr:false is safe — these components are browser-only anyway.
+ */
+const LiveKitRoom = dynamic(
+  () => import("@livekit/components-react").then((m) => m.LiveKitRoom),
+  { ssr: false },
+);
+const VideoConference = dynamic(
+  () => import("@livekit/components-react").then((m) => m.VideoConference),
+  { ssr: false },
+);
 
 export function VoiceRoom({
   channelId,

@@ -22,13 +22,19 @@ export async function computeForUser(
   supabase: SupabaseClient,
   userId: string,
 ): Promise<ReadinessResult> {
+  // Practice is recency-weighted with a 14-day half-life, so anything older than
+  // ~6 months contributes < 0.002 of a point. Bounding the window keeps this
+  // query flat instead of growing with every session a user ever recorded.
+  const practiceSince = new Date(Date.now() - 180 * 86_400_000).toISOString();
+
   const [{ data: topics }, { data: practice }, { data: profile }] =
     await Promise.all([
       supabase.from("topics").select("status, subject_id").eq("user_id", userId),
       supabase
         .from("practice_sessions")
         .select("score, max_score, created_at")
-        .eq("user_id", userId),
+        .eq("user_id", userId)
+        .gte("created_at", practiceSince),
       supabase.from("users").select("exam_date").eq("id", userId).single(),
     ]);
 
@@ -65,14 +71,17 @@ export async function getReadinessSnapshot(): Promise<ReadinessSnapshot | null> 
   const user = await getUser();
   if (!user) return null;
 
-  const live = await computeForUser(supabase, user.id);
-
-  const { data: rows } = await supabase
-    .from("readiness_scores")
-    .select("day, score")
-    .eq("user_id", user.id)
-    .order("day", { ascending: false })
-    .limit(14);
+  // History is independent of the live compute — fetch both in one wave rather
+  // than paying a second serial round-trip.
+  const [live, { data: rows }] = await Promise.all([
+    computeForUser(supabase, user.id),
+    supabase
+      .from("readiness_scores")
+      .select("day, score")
+      .eq("user_id", user.id)
+      .order("day", { ascending: false })
+      .limit(14),
+  ]);
 
   const history = ((rows ?? []) as { day: string; score: number }[])
     .slice()

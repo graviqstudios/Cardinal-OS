@@ -1,40 +1,25 @@
-import type { Message } from "@ai-sdk/react";
+import { Suspense } from "react";
 
-import {
-  getChatMessages,
-  getOrCreateChatSession,
-  getStudyTarget,
-  getSubjectsWithTopics,
-} from "@/lib/study/queries";
-import { listChatSessions } from "@/lib/study/chat-actions";
+import { getStudyTarget, getSubjectsWithTopics } from "@/lib/study/queries";
 import { getReadinessSnapshot } from "@/lib/readiness/service";
 import { isMockAI } from "@/lib/ai/models";
 import { requireExamMode } from "@/lib/exam/guard";
 import { TargetBanner } from "@/components/study/target-banner";
 import { SubjectGrid } from "@/components/study/subject-grid";
 import { HeatmapGrid } from "@/components/study/heatmap-grid";
-import { ChatPanel } from "@/components/study/chat-panel";
+import { StudyChat, StudyChatSkeleton } from "@/components/study/study-chat";
 import { PageHeader } from "@/components/shell/page-header";
 
 export default async function StudyPage() {
   await requireExamMode();
 
-  const [subjects, target, readiness, sessionId, sessionsRes] = await Promise.all([
+  // One wave. The chat needs a session lookup *then* its messages, so it streams
+  // separately rather than adding a serial round-trip to the whole page.
+  const [subjects, target, readiness] = await Promise.all([
     getSubjectsWithTopics(),
     getStudyTarget(),
     getReadinessSnapshot(),
-    getOrCreateChatSession(),
-    listChatSessions(),
   ]);
-
-  const sessions = sessionsRes.ok && sessionsRes.data ? sessionsRes.data : [];
-
-  const history = sessionId ? await getChatMessages(sessionId) : [];
-  const initialMessages: Message[] = history.map((m) => ({
-    id: m.id,
-    role: m.role,
-    content: m.content,
-  }));
 
   const hasTopics = subjects.some((s) => s.topics.length > 0);
 
@@ -84,12 +69,9 @@ export default async function StudyPage() {
         </div>
 
         <aside className="lg:sticky lg:top-6 lg:self-start">
-          <ChatPanel
-            sessions={sessions}
-            sessionId={sessionId}
-            subjectId={null}
-            initialMessages={initialMessages}
-          />
+          <Suspense fallback={<StudyChatSkeleton />}>
+            <StudyChat subjectId={null} />
+          </Suspense>
         </aside>
       </div>
     </div>

@@ -4,7 +4,6 @@ import { redirect } from "next/navigation";
 import { createClient, getUser } from "@/lib/supabase/server";
 import { isOnboarded, type Profile } from "@/lib/types";
 import { LEGAL } from "@/lib/legal/content";
-import { getLifeScoreSnapshot } from "@/lib/life-score/service";
 import { Sidebar } from "@/components/nav/sidebar";
 import { AppHeader } from "@/components/shell/app-header";
 import { Aurora } from "@/components/shell/aurora";
@@ -23,14 +22,13 @@ export default async function AppLayout({
 
   if (!user) redirect("/login");
 
-  // Profile, the request pathname, and the Life Score all fetch in parallel.
-  // The score feeds the header on every normal page; computing it alongside the
-  // profile removes a serial round-trip from each navigation. (On the rare
-  // onboarding early-return path it goes unused, which is an acceptable trade.)
-  const [{ data: profile }, pathname, life] = await Promise.all([
+  // Only what the shell genuinely needs to decide *what* to render. The Life
+  // Score is deliberately NOT fetched here: it's a ~10-query round trip and
+  // awaiting it stalled every navigation behind a number that only decorates
+  // the header. It now streams inside AppHeader's Suspense boundary instead.
+  const [{ data: profile }, pathname] = await Promise.all([
     supabase.from("users").select("*").eq("id", user.id).single<Profile>(),
     headers().then((h) => h.get("x-pathname") ?? ""),
-    getLifeScoreSnapshot(),
   ]);
 
   const onOnboarding = pathname.startsWith("/onboarding");
@@ -74,7 +72,7 @@ export default async function AppLayout({
         examMode={profile?.exam_mode ?? false}
       />
       <main className="flex-1">
-        <AppHeader score={life?.score ?? 0} previous={life?.previous ?? null} />
+        <AppHeader />
         <PageTransition className="mx-auto w-full max-w-[100rem] px-4 py-6 md:px-10 md:py-10 lg:px-12">
           {children}
         </PageTransition>

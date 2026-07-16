@@ -110,13 +110,17 @@ export const getLifeScoreSnapshot = cache(
   const user = await getUser();
   if (!user) return null;
 
-  const live = await computeForUser(supabase, user.id);
-  const { data: rows } = await supabase
-    .from("life_scores")
-    .select("day, score")
-    .eq("user_id", user.id)
-    .order("day", { ascending: false })
-    .limit(14);
+  // The history doesn't depend on the live compute, so fetch both together:
+  // running them in sequence cost an extra full round-trip on every request.
+  const [live, { data: rows }] = await Promise.all([
+    computeForUser(supabase, user.id),
+    supabase
+      .from("life_scores")
+      .select("day, score")
+      .eq("user_id", user.id)
+      .order("day", { ascending: false })
+      .limit(14),
+  ]);
 
   const history = ((rows ?? []) as { day: string; score: number }[]).slice().reverse();
   const today = new Date().toISOString().slice(0, 10);
